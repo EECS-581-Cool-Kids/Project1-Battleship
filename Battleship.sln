@@ -3,7 +3,7 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.9.34728.123
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FixedTestMonoGameProject", "FixedTestMonoGameProject\FixedTestMonoGameProject.csproj", "{238AD9FD-0D60-4D09-91AA-E1715942E6A7}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Battleship", "Battleship\Battleship.csproj", "{A546EDD7-A09B-4104-84B4-C2F239904EEC}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -11,10 +11,10 @@ Global
 		Release|Any CPU = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{238AD9FD-0D60-4D09-91AA-E1715942E6A7}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{238AD9FD-0D60-4D09-91AA-E1715942E6A7}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{238AD9FD-0D60-4D09-91AA-E1715942E6A7}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{238AD9FD-0D60-4D09-91AA-E1715942E6A7}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A546EDD7-A09B-4104-84B4-C2F239904EEC}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A546EDD7-A09B-4104-84B4-C2F239904EEC}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A546EDD7-A09B-4104-84B4-C2F239904EEC}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A546EDD7-A09B-4104-84B4-C2F239904EEC}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
