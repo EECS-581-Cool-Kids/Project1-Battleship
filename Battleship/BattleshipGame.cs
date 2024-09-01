@@ -3,7 +3,7 @@ using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using System.Diagnostics;
 
-namespace FixedTestMonoGameProject
+namespace Battleship
 {
     public class BattleshipGame : Game
     {

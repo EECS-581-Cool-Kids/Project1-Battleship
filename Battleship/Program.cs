@@ -1,3 +1,3 @@
 ﻿
-using var game = new FixedTestMonoGameProject.BattleshipGame();
+using var game = new Battleship.BattleshipGame();
 game.Run();
