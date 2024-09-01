@@ -5,7 +5,7 @@ using System.Diagnostics;
 
 namespace FixedTestMonoGameProject
 {
-    public class TestGame : Game
+    public class BattleshipGame : Game
     {
         /// <summary>
         /// The MonoGame Graphics Device Manager.
@@ -22,7 +22,7 @@ namespace FixedTestMonoGameProject
         /// </summary>
         private Grid _grid;
 
-        public TestGame()
+        public BattleshipGame()
         {
             _graphics = new GraphicsDeviceManager(this);
             Content.RootDirectory = "Content";
