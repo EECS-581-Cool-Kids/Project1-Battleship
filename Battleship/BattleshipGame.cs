@@ -22,6 +22,11 @@ namespace Battleship
         /// </summary>
         private Grid _grid;
 
+        /// <summary>
+        /// The internal ship manager object.
+        /// </summary>
+        private ShipManager _shipManager = new();
+
         public BattleshipGame()
         {
             _graphics = new GraphicsDeviceManager(this);
@@ -78,6 +83,8 @@ namespace Battleship
             _grid.SquareSelectedTexture = Content.Load<Texture2D>("square_selected");
             _grid.SquareMissedTexture = Content.Load<Texture2D>("square_miss");
             _grid.SquareHitTexture = Content.Load<Texture2D>("square_hit");
+
+            _shipManager.LoadContent(Content);
         }
 
         /// <summary>
