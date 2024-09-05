@@ -18,11 +18,15 @@ namespace Battleship
         private SpriteBatch _spriteBatch;
 
         /// <summary>
-        /// Two internal grid objects. One for player and one for opponent.
+        /// Internal grid object.
+        /// One for each player.
         /// </summary>
-        private Grid _playerGrid;
-        private Grid _opponentGrid;
+        private Grid _player1grid;
+        private Grid _player2grid;
 
+        /// <summary>
+        /// Constructor for the Battleship game.
+        /// </summary>
         public BattleshipGame()
         {
             _graphics = new GraphicsDeviceManager(this);
@@ -43,8 +47,8 @@ namespace Battleship
 
             Window.Title = "Battleship";
 
-            _playerGrid = new Grid(11);
-            _opponentGrid = new Grid(11);
+            _player1grid = new Grid(11);
+            _player2grid = new Grid(11);
 
             base.Initialize();
         }
@@ -57,39 +61,8 @@ namespace Battleship
         {
             _spriteBatch = new SpriteBatch(GraphicsDevice);
 
-            // Load the player grid textures
-            LoadGridTextures(_playerGrid, "player");
-            LoadGridTextures(_opponentGrid, "opponent");
-        }
-
-        /// <summary>
-        /// Helper method to load textures for a specific grid.
-        /// </summary>
-        /// <param name="grid">A grid object.</param>
-        /// <param name="gridOwner">The player the grid belongs to.</param>
-        private void LoadGridTextures(Grid _grid, string _gridOwner)
-        {
-            GridTile[,] gridArray = _grid.GridArray;
-            gridArray[0, 0].GridTexture = Content.Load<Texture2D>("top_corner");
-
-            for (int tileNum = 1; tileNum < _grid.Size; tileNum++)
-            {
-                gridArray[0, tileNum].GridTexture = Content.Load<Texture2D>($"column_{tileNum}");
-                gridArray[tileNum, 0].GridTexture = Content.Load<Texture2D>($"row_{tileNum}");
-            }
-
-            for (int colNum = 1; colNum < _grid.Size; colNum++)
-            {
-                for (int rowNum = 1; rowNum < _grid.Size; rowNum++)
-                {
-                    gridArray[colNum, rowNum].GridTexture = Content.Load<Texture2D>("square");
-                    gridArray[colNum, rowNum].CanSelect = true;
-                }
-            }
-
-            _grid.SquareSelectedTexture = Content.Load<Texture2D>("square_selected");
-            _grid.SquareMissedTexture = Content.Load<Texture2D>("square_miss");
-            _grid.SquareHitTexture = Content.Load<Texture2D>("square_hit");
+            _player1grid.LoadContent(Content);
+            _player2grid.LoadContent(Content);
         }
 
         /// <summary>
@@ -101,11 +74,8 @@ namespace Battleship
             if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed || Keyboard.GetState().IsKeyDown(Keys.Escape))
                 Exit();
 
-            // Handle mouse interaction of player grid
-            HandleGridInteraction(_playerGrid, new Vector2(0,0));
-
-            // Handle mouse interaction with opponent grid
-            HandleGridInteraction(_opponentGrid, new Vector2(500,0));
+            _player1grid.Update();
+            _player2grid.Update();
 
             base.Update(gameTime);
         }
@@ -145,11 +115,8 @@ namespace Battleship
             GraphicsDevice.Clear(Color.CornflowerBlue);
 
             _spriteBatch.Begin(samplerState: SamplerState.PointClamp);
-
-            // Draw the player grid starting at (50,50) and the opponent grid starting at (550,50)
-            DrawGrid(_playerGrid, new Vector2(0, 0));
-            DrawGrid(_opponentGrid, new Vector2(500, 0));
-
+            _player1grid.Draw(_spriteBatch);
+            _player2grid.Draw(_spriteBatch);
             _spriteBatch.End();
 
             base.Draw(gameTime);
