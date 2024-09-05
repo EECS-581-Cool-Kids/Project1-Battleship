@@ -111,16 +111,18 @@ namespace Battleship
         {
             MouseState mouseState = Mouse.GetState();
             Point mousePoint = new Point(mouseState.X, mouseState.Y);
-            
+
             // Skip update loop if the mouse has not moved
             if (mousePoint.X == _previousMousePoint.X && mousePoint.Y == _previousMousePoint.Y)
             {
                 _mouseUpdated = false;
+                _previousMousePoint = mousePoint;
                 return;
             }
             else
             {
                 _mouseUpdated = true;
+                _previousMousePoint = mousePoint;
             }
 
             // Get which square the mouse is inside of
