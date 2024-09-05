@@ -18,9 +18,10 @@ namespace Battleship
         private SpriteBatch _spriteBatch;
 
         /// <summary>
-        /// Internal grid object.
+        /// Two internal grid objects. One for player and one for opponent.
         /// </summary>
-        private Grid _grid;
+        private Grid _playerGrid;
+        private Grid _opponentGrid;
 
         public BattleshipGame()
         {
@@ -36,13 +37,14 @@ namespace Battleship
         protected override void Initialize()
         {
             _graphics.IsFullScreen = false;
-            _graphics.PreferredBackBufferWidth = 495;
+            _graphics.PreferredBackBufferWidth = 1000; // Increased width to fit both grids.
             _graphics.PreferredBackBufferHeight = 495;
             _graphics.ApplyChanges();
 
             Window.Title = "Battleship";
 
-            _grid = new Grid(11);
+            _playerGrid = new Grid(11);
+            _opponentGrid = new Grid(11);
 
             base.Initialize();
         }
@@ -55,9 +57,19 @@ namespace Battleship
         {
             _spriteBatch = new SpriteBatch(GraphicsDevice);
 
-            // Load the grid textures
-            GridTile[,] gridArray = _grid.GridArray;
+            // Load the player grid textures
+            LoadGridTextures(_playerGrid, "player");
+            LoadGridTextures(_opponentGrid, "opponent");
+        }
 
+        /// <summary>
+        /// Helper method to load textures for a specific grid.
+        /// </summary>
+        /// <param name="grid">A grid object.</param>
+        /// <param name="gridOwner">The player the grid belongs to.</param>
+        private void LoadGridTextures(Grid _grid, string _gridOwner)
+        {
+            GridTile[,] gridArray = _grid.GridArray;
             gridArray[0, 0].GridTexture = Content.Load<Texture2D>("top_corner");
 
             for (int tileNum = 1; tileNum < _grid.Size; tileNum++)
@@ -66,7 +78,7 @@ namespace Battleship
                 gridArray[tileNum, 0].GridTexture = Content.Load<Texture2D>($"row_{tileNum}");
             }
 
-            for (int colNum = 1; colNum <  _grid.Size; colNum++)
+            for (int colNum = 1; colNum < _grid.Size; colNum++)
             {
                 for (int rowNum = 1; rowNum < _grid.Size; rowNum++)
                 {
@@ -89,9 +101,23 @@ namespace Battleship
             if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed || Keyboard.GetState().IsKeyDown(Keys.Escape))
                 Exit();
 
+            // Handle mouse interaction of player grid
+            HandleGridInteraction(_playerGrid, new Vector2(0,0));
+
+            // Handle mouse interaction with opponent grid
+            HandleGridInteraction(_opponentGrid, new Vector2(500,0));
+
+            base.Update(gameTime);
+        }
+        /// <summary>
+        /// Helper method to handle mouse interaction with a grid using the grid's position offset.
+        /// </summary>
+        /// <param name="_grid">A grid object.</param>
+        private void HandleGridInteraction(Grid _grid, Vector2 _position)
+        {
             // Get which square the mouse is inside of
             MouseState mouseState = Mouse.GetState();
-            Point moustPoint = new Point(mouseState.X, mouseState.Y);
+            Point moustPoint = new Point(mouseState.X - (int)_position.X, mouseState.Y - (int)_position.Y); // Offset the mouse position by the grid's position
             foreach (GridTile tile in _grid.GridArray)
             {
                 if (tile.GridRectangle.Contains(moustPoint) && tile.CanSelect)
@@ -108,8 +134,6 @@ namespace Battleship
                     tile.MouseOver = false;
                 }
             }
-
-            base.Update(gameTime);
         }
 
         /// <summary>
@@ -122,7 +146,21 @@ namespace Battleship
 
             _spriteBatch.Begin(samplerState: SamplerState.PointClamp);
 
-            // Draw the grid
+            // Draw the player grid starting at (50,50) and the opponent grid starting at (550,50)
+            DrawGrid(_playerGrid, new Vector2(0, 0));
+            DrawGrid(_opponentGrid, new Vector2(500, 0));
+
+            _spriteBatch.End();
+
+            base.Draw(gameTime);
+        }
+        /// <summary>
+        ///  Helper method to draw a grid at a specified position.
+        /// </summary>
+        /// <param name="_grid"></param>
+        /// <param name="postition"></param>
+        private void DrawGrid(Grid _grid, Vector2 postition)
+        {
             GridTile[,] gridArray = _grid.GridArray;
             foreach (GridTile tile in gridArray)
             {
@@ -136,12 +174,9 @@ namespace Battleship
                 else
                     texture = tile.GridTexture;
 
-                _spriteBatch.Draw(texture, tile.GridRectangle, Color.White);
+                // Draw each tile, offset by the grid's position
+                _spriteBatch.Draw(texture, new Rectangle(tile.GridRectangle.X + (int)postition.X, tile.GridRectangle.Y + (int)postition.Y, tile.GridRectangle.Width, tile.GridRectangle.Height), Color.White);
             }
-
-            _spriteBatch.End();
-
-            base.Draw(gameTime);
         }
     }
 }
