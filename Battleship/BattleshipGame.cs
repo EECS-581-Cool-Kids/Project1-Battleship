@@ -8,6 +8,21 @@ namespace Battleship
     public class BattleshipGame : Game
     {
         /// <summary>
+        /// Player 1 offset.
+        /// </summary>
+        private const int PLAYER_1_OFFSET = 0;
+
+        /// <summary>
+        /// Player 2 offset.
+        /// </summary>
+        private const int PLAYER_2_OFFSET = 500;
+
+        /// <summary>
+        /// The grid size.
+        /// </summary>
+        private const int GRID_SIZE = 11;
+
+        /// <summary>
         /// The MonoGame Graphics Device Manager.
         /// </summary>
         private GraphicsDeviceManager _graphics;
@@ -47,8 +62,8 @@ namespace Battleship
 
             Window.Title = "Battleship";
 
-            _player1grid = new Grid(11);
-            _player2grid = new Grid(11);
+            _player1grid = new Grid(GRID_SIZE, PLAYER_1_OFFSET);
+            _player2grid = new Grid(GRID_SIZE, PLAYER_2_OFFSET);
 
             base.Initialize();
         }
