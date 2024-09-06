@@ -18,10 +18,28 @@ namespace Battleship
         private SpriteBatch _spriteBatch;
 
         /// <summary>
-        /// Internal grid object.
-        /// One for each player.
+        /// The grid size
+        /// </summary>
+        private const int _GRIDSIZE = 11;
+
+        ///<summary>
+        /// Player 1 grid offset value.
+        /// </summary>
+        private const int _PLAYER1OFFSET = 0;
+
+        ///<summary>
+        /// Player 2 grid offset value.
+        /// </summary>
+        private const int _PLAYER2OFFSET = 500;
+
+        /// <summary>
+        /// Player 1 grid object.
         /// </summary>
         private Grid _player1grid;
+
+        /// <summary>
+        /// Player 2 grid object.
+        /// </summary>
         private Grid _player2grid;
 
         /// <summary>
@@ -47,8 +65,8 @@ namespace Battleship
 
             Window.Title = "Battleship";
 
-            _player1grid = new Grid(11);
-            _player2grid = new Grid(11);
+            _player1grid = new Grid(_GRIDSIZE, _PLAYER1OFFSET);
+            _player2grid = new Grid(_GRIDSIZE, _PLAYER2OFFSET);
 
             base.Initialize();
         }
@@ -79,32 +97,6 @@ namespace Battleship
 
             base.Update(gameTime);
         }
-        /// <summary>
-        /// Helper method to handle mouse interaction with a grid using the grid's position offset.
-        /// </summary>
-        /// <param name="_grid">A grid object.</param>
-        private void HandleGridInteraction(Grid _grid, Vector2 _position)
-        {
-            // Get which square the mouse is inside of
-            MouseState mouseState = Mouse.GetState();
-            Point moustPoint = new Point(mouseState.X - (int)_position.X, mouseState.Y - (int)_position.Y); // Offset the mouse position by the grid's position
-            foreach (GridTile tile in _grid.GridArray)
-            {
-                if (tile.GridRectangle.Contains(moustPoint) && tile.CanSelect)
-                {
-                    tile.MouseOver = true;
-
-                    if (mouseState.LeftButton == ButtonState.Pressed && !tile.IsMiss && !tile.IsHit)
-                        tile.IsMiss = true;
-                    if (mouseState.RightButton == ButtonState.Pressed && !tile.IsMiss && !tile.IsHit)
-                        tile.IsHit = true;
-                }
-                else if (!tile.GridRectangle.Contains(moustPoint) && tile.MouseOver)
-                {
-                    tile.MouseOver = false;
-                }
-            }
-        }
 
         /// <summary>
         /// Draws objects to the screen. Called constantly in a loop.
@@ -120,30 +112,6 @@ namespace Battleship
             _spriteBatch.End();
 
             base.Draw(gameTime);
-        }
-        /// <summary>
-        ///  Helper method to draw a grid at a specified position.
-        /// </summary>
-        /// <param name="_grid"></param>
-        /// <param name="postition"></param>
-        private void DrawGrid(Grid _grid, Vector2 postition)
-        {
-            GridTile[,] gridArray = _grid.GridArray;
-            foreach (GridTile tile in gridArray)
-            {
-                Texture2D texture;
-                if (tile.IsMiss)
-                    texture = _grid.SquareMissedTexture;
-                else if (tile.IsHit)
-                    texture = _grid.SquareHitTexture;
-                else if (tile.MouseOver)
-                    texture = _grid.SquareSelectedTexture;
-                else
-                    texture = tile.GridTexture;
-
-                // Draw each tile, offset by the grid's position
-                _spriteBatch.Draw(texture, new Rectangle(tile.GridRectangle.X + (int)postition.X, tile.GridRectangle.Y + (int)postition.Y, tile.GridRectangle.Width, tile.GridRectangle.Height), Color.White);
-            }
         }
     }
 }

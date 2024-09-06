@@ -1,5 +1,7 @@
 ﻿using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
+using Microsoft.Xna.Framework.Input;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -14,12 +16,12 @@ namespace Battleship
         /// <summary>
         /// The number of pixels for the width and height of each square.
         /// </summary>
-        private const int _squareSize = 9;
+        private const int _SQUARESIZE = 9;
 
         /// <summary>
         /// The scale factor between the texture and actual display.
         /// </summary>
-        private const int _scale = 5;
+        private const int _SCALE = 5;
 
         /// <summary>
         /// The 2D Array representing and storing the grid.
@@ -46,22 +48,10 @@ namespace Battleship
         /// </summary>
         public int Size { get; set; }
 
-        ///<summary>
-        ///The number associated with the grid's player.
-        ///i.e. 1 for player 1, 2 for player 2.
-        /// </summary>
-        public int playerNum { get; set; }
-
-        ///<summary>
-        /// Static property to keep track of the current player.
-        /// Increments by 1 each time a new player is created.
-        /// </summary>
-        private static int _playerCounter = 0;
-
         /// <summary>
-        /// The 
+        /// The horizontal offset value used for drawing the grid.
         /// </summary>
-        private Vector2 _position;
+        private int _offset { get; set; }
 
         /// <summary>
         /// The previous mouse point from the last update cycle.
@@ -73,13 +63,12 @@ namespace Battleship
         /// </summary>
         private bool _mouseUpdated;
 
-        public Grid(int size)
+        public Grid(int size, int offset)
         {
             // Initialize the 2D Array. 
             GridArray = new GridTile[size, size];
             Size = size;
-            this.playerNum = Interlocked.Increment(ref _playerCounter); // Increment the player counter and assign the value to playerNum. Thread-safe.
-            this._position = this.playerNum == 1 ? new Vector2(0, 0) : new Vector2(500, 0); // Set the position of the grid based on the player number.
+            _offset = offset;
 
 
             // Initialize each GridTile
@@ -87,8 +76,8 @@ namespace Battleship
             {
                 for (int colNum = 0; colNum < size; colNum++)
                 {
-                    Point squarePosition = new Point(colNum * _squareSize * _scale, rowNum * _squareSize * _scale);
-                    Point squareSize = new Point(_squareSize * _scale, _squareSize * _scale);
+                    Point squarePosition = new (colNum * _SQUARESIZE * _SCALE + _offset, rowNum * _SQUARESIZE * _SCALE);
+                    Point squareSize = new (_SQUARESIZE * _SCALE, _SQUARESIZE * _SCALE);
 
                     GridArray[rowNum, colNum] = new GridTile(squarePosition, squareSize);
                 }
@@ -128,7 +117,7 @@ namespace Battleship
         public void Update()
         {
             MouseState mouseState = Mouse.GetState();
-            Point mousePoint = new Point(mouseState.X - (int)_position.X, mouseState.Y - (int)_position.Y); // Offset the mouse position by the grid's position 
+            Point mousePoint = new (mouseState.X, mouseState.Y);
             
             // Skip update loop if the mouse has not moved
             if (mousePoint.X == _previousMousePoint.X && mousePoint.Y == _previousMousePoint.Y)
@@ -180,7 +169,7 @@ namespace Battleship
                 else
                     texture = tile.GridTexture;
 
-                spriteBatch.Draw(texture, new Rectangle(tile.GridRectangle.X +(int)_position.X, tile.GridRectangle.Y + (int)_position.Y, tile.GridRectangle.Width, tile.GridRectangle.Height), Color.White);
+                spriteBatch.Draw(texture, new Rectangle(tile.GridRectangle.X, tile.GridRectangle.Y, tile.GridRectangle.Width, tile.GridRectangle.Height), Color.White);
             }
         }
     }
