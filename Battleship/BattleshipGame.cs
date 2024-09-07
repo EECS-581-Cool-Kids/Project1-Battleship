@@ -82,7 +82,7 @@ namespace Battleship
             _player1grid.LoadContent(Content);
             _player2grid.LoadContent(Content);
         }
-
+        
         /// <summary>
         /// Checks if any game logic has updated. Called constantly in a loop.
         /// </summary>

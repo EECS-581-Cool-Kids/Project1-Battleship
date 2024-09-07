@@ -5,6 +5,7 @@ using Microsoft.Xna.Framework.Input;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection.Metadata;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
@@ -69,7 +70,6 @@ namespace Battleship
             GridArray = new GridTile[size, size];
             Size = size;
             _offset = offset;
-
 
             // Initialize each GridTile
             for (int rowNum = 0; rowNum < size; rowNum++)
