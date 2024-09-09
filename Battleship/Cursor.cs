@@ -13,22 +13,49 @@ namespace Battleship
 {
     public class Cursor
     {
+        /// <summary>
+        /// Texture for the left half of the cursor when it is horizontal.
+        /// </summary>
         public Texture2D? CursorLeftHalfTexture { get; set; }
 
+        /// <summary>
+        /// Texture for the right half of the cursor when it is horizontal.
+        /// </summary>
         public Texture2D? CursorRightHalfTexture { get; set; }
 
+        /// <summary>
+        /// Texture for the top half of the cursor when it is vertical.
+        /// </summary>
         public Texture2D? CursorTopHalfTexture { get; set; }
 
+        /// <summary>
+        /// Texture for the bottom half of the cursor when it is vertical.
+        /// </summary>
         public Texture2D? CursorBottomHalfTexture { get; set; }
 
+        /// <summary>
+        /// The first rectangle for the cursor, represents the starting edge.
+        /// </summary>
         public Rectangle? CursorStartRectangle { get; set; }
 
+        /// <summary>
+        /// The second rectangle for the cursor, represents the ending edge.
+        /// </summary>
         public Rectangle? CursorEndRectangle { get; set; }
 
-        public CursorOrientation Orientation { get; set; } = CursorOrientation.VERTICAL;
+        /// <summary>
+        /// The orientation of the cursor.
+        /// </summary>
+        public CursorOrientation Orientation { get; set; } = CursorOrientation.HORIZONTAL;
 
+        /// <summary>
+        /// The timeout for rotating the cursor.
+        /// </summary>
         private Timer? _rotateTimeout;
 
+        /// <summary>
+        /// LoadContent for the cursor.
+        /// </summary>
         public void LoadContent(ContentManager content)
         {
             CursorLeftHalfTexture = content.Load<Texture2D>("cursor_left");
@@ -37,32 +64,40 @@ namespace Battleship
             CursorBottomHalfTexture = content.Load<Texture2D>("cursor_bottom");
         }
 
-
-        public void Update(GridTile? currentTile, Tuple<int, int> tileLocation, int shipSize)
+        /// <summary>
+        /// Update for the cursor while in ship placement mode
+        /// </summary>
+        /// <param name="currentTile">The current GridTile the mouse is over.</param>
+        /// <param name="tileLocation">The location of the given GridTile in the GridArray</param>
+        /// <param name="shipSize">The size of the currently selected ship</param>
+        public void UpdateWhilePlacing(GridTile? currentTile, Tuple<int, int> tileLocation, int shipSize)
         {
             if (Keyboard.GetState().IsKeyDown(Keys.R) && (_rotateTimeout is null || !_rotateTimeout.Enabled))
             {
                 FlipOrientation();
                 _rotateTimeout = new Timer(100);
-                _rotateTimeout.Elapsed += OnTimeoutEvent;
+                _rotateTimeout.Elapsed += OnTimeoutEvent!;
                 _rotateTimeout.Start();
             }
 
             if (currentTile is not null)
             {
                 if (Orientation.Equals(CursorOrientation.HORIZONTAL))
-                    UpdateRectangles(currentTile.GetLeftHalfLocation(tileLocation.Item1, shipSize),
-                                     currentTile.GetRightHalfLocation(tileLocation.Item1, shipSize),
-                                     currentTile.GetAdjustedHorizontalSize());
+                    UpdateRectangles(currentTile.GetCursorLeftHalfLocation(tileLocation.Item1, shipSize),
+                                     currentTile.GetCursorRightHalfLocation(tileLocation.Item1, shipSize),
+                                     currentTile.GetCursorAdjustedHorizontalSize());
                 else
                     UpdateRectangles(currentTile.GetTopHalfLocation(tileLocation.Item2, shipSize),
                                      currentTile.GetBottomHalfLocation(tileLocation.Item2, shipSize),
                                      currentTile.GetAdjustedVerticalSize());
             }
-            else if (CursorStartRectangle is not null)
+            else if (CursorStartRectangle is not null || CursorEndRectangle is not null)
                 RemoveCursor();
         }
 
+        /// <summary>
+        /// Draw for the Cursor.
+        /// </summary>
         public void Draw(SpriteBatch spriteBatch)
         {
             Texture2D texture1;
@@ -85,7 +120,12 @@ namespace Battleship
             }
         }
 
-
+        /// <summary>
+        /// Updates the info for the rectangle objects.
+        /// </summary>
+        /// <param name="startLocation">The start coordinates for the cursor rectangle.</param>
+        /// <param name="endLocation">The end coordinates for the cursor rectangle.</param>
+        /// <param name="size">The size of the rectangles.</param>
         private void UpdateRectangles(Point startLocation, Point endLocation, Point size)
         {
             if (CursorStartRectangle is null || CursorStartRectangle.Value.X != startLocation.X || CursorStartRectangle.Value.Y != startLocation.Y ||
@@ -96,21 +136,26 @@ namespace Battleship
             }
         }
 
-
+        /// <summary>
+        /// Removes the cursor when the mouse is no longer over the board.
+        /// </summary>
         private void RemoveCursor()
         {
             CursorStartRectangle = null;
+            CursorEndRectangle = null;
         }
 
-
+        /// <summary>
+        /// Flips the orientation of the cursor
+        /// </summary>
         private void FlipOrientation()
         {
-            if (Orientation.Equals(CursorOrientation.HORIZONTAL))
-                Orientation = CursorOrientation.VERTICAL;
-            else
-                Orientation = CursorOrientation.HORIZONTAL;
+            Orientation = Orientation.Equals(CursorOrientation.HORIZONTAL) ? CursorOrientation.VERTICAL : CursorOrientation.HORIZONTAL;
         }
 
+        /// <summary>
+        /// Event called when the rotate timer times out.
+        /// </summary>
         private static void OnTimeoutEvent(object source, ElapsedEventArgs e)
         {
             Timer timer = (Timer)source;

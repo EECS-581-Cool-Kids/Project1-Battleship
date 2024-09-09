@@ -56,8 +56,13 @@ namespace Battleship
             GridRectangle = new Rectangle(location, size);
         }
 
-
-        public Point GetLeftHalfLocation(int squareCoord, int shipSize)
+        /// <summary>
+        /// Gets the location for the left half of a horizontal cursor.
+        /// </summary>
+        /// <param name="squareCoord">The X coordinate of this tile</param>
+        /// <param name="shipSize">The currently selected ship size.</param>
+        /// <returns></returns>
+        public Point GetCursorLeftHalfLocation(int squareCoord, int shipSize)
         {
             if (shipSize > 5)
                 shipSize = 5;
@@ -74,8 +79,13 @@ namespace Battleship
             return new Point(GridRectangle.X - SCALE - xAdjust, GridRectangle.Y - SCALE);
         }
 
-
-        public Point GetRightHalfLocation(int squareCoord, int shipSize)
+        /// <summary>
+        /// Gets the location for the right half of a horizontal cursor.
+        /// </summary>
+        /// <param name="squareCoord">The X coordinate of this tile</param>
+        /// <param name="shipSize">The currently selected ship size.</param>
+        /// <returns></returns>
+        public Point GetCursorRightHalfLocation(int squareCoord, int shipSize)
         {
             if (shipSize > 5)
                 shipSize = 5;
@@ -89,7 +99,12 @@ namespace Battleship
             return new Point(xPos, GridRectangle.Y - SCALE);
         }
 
-
+        /// <summary>
+        /// Gets the location for the top half of a vertical cursor.
+        /// </summary>
+        /// <param name="squareCoord">The Y coordinate of this tile</param>
+        /// <param name="shipSize">The currently selected ship size.</param>
+        /// <returns></returns>
         public Point GetTopHalfLocation(int squareCoord, int shipSize)
         {
             if (shipSize > 5)
@@ -107,7 +122,12 @@ namespace Battleship
             return new Point(GridRectangle.X - SCALE, GridRectangle.Y - SCALE - yAdjust);
         }
 
-
+        /// <summary>
+        /// Gets the location for the bottom half of a vertical cursor.
+        /// </summary>
+        /// <param name="squareCoord">The Y coordinate of this tile</param>
+        /// <param name="shipSize">The currently selected ship size.</param>
+        /// <returns></returns>
         public Point GetBottomHalfLocation(int squareCoord, int shipSize)
         {
             if (shipSize > 5)
@@ -122,22 +142,20 @@ namespace Battleship
             return new Point(GridRectangle.X - SCALE, yPos);
         }
 
-
-        public Point GetAdjustedHorizontalSize()
+        /// <summary>
+        /// Gets the adjusted size for a horizontal cursor.
+        /// </summary>
+        public Point GetCursorAdjustedHorizontalSize()
         {
             return new Point((SQUARE_SIZE + 1) * SCALE / 2, (SQUARE_SIZE + 1) * SCALE);
         }
 
-
+        /// <summary>
+        /// Gets the adjusted size for a vertical cursor.
+        /// </summary>
         public Point GetAdjustedVerticalSize()
         {
             return new Point((SQUARE_SIZE + 1) * SCALE, (SQUARE_SIZE + 1) * SCALE / 2);
-        }
-
-
-        public Point GetLocation()
-        {
-            return new Point(GridRectangle.X, GridRectangle.Y);
         }
     }
 }

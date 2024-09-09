@@ -83,7 +83,7 @@ namespace Battleship
                 Exit();
 
             _grid!.Update();
-            _cursor.Update(_grid.CurrentTile, _grid.GridArray.CoordinatesOf(_grid.CurrentTile), 3);
+            _cursor.UpdateWhilePlacing(_grid.CurrentTile, _grid.GridArray.CoordinatesOf(_grid.CurrentTile), 3);
 
             // update the ship
             if (_shipManager!.IsShipPlacementMode && _grid.CurrentTile is not null)

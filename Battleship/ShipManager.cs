@@ -74,13 +74,17 @@ namespace Battleship
             ShipTexture1x5 = content.Load<Texture2D>("ship1x5");
         }
 
-
+        /// <summary>
+        /// Update for the ship manager.
+        /// </summary>
         public void Update()
         {
 
         }
 
-
+        /// <summary>
+        /// Draw for the ship manager.
+        /// </summary>
         public void Draw(SpriteBatch spriteBatch)
         {
 
