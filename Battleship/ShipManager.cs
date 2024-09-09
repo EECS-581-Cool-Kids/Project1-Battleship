@@ -113,7 +113,7 @@ namespace Battleship
         {
             MouseState mouseState = Mouse.GetState();
 
-            if (mouseState.LeftButton == ButtonState.Pressed && !currentTile.HasShip)
+            if (mouseState.LeftButton == ButtonState.Pressed && !currentTile.HasShip && (_placementTimeout is null || !_placementTimeout.Enabled))
             {
                 Point size;
                 if (orientation.Equals(CursorOrientation.HORIZONTAL))
@@ -152,6 +152,12 @@ namespace Battleship
                 if (CurrentShipSize > NumShips)
                     IsShipPlacementMode = false;
 
+                if (_placementTimeout is not null)
+                {
+                    _placementTimeout.Stop();
+                    _placementTimeout.Dispose();
+                }
+
                 _placementTimeout = new Timer(1000);
                 _placementTimeout.Elapsed += OnTimeoutEvent!;
                 _placementTimeout.Start();
@@ -176,6 +182,7 @@ namespace Battleship
         private static void OnTimeoutEvent(object source, ElapsedEventArgs e)
         {
             Timer timer = (Timer)source;
+            timer.Stop();
             timer.Dispose();
         }
     }

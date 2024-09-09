@@ -156,7 +156,7 @@ namespace Battleship
 
             if (orientation.Equals(CursorOrientation.HORIZONTAL) && currentTileLocation.Item1 + shipLength >= Size)
                 return GridArray[currentTileLocation.Item2, Size - shipLength];
-            else if (currentTileLocation.Item2 + shipLength >= Size)
+            else if (orientation.Equals(CursorOrientation.VERTICAL) && currentTileLocation.Item2 + shipLength >= Size)
                 return GridArray[Size - shipLength, currentTileLocation.Item1];
             else
                 return currentTile;
