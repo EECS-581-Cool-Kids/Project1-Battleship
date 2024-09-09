@@ -79,6 +79,16 @@ namespace Battleship
         /// </summary>
         private Timer? _placementTimeout;
 
+        /// <summary>
+        /// Event called when a ship is placed.
+        /// </summary>
+        public Action<GridTile, Ship, CursorOrientation>? OnShipPlaced;
+
+        /// <summary>
+        /// Event called when a tile needs adjustment.
+        /// </summary>
+        public Func<GridTile, int, CursorOrientation, GridTile>? OnAdjustedTileRequested;
+
         public ShipManager(int numShips) 
         {
             NumShips = numShips;
@@ -111,6 +121,9 @@ namespace Battleship
                 else
                     size = new Point(SCALE * SQUARE_SIZE, SCALE * SQUARE_SIZE * CurrentShipSize);
 
+                if (OnAdjustedTileRequested is not null)
+                    currentTile = OnAdjustedTileRequested.Invoke(currentTile, CurrentShipSize, orientation);
+
                 Ship ship = new Ship(currentTile.GetLocation(), size, CurrentShipSize);
                 currentTile.Ship = ship;
                 
@@ -142,6 +155,9 @@ namespace Battleship
                 _placementTimeout = new Timer(1000);
                 _placementTimeout.Elapsed += OnTimeoutEvent!;
                 _placementTimeout.Start();
+
+                if (OnShipPlaced is not null)
+                    OnShipPlaced.Invoke(currentTile, ship, orientation);
             }
         }
 

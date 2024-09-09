@@ -57,6 +57,10 @@ namespace Battleship
             _grid = new Grid(11);
             _shipManager = new ShipManager(5);
 
+            // add event handlers
+            _shipManager.OnShipPlaced = _grid.ShipPlaced;
+            _shipManager.OnAdjustedTileRequested = _grid.GetAdjustedCurrentTile;
+
             base.Initialize();
         }
 

@@ -120,5 +120,46 @@ namespace Battleship
             foreach (GridTile tile in GridArray)
                 spriteBatch.Draw(tile.GridTexture, tile.GridRectangle, Color.White);
         }
+
+        /// <summary>
+        /// Handles updating all grid tiles to indicate that a ship has been placed upon it.
+        /// </summary>
+        /// <param name="tile">The tile that was selected.</param>
+        /// <param name="ship">The ship placed.</param>
+        /// <param name="orientation">The current cursor orientation.</param>
+        public void ShipPlaced(GridTile tile, Ship ship, CursorOrientation orientation)
+        {
+            Tuple<int, int> currentTileLocation = GridArray.CoordinatesOf(tile);
+
+            for (int tileNum = 1; tileNum < ship.Length; tileNum++)
+            {
+                GridTile nextTile;
+                if (orientation.Equals(CursorOrientation.HORIZONTAL))
+                    nextTile = GridArray[currentTileLocation.Item2, currentTileLocation.Item1 + tileNum];
+                else
+                    nextTile = GridArray[currentTileLocation.Item2 + tileNum, currentTileLocation.Item1];
+
+                nextTile.Ship = ship;
+            }
+        }
+
+        /// <summary>
+        /// Returns a new "current tile" based on a required adjustment.
+        /// This is for when the ship is being placed on squares close to the edge.
+        /// </summary>
+        /// <param name="currentTile">The current tile the mouse is over.</param>
+        /// <param name="shipLength">The length of the ship being placed.</param>
+        /// <param name="orientation">The cursor's orientation</param>
+        public GridTile GetAdjustedCurrentTile(GridTile currentTile, int shipLength, CursorOrientation orientation)
+        {
+            Tuple<int, int> currentTileLocation = GridArray.CoordinatesOf(currentTile);
+
+            if (orientation.Equals(CursorOrientation.HORIZONTAL) && currentTileLocation.Item1 + shipLength >= Size)
+                return GridArray[currentTileLocation.Item2, Size - shipLength];
+            else if (currentTileLocation.Item2 + shipLength >= Size)
+                return GridArray[Size - shipLength, currentTileLocation.Item1];
+            else
+                return currentTile;
+        }
     }
 }
