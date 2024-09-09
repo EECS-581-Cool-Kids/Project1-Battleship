@@ -1,7 +1,9 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
+using System;
 using System.Diagnostics;
+using System.Diagnostics.Tracing;
 
 namespace Battleship
 {
@@ -80,14 +82,8 @@ namespace Battleship
             if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed || Keyboard.GetState().IsKeyDown(Keys.Escape))
                 Exit();
 
-            // update the grid
             _grid!.Update();
-            
-            // update the cursor
-            if (_grid.CurrentTile is not null)
-                _cursor.Update(_grid.CurrentTile.GetAdjustedLocation(), _grid.CurrentTile.GetAdjustedSize());
-            else if (_cursor.CursorRectangle is not null)
-                _cursor.RemoveCursor();
+            _cursor.Update(_grid.CurrentTile, _grid.GridArray.CoordinatesOf(_grid.CurrentTile), 3);
 
             // update the ship
             if (_shipManager!.IsShipPlacementMode && _grid.CurrentTile is not null)

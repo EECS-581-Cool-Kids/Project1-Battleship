@@ -57,15 +57,81 @@ namespace Battleship
         }
 
 
-        public Point GetAdjustedLocation()
+        public Point GetLeftHalfLocation(int squareCoord, int shipSize)
         {
-            return new Point(GridRectangle.X - SCALE, GridRectangle.Y - SCALE);
+            if (shipSize > 5)
+                shipSize = 5;
+
+            int squareAdjust = 0;
+            while (squareCoord + shipSize > 11)
+            {
+                squareAdjust++;
+                shipSize--;
+            }
+
+            int xAdjust = SCALE * SQUARE_SIZE * squareAdjust;
+
+            return new Point(GridRectangle.X - SCALE - xAdjust, GridRectangle.Y - SCALE);
         }
 
 
-        public Point GetAdjustedSize()
+        public Point GetRightHalfLocation(int squareCoord, int shipSize)
         {
-            return new Point((SQUARE_SIZE + 1) * SCALE, (SQUARE_SIZE + 1) * SCALE);
+            if (shipSize > 5)
+                shipSize = 5;
+
+            while (squareCoord + shipSize > 11)
+                shipSize--;
+
+            int xPos = GridRectangle.X + (SCALE * 4);
+            xPos += (shipSize - 1) * SCALE * SQUARE_SIZE;
+
+            return new Point(xPos, GridRectangle.Y - SCALE);
+        }
+
+
+        public Point GetTopHalfLocation(int squareCoord, int shipSize)
+        {
+            if (shipSize > 5)
+                shipSize = 5;
+
+            int squareAdjust = 0;
+            while (squareCoord + shipSize > 11)
+            {
+                squareAdjust++;
+                shipSize--;
+            }
+
+            int yAdjust = SCALE * SQUARE_SIZE * squareAdjust;
+
+            return new Point(GridRectangle.X - SCALE, GridRectangle.Y - SCALE - yAdjust);
+        }
+
+
+        public Point GetBottomHalfLocation(int squareCoord, int shipSize)
+        {
+            if (shipSize > 5)
+                shipSize = 5;
+
+            while (squareCoord + shipSize > 11)
+                shipSize--;
+
+            int yPos = GridRectangle.Y + (SCALE * 4);
+            yPos += (shipSize - 1) * SCALE * SQUARE_SIZE;
+
+            return new Point(GridRectangle.X - SCALE, yPos);
+        }
+
+
+        public Point GetAdjustedHorizontalSize()
+        {
+            return new Point((SQUARE_SIZE + 1) * SCALE / 2, (SQUARE_SIZE + 1) * SCALE);
+        }
+
+
+        public Point GetAdjustedVerticalSize()
+        {
+            return new Point((SQUARE_SIZE + 1) * SCALE, (SQUARE_SIZE + 1) * SCALE / 2);
         }
 
 
