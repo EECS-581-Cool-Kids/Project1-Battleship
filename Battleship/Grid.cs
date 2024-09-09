@@ -7,6 +7,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection.Metadata;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace Battleship
@@ -16,12 +17,12 @@ namespace Battleship
         /// <summary>
         /// The number of pixels for the width and height of each square.
         /// </summary>
-        private const int _squareSize = 9;
+        private const int _SQUARESIZE = 9;
 
         /// <summary>
         /// The scale factor between the texture and actual display.
         /// </summary>
-        private const int _scale = 5;
+        private const int _SCALE = 5;
 
         /// <summary>
         /// The 2D Array representing and storing the grid.
@@ -49,6 +50,11 @@ namespace Battleship
         public int Size { get; set; }
 
         /// <summary>
+        /// The horizontal offset value used for drawing the grid.
+        /// </summary>
+        private int _offset { get; set; }
+
+        /// <summary>
         /// The previous mouse point from the last update cycle.
         /// </summary>
         private Point _previousMousePoint;
@@ -58,19 +64,20 @@ namespace Battleship
         /// </summary>
         private bool _mouseUpdated;
 
-        public Grid(int size)
+        public Grid(int size, int offset)
         {
-            // Initialize the 2D Array
+            // Initialize the 2D Array. 
             GridArray = new GridTile[size, size];
             Size = size;
+            _offset = offset;
 
             // Initialize each GridTile
             for (int rowNum = 0; rowNum < size; rowNum++)
             {
                 for (int colNum = 0; colNum < size; colNum++)
                 {
-                    Point squarePosition = new Point(colNum * _squareSize * _scale, rowNum * _squareSize * _scale);
-                    Point squareSize = new Point(_squareSize * _scale, _squareSize * _scale);
+                    Point squarePosition = new (colNum * _SQUARESIZE * _SCALE + _offset, rowNum * _SQUARESIZE * _SCALE);
+                    Point squareSize = new (_SQUARESIZE * _SCALE, _SQUARESIZE * _SCALE);
 
                     GridArray[rowNum, colNum] = new GridTile(squarePosition, squareSize);
                 }
@@ -110,7 +117,7 @@ namespace Battleship
         public void Update()
         {
             MouseState mouseState = Mouse.GetState();
-            Point mousePoint = new Point(mouseState.X, mouseState.Y);
+            Point mousePoint = new (mouseState.X, mouseState.Y);
             
             // Skip update loop if the mouse has not moved
             if (mousePoint.X == _previousMousePoint.X && mousePoint.Y == _previousMousePoint.Y)
@@ -162,7 +169,7 @@ namespace Battleship
                 else
                     texture = tile.GridTexture;
 
-                spriteBatch.Draw(texture, tile.GridRectangle, Color.White);
+                spriteBatch.Draw(texture, new Rectangle(tile.GridRectangle.X, tile.GridRectangle.Y, tile.GridRectangle.Width, tile.GridRectangle.Height), Color.White);
             }
         }
     }

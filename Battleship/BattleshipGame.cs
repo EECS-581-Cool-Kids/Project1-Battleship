@@ -18,10 +18,33 @@ namespace Battleship
         private SpriteBatch _spriteBatch;
 
         /// <summary>
-        /// Internal grid object.
+        /// The grid size
         /// </summary>
-        private Grid _grid;
+        private const int _GRIDSIZE = 11;
 
+        ///<summary>
+        /// Player 1 grid offset value.
+        /// </summary>
+        private const int _PLAYER1OFFSET = 0;
+
+        ///<summary>
+        /// Player 2 grid offset value.
+        /// </summary>
+        private const int _PLAYER2OFFSET = 500;
+
+        /// <summary>
+        /// Player 1 grid object.
+        /// </summary>
+        private Grid _player1grid;
+
+        /// <summary>
+        /// Player 2 grid object.
+        /// </summary>
+        private Grid _player2grid;
+
+        /// <summary>
+        /// Constructor for the Battleship game.
+        /// </summary>
         public BattleshipGame()
         {
             _graphics = new GraphicsDeviceManager(this);
@@ -36,13 +59,14 @@ namespace Battleship
         protected override void Initialize()
         {
             _graphics.IsFullScreen = false;
-            _graphics.PreferredBackBufferWidth = 495;
+            _graphics.PreferredBackBufferWidth = 1000; // Increased width to fit both grids.
             _graphics.PreferredBackBufferHeight = 495;
             _graphics.ApplyChanges();
 
             Window.Title = "Battleship";
 
-            _grid = new Grid(11);
+            _player1grid = new Grid(_GRIDSIZE, _PLAYER1OFFSET);
+            _player2grid = new Grid(_GRIDSIZE, _PLAYER2OFFSET);
 
             base.Initialize();
         }
@@ -55,9 +79,10 @@ namespace Battleship
         {
             _spriteBatch = new SpriteBatch(GraphicsDevice);
 
-            _grid.LoadContent(Content);
+            _player1grid.LoadContent(Content);
+            _player2grid.LoadContent(Content);
         }
-
+        
         /// <summary>
         /// Checks if any game logic has updated. Called constantly in a loop.
         /// </summary>
@@ -67,7 +92,8 @@ namespace Battleship
             if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed || Keyboard.GetState().IsKeyDown(Keys.Escape))
                 Exit();
 
-            _grid.Update();
+            _player1grid.Update();
+            _player2grid.Update();
 
             base.Update(gameTime);
         }
@@ -81,7 +107,8 @@ namespace Battleship
             GraphicsDevice.Clear(Color.CornflowerBlue);
 
             _spriteBatch.Begin(samplerState: SamplerState.PointClamp);
-            _grid.Draw(_spriteBatch);
+            _player1grid.Draw(_spriteBatch);
+            _player2grid.Draw(_spriteBatch);
             _spriteBatch.End();
 
             base.Draw(gameTime);
