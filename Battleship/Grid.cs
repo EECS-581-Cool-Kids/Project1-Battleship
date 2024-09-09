@@ -7,6 +7,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection.Metadata;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace Battleship
@@ -49,18 +50,24 @@ namespace Battleship
         /// </summary>
         public int Size { get; set; }
 
-        public Grid(int size)
+        /// <summary>
+        /// The horizontal offset value used for drawing the grid.
+        /// </summary>
+        private int _offset { get; set; }
+
+        public Grid(int size, int offset)
         {
-            // Initialize the 2D Array
+            // Initialize the 2D Array. 
             GridArray = new GridTile[size, size];
             Size = size;
+            _offset = offset;
 
             // Initialize each GridTile
             for (int rowNum = 0; rowNum < size; rowNum++)
             {
                 for (int colNum = 0; colNum < size; colNum++)
                 {
-                    Point squarePosition = new Point(colNum * SQUARE_SIZE * SCALE, rowNum * SQUARE_SIZE * SCALE);
+                    Point squarePosition = new Point(colNum * SQUARE_SIZE * SCALE + _offset, rowNum * SQUARE_SIZE * SCALE);
                     Point squareSize = new Point(SQUARE_SIZE * SCALE, SQUARE_SIZE * SCALE);
 
                     GridArray[rowNum, colNum] = new GridTile(squarePosition, squareSize);
