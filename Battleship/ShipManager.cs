@@ -1,16 +1,28 @@
-﻿using Microsoft.Xna.Framework.Content;
+﻿using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
+using Microsoft.Xna.Framework.Input;
 using System;
 using System.Collections.Generic;
-using System.Drawing;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Timers;
 
 namespace Battleship
 {
     public class ShipManager
     {
+        /// <summary>
+        /// The number of pixels for the width and height of each square.
+        /// </summary>
+        private const int SQUARE_SIZE = 9;
+
+        /// <summary>
+        /// The scale factor between the texture and actual display.
+        /// </summary>
+        private const int SCALE = 5;
+
         /// <summary>
         /// The texture for the 1x1 ship.
         /// </summary>
@@ -57,6 +69,16 @@ namespace Battleship
         /// </summary>
         public int NumShips { get; set; }
 
+        /// <summary>
+        /// Size of the currently selected ship.
+        /// </summary>
+        public int CurrentShipSize { get; set; } = 1;
+
+        /// <summary>
+        /// The timeout for ship placement.
+        /// </summary>
+        private Timer? _placementTimeout;
+
         public ShipManager(int numShips) 
         {
             NumShips = numShips;
@@ -77,9 +99,50 @@ namespace Battleship
         /// <summary>
         /// Update for the ship manager.
         /// </summary>
-        public void Update()
+        public void UpdateWhilePlacing(GridTile currentTile, CursorOrientation orientation)
         {
+            MouseState mouseState = Mouse.GetState();
 
+            if (mouseState.LeftButton == ButtonState.Pressed && !currentTile.HasShip)
+            {
+                Point size;
+                if (orientation.Equals(CursorOrientation.HORIZONTAL))
+                    size = new Point(SCALE * SQUARE_SIZE * CurrentShipSize, SCALE * SQUARE_SIZE);
+                else
+                    size = new Point(SCALE * SQUARE_SIZE, SCALE * SQUARE_SIZE * CurrentShipSize);
+
+                Ship ship = new Ship(currentTile.GetLocation(), size, CurrentShipSize);
+                currentTile.Ship = ship;
+                
+                switch(CurrentShipSize)
+                {
+                    case 2:
+                        ship.ShipTexture = ShipTexture1x2;
+                        break;
+                    case 3:
+                        ship.ShipTexture = ShipTexture1x3;
+                        break;
+                    case 4:
+                        ship.ShipTexture = ShipTexture1x4;
+                        break;
+                    case 5:
+                        ship.ShipTexture = ShipTexture1x5;
+                        break;
+                    default:
+                        ship.ShipTexture = ShipTexture1x1;
+                        break;
+                }
+
+                Player1Ships.Add(ship);
+                CurrentShipSize++;
+
+                if (CurrentShipSize > NumShips)
+                    IsShipPlacementMode = false;
+
+                _placementTimeout = new Timer(1000);
+                _placementTimeout.Elapsed += OnTimeoutEvent!;
+                _placementTimeout.Start();
+            }
         }
 
         /// <summary>
@@ -87,7 +150,17 @@ namespace Battleship
         /// </summary>
         public void Draw(SpriteBatch spriteBatch)
         {
+            foreach (Ship ship in Player1Ships)
+                spriteBatch.Draw(ship.ShipTexture, ship.ShipRectangle, Color.White);
+        }
 
+        /// <summary>
+        /// Event called when the placement timer times out.
+        /// </summary>
+        private static void OnTimeoutEvent(object source, ElapsedEventArgs e)
+        {
+            Timer timer = (Timer)source;
+            timer.Dispose();
         }
     }
 }

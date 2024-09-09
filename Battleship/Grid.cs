@@ -95,7 +95,7 @@ namespace Battleship
         }
 
         /// <summary>
-        /// Update for the grid.
+        /// Update for the grid while in ship placement mode.
         /// </summary>
         public void Update()
         {
@@ -106,22 +106,9 @@ namespace Battleship
             foreach (GridTile tile in GridArray)
             {
                 if (tile.GridRectangle.Contains(mousePoint) && tile.CanSelect)
-                {
-                    tile.MouseOver = true;
                     CurrentTile = tile;
-
-                    if (mouseState.LeftButton == ButtonState.Pressed && !tile.IsMiss && !tile.IsHit)
-                        tile.IsMiss = true;
-                    if (mouseState.RightButton == ButtonState.Pressed && !tile.IsMiss && !tile.IsHit)
-                        tile.IsHit = true;
-                }
-                else if (!tile.GridRectangle.Contains(mousePoint) && tile.MouseOver)
-                {
-                    tile.MouseOver = false;
-
-                    if (CurrentTile?.Equals(tile) ?? false)
-                        CurrentTile = null;
-                }
+                else if (!tile.GridRectangle.Contains(mousePoint) && (CurrentTile?.Equals(tile) ?? false))
+                    CurrentTile = null;
             }
         }
 
@@ -131,17 +118,7 @@ namespace Battleship
         public void Draw(SpriteBatch spriteBatch)
         {
             foreach (GridTile tile in GridArray)
-            {
-                Texture2D texture;
-                if (tile.IsMiss)
-                    texture = SquareMissedTexture!;
-                else if (tile.IsHit)
-                    texture = SquareHitTexture!;
-                else
-                    texture = tile.GridTexture!;
-
-                spriteBatch.Draw(texture, tile.GridRectangle, Color.White);
-            }
+                spriteBatch.Draw(tile.GridTexture, tile.GridRectangle, Color.White);
         }
     }
 }

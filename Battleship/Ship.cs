@@ -25,6 +25,11 @@ namespace Battleship
         /// </summary>
         public int Length { get; set; }
 
+        /// <summary>
+        /// Whether or not the ship has been placed.
+        /// </summary>
+        public bool IsPlaced { get; set; }
+
         public Ship(Point position, Point size, int length)
         {
             ShipRectangle = new Rectangle(position, size);

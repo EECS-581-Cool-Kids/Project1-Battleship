@@ -31,6 +31,11 @@ namespace Battleship
         public Texture2D? GridTexture { get; set; }
 
         /// <summary>
+        /// The ship over the grid tile.
+        /// </summary>
+        public Ship? Ship { get; set; }
+
+        /// <summary>
         /// Whether or not the mouse is hovering over the tile.
         /// </summary>
         public bool MouseOver { get; set; } = false;
@@ -42,14 +47,15 @@ namespace Battleship
         public bool CanSelect { get; set; } = false;
 
         /// <summary>
-        /// Whether or not the tile is a "miss".
+        /// Whether or not the grid tile has a ship over it.
         /// </summary>
-        public bool IsMiss { get; set; } = false;
-
-        /// <summary>
-        /// Whether or not the tile is a "hit".
-        /// </summary>
-        public bool IsHit { get; set; } = false;
+        public bool HasShip
+        {
+            get
+            {
+                return Ship is not null;
+            }
+        }
 
         public GridTile(Point location, Point size)
         {
@@ -105,7 +111,7 @@ namespace Battleship
         /// <param name="squareCoord">The Y coordinate of this tile</param>
         /// <param name="shipSize">The currently selected ship size.</param>
         /// <returns></returns>
-        public Point GetTopHalfLocation(int squareCoord, int shipSize)
+        public Point GetCursorTopHalfLocation(int squareCoord, int shipSize)
         {
             if (shipSize > 5)
                 shipSize = 5;
@@ -128,7 +134,7 @@ namespace Battleship
         /// <param name="squareCoord">The Y coordinate of this tile</param>
         /// <param name="shipSize">The currently selected ship size.</param>
         /// <returns></returns>
-        public Point GetBottomHalfLocation(int squareCoord, int shipSize)
+        public Point GetCursorBottomHalfLocation(int squareCoord, int shipSize)
         {
             if (shipSize > 5)
                 shipSize = 5;
@@ -153,9 +159,17 @@ namespace Battleship
         /// <summary>
         /// Gets the adjusted size for a vertical cursor.
         /// </summary>
-        public Point GetAdjustedVerticalSize()
+        public Point GetCursorAdjustedVerticalSize()
         {
             return new Point((SQUARE_SIZE + 1) * SCALE, (SQUARE_SIZE + 1) * SCALE / 2);
+        }
+
+        /// <summary>
+        /// The location of the grid tile.
+        /// </summary>
+        public Point GetLocation()
+        {
+            return new Point(GridRectangle.X, GridRectangle.Y);
         }
     }
 }

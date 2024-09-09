@@ -87,10 +87,28 @@ namespace Battleship
                                      currentTile.GetCursorRightHalfLocation(tileLocation.Item1, shipSize),
                                      currentTile.GetCursorAdjustedHorizontalSize());
                 else
-                    UpdateRectangles(currentTile.GetTopHalfLocation(tileLocation.Item2, shipSize),
-                                     currentTile.GetBottomHalfLocation(tileLocation.Item2, shipSize),
-                                     currentTile.GetAdjustedVerticalSize());
+                    UpdateRectangles(currentTile.GetCursorTopHalfLocation(tileLocation.Item2, shipSize),
+                                     currentTile.GetCursorBottomHalfLocation(tileLocation.Item2, shipSize),
+                                     currentTile.GetCursorAdjustedVerticalSize());
             }
+            else if (CursorStartRectangle is not null || CursorEndRectangle is not null)
+                RemoveCursor();
+        }
+
+        /// <summary>
+        /// Updates the cursor while in play mode.
+        /// </summary>
+        /// <param name="currentTile">The current GridTile the mouse is over.</param>
+        /// <param name="tileLocation">The location of currentTile in the GridArray</param>
+        public void UpdateWhilePlaying(GridTile? currentTile, int tileLocation)
+        {
+            if (Orientation.Equals(CursorOrientation.VERTICAL))
+                FlipOrientation();
+
+            if (currentTile is not null)
+                UpdateRectangles(currentTile.GetCursorLeftHalfLocation(tileLocation, 1),
+                                 currentTile.GetCursorRightHalfLocation(tileLocation, 1),
+                                 currentTile.GetCursorAdjustedHorizontalSize());
             else if (CursorStartRectangle is not null || CursorEndRectangle is not null)
                 RemoveCursor();
         }

@@ -55,7 +55,7 @@ namespace Battleship
             Window.Title = "Battleship";
 
             _grid = new Grid(11);
-            _shipManager = new ShipManager(1);
+            _shipManager = new ShipManager(5);
 
             base.Initialize();
         }
@@ -83,11 +83,15 @@ namespace Battleship
                 Exit();
 
             _grid!.Update();
-            _cursor.UpdateWhilePlacing(_grid.CurrentTile, _grid.GridArray.CoordinatesOf(_grid.CurrentTile), 3);
 
-            // update the ship
+            Tuple<int, int> currentTileLocation = _grid.GridArray.CoordinatesOf(_grid.CurrentTile);
+            if (_shipManager!.IsShipPlacementMode)
+                _cursor.UpdateWhilePlacing(_grid.CurrentTile, currentTileLocation, _shipManager.CurrentShipSize);
+            else
+                _cursor.UpdateWhilePlaying(_grid.CurrentTile, currentTileLocation.Item1);
+
             if (_shipManager!.IsShipPlacementMode && _grid.CurrentTile is not null)
-                return;
+                _shipManager.UpdateWhilePlacing(_grid.CurrentTile, _cursor.Orientation);
 
             base.Update(gameTime);
         }
@@ -103,6 +107,7 @@ namespace Battleship
             _spriteBatch!.Begin(samplerState: SamplerState.PointClamp);
             _grid!.Draw(_spriteBatch);
             _cursor.Draw(_spriteBatch);
+            _shipManager!.Draw(_spriteBatch);
             _spriteBatch!.End();
 
             base.Draw(gameTime);
