@@ -18,7 +18,7 @@ namespace Battleship
         /// <summary>
         /// The texture object for the tile.
         /// </summary>
-        public Texture2D ShipTexture { get; set; }
+        public Texture2D? ShipTexture { get; set; }
 
         /// <summary>
         /// The length of the ship.

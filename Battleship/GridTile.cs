@@ -11,6 +11,16 @@ namespace Battleship
     public class GridTile
     {
         /// <summary>
+        /// The number of pixels for the width and height of each square.
+        /// </summary>
+        private const int SQUARE_SIZE = 9;
+
+        /// <summary>
+        /// The scale factor between the texture and actual display.
+        /// </summary>
+        private const int SCALE = 5;
+
+        /// <summary>
         /// The rectangle object that stores the texture.
         /// </summary>
         public Rectangle GridRectangle { get; set; }
@@ -18,7 +28,7 @@ namespace Battleship
         /// <summary>
         /// The texture object for the tile.
         /// </summary>
-        public Texture2D GridTexture { get; set; }
+        public Texture2D? GridTexture { get; set; }
 
         /// <summary>
         /// Whether or not the mouse is hovering over the tile.
@@ -44,6 +54,24 @@ namespace Battleship
         public GridTile(Point location, Point size)
         {
             GridRectangle = new Rectangle(location, size);
+        }
+
+
+        public Point GetAdjustedLocation()
+        {
+            return new Point(GridRectangle.X - SCALE, GridRectangle.Y - SCALE);
+        }
+
+
+        public Point GetAdjustedSize()
+        {
+            return new Point((SQUARE_SIZE + 1) * SCALE, (SQUARE_SIZE + 1) * SCALE);
+        }
+
+
+        public Point GetLocation()
+        {
+            return new Point(GridRectangle.X, GridRectangle.Y);
         }
     }
 }

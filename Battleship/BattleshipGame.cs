@@ -15,17 +15,22 @@ namespace Battleship
         /// <summary>
         /// The MonoGame sprit batch object.
         /// </summary>
-        private SpriteBatch _spriteBatch;
+        private SpriteBatch? _spriteBatch;
+
+        /// <summary>
+        /// The player's cursor.
+        /// </summary>
+        private Cursor _cursor = new();
 
         /// <summary>
         /// Internal grid object.
         /// </summary>
-        private Grid _grid;
+        private Grid? _grid;
 
         /// <summary>
         /// The internal ship manager object.
         /// </summary>
-        private ShipManager _shipManager = new();
+        private ShipManager? _shipManager;
 
         public BattleshipGame()
         {
@@ -48,6 +53,7 @@ namespace Battleship
             Window.Title = "Battleship";
 
             _grid = new Grid(11);
+            _shipManager = new ShipManager(1);
 
             base.Initialize();
         }
@@ -60,8 +66,9 @@ namespace Battleship
         {
             _spriteBatch = new SpriteBatch(GraphicsDevice);
 
-            _grid.LoadContent(Content);
-            _shipManager.LoadContent(Content);
+            _grid!.LoadContent(Content);
+            _shipManager!.LoadContent(Content);
+            _cursor.LoadContent(Content);
         }
 
         /// <summary>
@@ -73,7 +80,18 @@ namespace Battleship
             if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed || Keyboard.GetState().IsKeyDown(Keys.Escape))
                 Exit();
 
-            _grid.Update();
+            // update the grid
+            _grid!.Update();
+            
+            // update the cursor
+            if (_grid.CurrentTile is not null)
+                _cursor.Update(_grid.CurrentTile.GetAdjustedLocation(), _grid.CurrentTile.GetAdjustedSize());
+            else if (_cursor.CursorRectangle is not null)
+                _cursor.RemoveCursor();
+
+            // update the ship
+            if (_shipManager!.IsShipPlacementMode && _grid.CurrentTile is not null)
+                return;
 
             base.Update(gameTime);
         }
@@ -86,9 +104,10 @@ namespace Battleship
         {
             GraphicsDevice.Clear(Color.CornflowerBlue);
 
-            _spriteBatch.Begin(samplerState: SamplerState.PointClamp);
-            _grid.Draw(_spriteBatch);
-            _spriteBatch.End();
+            _spriteBatch!.Begin(samplerState: SamplerState.PointClamp);
+            _grid!.Draw(_spriteBatch);
+            _cursor.Draw(_spriteBatch);
+            _spriteBatch!.End();
 
             base.Draw(gameTime);
         }

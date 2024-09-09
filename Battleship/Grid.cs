@@ -16,12 +16,12 @@ namespace Battleship
         /// <summary>
         /// The number of pixels for the width and height of each square.
         /// </summary>
-        private const int _squareSize = 9;
+        private const int SQUARE_SIZE = 9;
 
         /// <summary>
         /// The scale factor between the texture and actual display.
         /// </summary>
-        private const int _scale = 5;
+        private const int SCALE = 5;
 
         /// <summary>
         /// The 2D Array representing and storing the grid.
@@ -29,34 +29,25 @@ namespace Battleship
         public GridTile[,] GridArray { get; set; }
 
         /// <summary>
-        /// The texture used to indicate when the mouse is hovering over a square.
-        /// </summary>
-        public Texture2D SquareSelectedTexture { get; set; }
-
-        /// <summary>
         /// The texture used to indicate a square was a "miss".
         /// </summary>
-        public Texture2D SquareMissedTexture { get; set; }
+        public Texture2D? SquareMissedTexture { get; set; }
 
         /// <summary>
         /// The texture used to indicate a square was a "hit".
         /// </summary>
-        public Texture2D SquareHitTexture { get; set; }
+        public Texture2D? SquareHitTexture { get; set; }
+
+        /// <summary>
+        /// The current tile the mouse is hovering over.
+        /// Set in the update loop.
+        /// </summary>
+        public GridTile? CurrentTile { get; set; }
 
         /// <summary>
         /// The size of width and height of the grid.
         /// </summary>
         public int Size { get; set; }
-
-        /// <summary>
-        /// The previous mouse point from the last update cycle.
-        /// </summary>
-        private Point _previousMousePoint;
-
-        /// <summary>
-        /// Whether or not the mouse has updated.
-        /// </summary>
-        private bool _mouseUpdated;
 
         public Grid(int size)
         {
@@ -69,8 +60,8 @@ namespace Battleship
             {
                 for (int colNum = 0; colNum < size; colNum++)
                 {
-                    Point squarePosition = new Point(colNum * _squareSize * _scale, rowNum * _squareSize * _scale);
-                    Point squareSize = new Point(_squareSize * _scale, _squareSize * _scale);
+                    Point squarePosition = new Point(colNum * SQUARE_SIZE * SCALE, rowNum * SQUARE_SIZE * SCALE);
+                    Point squareSize = new Point(SQUARE_SIZE * SCALE, SQUARE_SIZE * SCALE);
 
                     GridArray[rowNum, colNum] = new GridTile(squarePosition, squareSize);
                 }
@@ -99,7 +90,6 @@ namespace Battleship
                 }
             }
 
-            SquareSelectedTexture = content.Load<Texture2D>("square_selected");
             SquareMissedTexture = content.Load<Texture2D>("square_miss");
             SquareHitTexture = content.Load<Texture2D>("square_hit");
         }
@@ -112,25 +102,13 @@ namespace Battleship
             MouseState mouseState = Mouse.GetState();
             Point mousePoint = new Point(mouseState.X, mouseState.Y);
 
-            // Skip update loop if the mouse has not moved
-            if (mousePoint.X == _previousMousePoint.X && mousePoint.Y == _previousMousePoint.Y)
-            {
-                _mouseUpdated = false;
-                _previousMousePoint = mousePoint;
-                return;
-            }
-            else
-            {
-                _mouseUpdated = true;
-                _previousMousePoint = mousePoint;
-            }
-
             // Get which square the mouse is inside of
             foreach (GridTile tile in GridArray)
             {
                 if (tile.GridRectangle.Contains(mousePoint) && tile.CanSelect)
                 {
                     tile.MouseOver = true;
+                    CurrentTile = tile;
 
                     if (mouseState.LeftButton == ButtonState.Pressed && !tile.IsMiss && !tile.IsHit)
                         tile.IsMiss = true;
@@ -140,6 +118,9 @@ namespace Battleship
                 else if (!tile.GridRectangle.Contains(mousePoint) && tile.MouseOver)
                 {
                     tile.MouseOver = false;
+
+                    if (CurrentTile?.Equals(tile) ?? false)
+                        CurrentTile = null;
                 }
             }
         }
@@ -149,20 +130,15 @@ namespace Battleship
         /// </summary>
         public void Draw(SpriteBatch spriteBatch)
         {
-            if (!_mouseUpdated)
-                return;
-
             foreach (GridTile tile in GridArray)
             {
                 Texture2D texture;
                 if (tile.IsMiss)
-                    texture = SquareMissedTexture;
+                    texture = SquareMissedTexture!;
                 else if (tile.IsHit)
-                    texture = SquareHitTexture;
-                else if (tile.MouseOver)
-                    texture = SquareSelectedTexture;
+                    texture = SquareHitTexture!;
                 else
-                    texture = tile.GridTexture;
+                    texture = tile.GridTexture!;
 
                 spriteBatch.Draw(texture, tile.GridRectangle, Color.White);
             }
