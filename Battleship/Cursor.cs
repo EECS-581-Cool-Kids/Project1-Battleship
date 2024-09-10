@@ -75,7 +75,7 @@ namespace Battleship
             if (Keyboard.GetState().IsKeyDown(Keys.R) && (_rotateTimeout is null || !_rotateTimeout.Enabled))
             {
                 FlipOrientation();
-                _rotateTimeout = new Timer(100);
+                _rotateTimeout = new Timer(500);
                 _rotateTimeout.Elapsed += OnTimeoutEvent!;
                 _rotateTimeout.Start();
             }
