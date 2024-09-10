@@ -55,6 +55,11 @@ namespace Battleship
         /// </summary>
         private ShipManager? _shipManager;
 
+        /// <summary>
+        /// The internal turn manager object.
+        /// </summary>
+        private TurnManager? _turnManager;
+
         public BattleshipGame()
         {
             _graphics = new GraphicsDeviceManager(this);
@@ -78,7 +83,7 @@ namespace Battleship
             _player1grid = new Grid(GRID_SIZE, PLAYER_1_OFFSET);
             _player2grid = new Grid(GRID_SIZE, PLAYER_2_OFFSET);
             _shipManager = new ShipManager(5);
-
+            _turnManager = new TurnManager(new Point(PLAYER_2_OFFSET, 0), new Point(9 * 4, 9 * 4));
             // add event handlers
             _shipManager.OnPlayer1ShipPlaced = _player1grid.ShipPlaced;
             _shipManager.OnPlayer2ShipPlaced = _player2grid.ShipPlaced;
@@ -86,6 +91,7 @@ namespace Battleship
             _shipManager.OnPlayer2AdjustedTileRequested = _player2grid.GetAdjustedCurrentTile;
             _shipManager.IsPlayer1PlacementValid = _player1grid.IsShipPlacementValid;
             _shipManager.IsPlayer2PlacementValid = _player2grid.IsShipPlacementValid;
+            _shipManager.OnPlayerChange = _turnManager.NextTurn;
 
 
             base.Initialize();
@@ -103,6 +109,7 @@ namespace Battleship
             _player2grid!.LoadContent(Content);
             _shipManager!.LoadContent(Content);
             _cursor.LoadContent(Content);
+            _turnManager!.LoadContent(Content);
         }
         
         /// <summary>
@@ -150,7 +157,8 @@ namespace Battleship
             _player1grid!.Draw(_spriteBatch);
             _player2grid!.Draw(_spriteBatch);
             _cursor.Draw(_spriteBatch);
-            _shipManager!.Draw(_spriteBatch);
+            _shipManager!.Draw(_spriteBatch, _turnManager!.IsP1sTurn);
+            _turnManager!.Draw(_spriteBatch);
             _spriteBatch!.End();
 
             base.Draw(gameTime);

@@ -96,6 +96,11 @@ namespace Battleship
         public Action<GridTile, Ship, CursorOrientation>? OnPlayer2ShipPlaced;
 
         /// <summary>
+        /// Event called when a player has completed their turn.
+        /// </summary>
+        public Action? OnPlayerChange;
+
+        /// <summary>
         /// Event called to check if a position on player 1's board is valid.
         /// </summary>
         public Func<GridTile, int, CursorOrientation, bool>? IsPlayer1PlacementValid;
@@ -181,10 +186,14 @@ namespace Battleship
                     IsPlayer1Placing = false;
                     IsPlayer2Placing = true;
                     CurrentShipSize = 1;
+                    if (OnPlayerChange is not null)
+                        OnPlayerChange();
                 }
                 else if (CurrentShipSize > NumShips && IsPlayer2Placing)
                 {
                     IsPlayer2Placing = false;
+                    if (OnPlayerChange is not null)
+                        OnPlayerChange();
                 }
 
                 if (_placementTimeout is not null)
@@ -207,12 +216,19 @@ namespace Battleship
         /// <summary>
         /// Draw for the ship manager.
         /// </summary>
-        public void Draw(SpriteBatch spriteBatch)
+        /// <param name="isP1Turn">If it's P1's turn, don't render P2's ships.</param>
+        public void Draw(SpriteBatch spriteBatch, bool isP1Turn)
         {
-            foreach (Ship ship in Player1Ships)
-                spriteBatch.Draw(ship.ShipTexture, ship.ShipRectangle, Color.White);
-            foreach (Ship ship in Player2Ships)
-                spriteBatch.Draw(ship.ShipTexture, ship.ShipRectangle, Color.White);
+            if (isP1Turn)
+            {
+                foreach (Ship ship in Player1Ships)
+                    spriteBatch.Draw(ship.ShipTexture, ship.ShipRectangle, Color.White);
+            }
+            else
+            {
+                foreach (Ship ship in Player2Ships)
+                    spriteBatch.Draw(ship.ShipTexture, ship.ShipRectangle, Color.White);
+            }
         }
 
         /// <summary>
