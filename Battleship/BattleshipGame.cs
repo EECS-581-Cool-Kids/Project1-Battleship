@@ -81,9 +81,12 @@ namespace Battleship
 
             // add event handlers
             _shipManager.OnPlayer1ShipPlaced = _player1grid.ShipPlaced;
-            _shipManager.OnPlayer1AdjustedTileRequested = _player1grid.GetAdjustedCurrentTile;
             _shipManager.OnPlayer2ShipPlaced = _player2grid.ShipPlaced;
+            _shipManager.OnPlayer1AdjustedTileRequested = _player1grid.GetAdjustedCurrentTile;
             _shipManager.OnPlayer2AdjustedTileRequested = _player2grid.GetAdjustedCurrentTile;
+            _shipManager.IsPlayer1PlacementValid = _player1grid.IsShipPlacementValid;
+            _shipManager.IsPlayer2PlacementValid = _player2grid.IsShipPlacementValid;
+
 
             base.Initialize();
         }

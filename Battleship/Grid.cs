@@ -168,5 +168,38 @@ namespace Battleship
             else
                 return currentTile;
         }
+
+        /// <summary>
+        /// Confirms a ship placement is valid.
+        /// </summary>
+        /// <param name="selectedTile"></param>
+        /// <param name="shipLength"></param>
+        /// <param name="orientation"></param>
+        /// <returns></returns>
+        public bool IsShipPlacementValid(GridTile selectedTile, int shipLength, CursorOrientation orientation)
+        {
+            if (selectedTile.HasShip)
+                return false;
+
+            Tuple<int, int> currentTileLocation = GridArray.CoordinatesOf(selectedTile);
+
+            List<GridTile> tiles = new();
+
+            for (int tileNum = 1; tileNum < shipLength; tileNum++)
+            {
+                if (orientation.Equals(CursorOrientation.HORIZONTAL))
+                    tiles.Add(GridArray[currentTileLocation.Item2, currentTileLocation.Item1 + tileNum]);
+                else
+                    tiles.Add(GridArray[currentTileLocation.Item2 + tileNum, currentTileLocation.Item1]);
+            }
+
+            foreach (GridTile tile in tiles)
+            {
+                if (tile.HasShip)
+                    return false;
+            }
+
+            return true;
+        }
     }
 }

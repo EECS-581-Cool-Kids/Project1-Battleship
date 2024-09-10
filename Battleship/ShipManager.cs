@@ -96,6 +96,16 @@ namespace Battleship
         public Action<GridTile, Ship, CursorOrientation>? OnPlayer2ShipPlaced;
 
         /// <summary>
+        /// Event called to check if a position on player 1's board is valid.
+        /// </summary>
+        public Func<GridTile, int, CursorOrientation, bool>? IsPlayer1PlacementValid;
+
+        /// <summary>
+        /// Event called to check if a position on player 2's board is valid.
+        /// </summary>
+        public Func<GridTile, int, CursorOrientation, bool>? IsPlayer2PlacementValid;
+
+        /// <summary>
         /// Event called when a tile needs adjustment in the player 1 grid.
         /// </summary>
         public Func<GridTile, int, CursorOrientation, GridTile>? OnPlayer1AdjustedTileRequested;
@@ -129,18 +139,24 @@ namespace Battleship
         {
             MouseState mouseState = Mouse.GetState();
 
-            if (mouseState.LeftButton == ButtonState.Pressed && !currentTile.HasShip && (_placementTimeout is null || !_placementTimeout.Enabled))
+            if (mouseState.LeftButton == ButtonState.Pressed && (_placementTimeout is null || !_placementTimeout.Enabled))
             {
+                if (OnPlayer1AdjustedTileRequested is not null && playerNum == 1)
+                    currentTile = OnPlayer1AdjustedTileRequested.Invoke(currentTile, CurrentShipSize, orientation);
+                else if (OnPlayer2AdjustedTileRequested is not null && playerNum == 2)
+                    currentTile = OnPlayer2AdjustedTileRequested.Invoke(currentTile, CurrentShipSize, orientation);
+
+                bool isShipPlacementValid = playerNum == 1 ? IsPlayer1PlacementValid!.Invoke(currentTile, CurrentShipSize, orientation)
+                                                           : IsPlayer2PlacementValid!.Invoke(currentTile, CurrentShipSize, orientation);
+
+                if (!isShipPlacementValid)
+                    return;
+
                 Point size;
                 if (orientation.Equals(CursorOrientation.HORIZONTAL))
                     size = new Point(SCALE * SQUARE_SIZE * CurrentShipSize, SCALE * SQUARE_SIZE);
                 else
                     size = new Point(SCALE * SQUARE_SIZE, SCALE * SQUARE_SIZE * CurrentShipSize);
-
-                if (OnPlayer1AdjustedTileRequested is not null && playerNum == 1)
-                    currentTile = OnPlayer1AdjustedTileRequested.Invoke(currentTile, CurrentShipSize, orientation);
-                else if (OnPlayer2AdjustedTileRequested is not null && playerNum == 2)
-                    currentTile = OnPlayer2AdjustedTileRequested.Invoke(currentTile, CurrentShipSize, orientation);
 
                 Ship ship = new Ship(currentTile.GetLocation(), size, CurrentShipSize);
                 currentTile.Ship = ship;
