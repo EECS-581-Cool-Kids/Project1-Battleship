@@ -118,7 +118,7 @@ namespace Battleship
             _player2grid!.Update();
 
             Tuple<int, int> currentPlayer1TileLocation = _player1grid.GridArray.CoordinatesOf(_player1grid.CurrentTile);
-            Tuple<int, int> currentPlayer2TileLocation = _player1grid.GridArray.CoordinatesOf(_player2grid.CurrentTile);
+            Tuple<int, int> currentPlayer2TileLocation = _player2grid.GridArray.CoordinatesOf(_player2grid.CurrentTile);
 
             if (_shipManager!.IsPlayer1Placing && _player1grid.CurrentTile is not null)
                 _cursor.UpdateWhilePlacing(_player1grid.CurrentTile, currentPlayer1TileLocation, _shipManager.CurrentShipSize);
