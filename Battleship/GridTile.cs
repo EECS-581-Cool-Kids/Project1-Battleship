@@ -94,16 +94,13 @@ namespace Battleship
         /// <returns></returns>
         public Point GetCursorRightHalfLocation(int squareCoord, int shipSize)
         {
+            
             if (shipSize > 5)
                 shipSize = 5;
+            
+            int xAdjust = - SCALE * SQUARE_SIZE * shipSize + SCALE * SQUARE_SIZE / 2 - 3;
 
-            while (squareCoord + shipSize > 11)
-                shipSize--;
-
-            int xPos = GridRectangle.X + (SCALE * 4);
-            xPos += (shipSize - 1) * SCALE * SQUARE_SIZE;
-
-            return new Point(xPos, GridRectangle.Y - SCALE);
+            return new Point(GridRectangle.X - SCALE - xAdjust, GridRectangle.Y - SCALE);
         }
 
         /// <summary>
@@ -139,14 +136,22 @@ namespace Battleship
         {
             if (shipSize > 5)
                 shipSize = 5;
-
-            while (squareCoord + shipSize > 11)
-                shipSize--;
-
-            int yPos = GridRectangle.Y + (SCALE * 4);
-            yPos += (shipSize - 1) * SCALE * SQUARE_SIZE;
-
-            return new Point(GridRectangle.X - SCALE, yPos);
+            
+            int yAdjust = - SCALE * SQUARE_SIZE * shipSize + SCALE * SQUARE_SIZE / 2 - 3;
+            
+            return new Point(GridRectangle.X - SCALE, GridRectangle.Y - SCALE - yAdjust);
+            
+            
+            // if (shipSize > 5)
+            //     shipSize = 5;
+            //
+            // while (squareCoord + shipSize > 11)
+            //     shipSize--;
+            //
+            // int yPos = GridRectangle.Y + (SCALE * 4);
+            // yPos += (shipSize - 1) * SCALE * SQUARE_SIZE;
+            //
+            // return new Point(GridRectangle.X - SCALE, yPos);
         }
 
         /// <summary>

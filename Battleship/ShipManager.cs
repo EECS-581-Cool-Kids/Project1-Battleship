@@ -185,22 +185,42 @@ namespace Battleship
                     return;
 
                 Point size;
-                if (orientation.Equals(CursorOrientation.HORIZONTAL))
+                // set the size of the ship rectangle based on orientation
+                if (orientation.Equals(CursorOrientation.HORIZONTAL))  // horizontal
                     size = new Point(SCALE * SQUARE_SIZE * CurrentShipSize, SCALE * SQUARE_SIZE);
-                else
+                    
+                else  // vertical
                     size = new Point(SCALE * SQUARE_SIZE, SCALE * SQUARE_SIZE * CurrentShipSize);
 
                 Ship ship = new Ship(currentTile.GetLocation(), size, CurrentShipSize);
                 currentTile.Ship = ship;
-
-                ship.ShipTexture = CurrentShipSize switch
+                
+                
+                // set the texture of the ship based on size and orientation
+                if (orientation.Equals(CursorOrientation.HORIZONTAL))  // horizontal
                 {
-                    2 => ShipTexture1x2,
-                    3 => ShipTexture1x3,
-                    4 => ShipTexture1x4,
-                    5 => ShipTexture1x5,
-                    _ => ShipTexture1x1,
-                };
+                    ship.ShipTexture = CurrentShipSize switch
+                    {
+                        1 => ShipTexture1x1,
+                        2 => ShipTexture1x2,
+                        3 => ShipTexture1x3,
+                        4 => ShipTexture1x4,
+                        5 => ShipTexture1x5,
+                        _ => ShipTexture1x1
+                    };
+                }
+                else  // vertical
+                {
+                    ship.ShipTexture = CurrentShipSize switch
+                    {
+                        1 => ShipTexture1x1vert,
+                        2 => ShipTexture1x2vert,
+                        3 => ShipTexture1x3vert,
+                        4 => ShipTexture1x4vert,
+                        5 => ShipTexture1x5vert,
+                        _ => ShipTexture1x1vert
+                    };
+                }
 
                 if (IsPlayer1Placing)
                     Player1Ships.Add(ship);
