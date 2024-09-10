@@ -17,12 +17,12 @@ namespace Battleship
         /// <summary>
         /// The number of pixels for the width and height of each square.
         /// </summary>
-        private const int _SQUARESIZE = 9;
+        private const int SQUARE_SIZE = 9;
 
         /// <summary>
         /// The scale factor between the texture and actual display.
         /// </summary>
-        private const int _SCALE = 5;
+        private const int SCALE = 5;
 
         /// <summary>
         /// The 2D Array representing and storing the grid.
@@ -30,19 +30,20 @@ namespace Battleship
         public GridTile[,] GridArray { get; set; }
 
         /// <summary>
-        /// The texture used to indicate when the mouse is hovering over a square.
-        /// </summary>
-        public Texture2D SquareSelectedTexture { get; set; }
-
-        /// <summary>
         /// The texture used to indicate a square was a "miss".
         /// </summary>
-        public Texture2D SquareMissedTexture { get; set; }
+        public Texture2D? SquareMissedTexture { get; set; }
 
         /// <summary>
         /// The texture used to indicate a square was a "hit".
         /// </summary>
-        public Texture2D SquareHitTexture { get; set; }
+        public Texture2D? SquareHitTexture { get; set; }
+
+        /// <summary>
+        /// The current tile the mouse is hovering over.
+        /// Set in the update loop.
+        /// </summary>
+        public GridTile? CurrentTile { get; set; }
 
         /// <summary>
         /// The size of width and height of the grid.
@@ -53,16 +54,6 @@ namespace Battleship
         /// The horizontal offset value used for drawing the grid.
         /// </summary>
         private int _offset { get; set; }
-
-        /// <summary>
-        /// The previous mouse point from the last update cycle.
-        /// </summary>
-        private Point _previousMousePoint;
-
-        /// <summary>
-        /// Whether or not the mouse has updated.
-        /// </summary>
-        private bool _mouseUpdated;
 
         public Grid(int size, int offset)
         {
@@ -76,8 +67,8 @@ namespace Battleship
             {
                 for (int colNum = 0; colNum < size; colNum++)
                 {
-                    Point squarePosition = new (colNum * _SQUARESIZE * _SCALE + _offset, rowNum * _SQUARESIZE * _SCALE);
-                    Point squareSize = new (_SQUARESIZE * _SCALE, _SQUARESIZE * _SCALE);
+                    Point squarePosition = new Point(colNum * SQUARE_SIZE * SCALE + _offset, rowNum * SQUARE_SIZE * SCALE);
+                    Point squareSize = new Point(SQUARE_SIZE * SCALE, SQUARE_SIZE * SCALE);
 
                     GridArray[rowNum, colNum] = new GridTile(squarePosition, squareSize);
                 }
@@ -106,46 +97,25 @@ namespace Battleship
                 }
             }
 
-            SquareSelectedTexture = content.Load<Texture2D>("square_selected");
             SquareMissedTexture = content.Load<Texture2D>("square_miss");
             SquareHitTexture = content.Load<Texture2D>("square_hit");
         }
 
         /// <summary>
-        /// Update for the grid.
+        /// Update for the grid while in ship placement mode.
         /// </summary>
         public void Update()
         {
             MouseState mouseState = Mouse.GetState();
-            Point mousePoint = new (mouseState.X, mouseState.Y);
-            
-            // Skip update loop if the mouse has not moved
-            if (mousePoint.X == _previousMousePoint.X && mousePoint.Y == _previousMousePoint.Y)
-            {
-                _mouseUpdated = false;
-                return;
-            }
-            else
-            {
-                _mouseUpdated = true;
-            }
+            Point mousePoint = new Point(mouseState.X, mouseState.Y);
 
             // Get which square the mouse is inside of
             foreach (GridTile tile in GridArray)
             {
                 if (tile.GridRectangle.Contains(mousePoint) && tile.CanSelect)
-                {
-                    tile.MouseOver = true;
-
-                    if (mouseState.LeftButton == ButtonState.Pressed && !tile.IsMiss && !tile.IsHit)
-                        tile.IsMiss = true;
-                    if (mouseState.RightButton == ButtonState.Pressed && !tile.IsMiss && !tile.IsHit)
-                        tile.IsHit = true;
-                }
-                else if (!tile.GridRectangle.Contains(mousePoint) && tile.MouseOver)
-                {
-                    tile.MouseOver = false;
-                }
+                    CurrentTile = tile;
+                else if (!tile.GridRectangle.Contains(mousePoint) && (CurrentTile?.Equals(tile) ?? false))
+                    CurrentTile = null;
             }
         }
 
@@ -154,23 +124,82 @@ namespace Battleship
         /// </summary>
         public void Draw(SpriteBatch spriteBatch)
         {
-            if (!_mouseUpdated)
-                return;
-
             foreach (GridTile tile in GridArray)
-            {
-                Texture2D texture;
-                if (tile.IsMiss)
-                    texture = SquareMissedTexture;
-                else if (tile.IsHit)
-                    texture = SquareHitTexture;
-                else if (tile.MouseOver)
-                    texture = SquareSelectedTexture;
-                else
-                    texture = tile.GridTexture;
+                spriteBatch.Draw(tile.GridTexture, tile.GridRectangle, Color.White);
+        }
 
-                spriteBatch.Draw(texture, new Rectangle(tile.GridRectangle.X, tile.GridRectangle.Y, tile.GridRectangle.Width, tile.GridRectangle.Height), Color.White);
+        /// <summary>
+        /// Handles updating all grid tiles to indicate that a ship has been placed upon it.
+        /// </summary>
+        /// <param name="tile">The tile that was selected.</param>
+        /// <param name="ship">The ship placed.</param>
+        /// <param name="orientation">The current cursor orientation.</param>
+        public void ShipPlaced(GridTile tile, Ship ship, CursorOrientation orientation)
+        {
+            Tuple<int, int> currentTileLocation = GridArray.CoordinatesOf(tile);
+
+            for (int tileNum = 1; tileNum < ship.Length; tileNum++)
+            {
+                GridTile nextTile;
+                if (orientation.Equals(CursorOrientation.HORIZONTAL))
+                    nextTile = GridArray[currentTileLocation.Item2, currentTileLocation.Item1 + tileNum];
+                else
+                    nextTile = GridArray[currentTileLocation.Item2 + tileNum, currentTileLocation.Item1];
+
+                nextTile.Ship = ship;
             }
+        }
+
+        /// <summary>
+        /// Returns a new "current tile" based on a required adjustment.
+        /// This is for when the ship is being placed on squares close to the edge.
+        /// </summary>
+        /// <param name="currentTile">The current tile the mouse is over.</param>
+        /// <param name="shipLength">The length of the ship being placed.</param>
+        /// <param name="orientation">The cursor's orientation</param>
+        public GridTile GetAdjustedCurrentTile(GridTile currentTile, int shipLength, CursorOrientation orientation)
+        {
+            Tuple<int, int> currentTileLocation = GridArray.CoordinatesOf(currentTile);
+
+            if (orientation.Equals(CursorOrientation.HORIZONTAL) && currentTileLocation.Item1 + shipLength >= Size)
+                return GridArray[currentTileLocation.Item2, Size - shipLength];
+            else if (orientation.Equals(CursorOrientation.VERTICAL) && currentTileLocation.Item2 + shipLength >= Size)
+                return GridArray[Size - shipLength, currentTileLocation.Item1];
+            else
+                return currentTile;
+        }
+
+        /// <summary>
+        /// Confirms a ship placement is valid.
+        /// </summary>
+        /// <param name="selectedTile"></param>
+        /// <param name="shipLength"></param>
+        /// <param name="orientation"></param>
+        /// <returns></returns>
+        public bool IsShipPlacementValid(GridTile selectedTile, int shipLength, CursorOrientation orientation)
+        {
+            if (selectedTile.HasShip)
+                return false;
+
+            Tuple<int, int> currentTileLocation = GridArray.CoordinatesOf(selectedTile);
+
+            List<GridTile> tiles = new();
+
+            for (int tileNum = 1; tileNum < shipLength; tileNum++)
+            {
+                if (orientation.Equals(CursorOrientation.HORIZONTAL))
+                    tiles.Add(GridArray[currentTileLocation.Item2, currentTileLocation.Item1 + tileNum]);
+                else
+                    tiles.Add(GridArray[currentTileLocation.Item2 + tileNum, currentTileLocation.Item1]);
+            }
+
+            foreach (GridTile tile in tiles)
+            {
+                if (tile.HasShip)
+                    return false;
+            }
+
+            return true;
         }
     }
 }
