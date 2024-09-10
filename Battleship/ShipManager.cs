@@ -160,25 +160,15 @@ namespace Battleship
 
                 Ship ship = new Ship(currentTile.GetLocation(), size, CurrentShipSize);
                 currentTile.Ship = ship;
-                
-                switch(CurrentShipSize)
+
+                ship.ShipTexture = CurrentShipSize switch
                 {
-                    case 2:
-                        ship.ShipTexture = ShipTexture1x2;
-                        break;
-                    case 3:
-                        ship.ShipTexture = ShipTexture1x3;
-                        break;
-                    case 4:
-                        ship.ShipTexture = ShipTexture1x4;
-                        break;
-                    case 5:
-                        ship.ShipTexture = ShipTexture1x5;
-                        break;
-                    default:
-                        ship.ShipTexture = ShipTexture1x1;
-                        break;
-                }
+                    2 => ShipTexture1x2,
+                    3 => ShipTexture1x3,
+                    4 => ShipTexture1x4,
+                    5 => ShipTexture1x5,
+                    _ => ShipTexture1x1,
+                };
 
                 if (IsPlayer1Placing)
                     Player1Ships.Add(ship);
