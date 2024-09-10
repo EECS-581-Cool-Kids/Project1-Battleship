@@ -1,12 +1,30 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
+using System;
 using System.Diagnostics;
+using System.Diagnostics.Tracing;
 
 namespace Battleship
 {
     public class BattleshipGame : Game
     {
+        /// <summary>
+        /// Internal grid object.
+        /// The grid size
+        /// </summary>
+        private const int GRID_SIZE = 11;
+
+        ///<summary>
+        /// Player 1 grid offset value.
+        /// </summary>
+        private const int PLAYER_1_OFFSET = 0;
+
+        ///<summary>
+        /// Player 2 grid offset value.
+        /// </summary>
+        private const int PLAYER_2_OFFSET = 500;
+
         /// <summary>
         /// The MonoGame Graphics Device Manager.
         /// </summary>
@@ -15,36 +33,28 @@ namespace Battleship
         /// <summary>
         /// The MonoGame sprit batch object.
         /// </summary>
-        private SpriteBatch _spriteBatch;
+        private SpriteBatch? _spriteBatch;
 
         /// <summary>
-        /// The grid size
+        /// The player's cursor.
         /// </summary>
-        private const int _GRIDSIZE = 11;
-
-        ///<summary>
-        /// Player 1 grid offset value.
-        /// </summary>
-        private const int _PLAYER1OFFSET = 0;
-
-        ///<summary>
-        /// Player 2 grid offset value.
-        /// </summary>
-        private const int _PLAYER2OFFSET = 500;
+        private Cursor _cursor = new();
 
         /// <summary>
         /// Player 1 grid object.
         /// </summary>
-        private Grid _player1grid;
+        private Grid? _player1grid;
 
         /// <summary>
         /// Player 2 grid object.
         /// </summary>
-        private Grid _player2grid;
+        private Grid? _player2grid;
 
         /// <summary>
-        /// Constructor for the Battleship game.
+        /// The internal ship manager object.
         /// </summary>
+        private ShipManager? _shipManager;
+
         public BattleshipGame()
         {
             _graphics = new GraphicsDeviceManager(this);
@@ -65,8 +75,18 @@ namespace Battleship
 
             Window.Title = "Battleship";
 
-            _player1grid = new Grid(_GRIDSIZE, _PLAYER1OFFSET);
-            _player2grid = new Grid(_GRIDSIZE, _PLAYER2OFFSET);
+            _player1grid = new Grid(GRID_SIZE, PLAYER_1_OFFSET);
+            _player2grid = new Grid(GRID_SIZE, PLAYER_2_OFFSET);
+            _shipManager = new ShipManager(5);
+
+            // add event handlers
+            _shipManager.OnPlayer1ShipPlaced = _player1grid.ShipPlaced;
+            _shipManager.OnPlayer2ShipPlaced = _player2grid.ShipPlaced;
+            _shipManager.OnPlayer1AdjustedTileRequested = _player1grid.GetAdjustedCurrentTile;
+            _shipManager.OnPlayer2AdjustedTileRequested = _player2grid.GetAdjustedCurrentTile;
+            _shipManager.IsPlayer1PlacementValid = _player1grid.IsShipPlacementValid;
+            _shipManager.IsPlayer2PlacementValid = _player2grid.IsShipPlacementValid;
+
 
             base.Initialize();
         }
@@ -79,8 +99,10 @@ namespace Battleship
         {
             _spriteBatch = new SpriteBatch(GraphicsDevice);
 
-            _player1grid.LoadContent(Content);
-            _player2grid.LoadContent(Content);
+            _player1grid!.LoadContent(Content);
+            _player2grid!.LoadContent(Content);
+            _shipManager!.LoadContent(Content);
+            _cursor.LoadContent(Content);
         }
         
         /// <summary>
@@ -92,8 +114,26 @@ namespace Battleship
             if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed || Keyboard.GetState().IsKeyDown(Keys.Escape))
                 Exit();
 
-            _player1grid.Update();
-            _player2grid.Update();
+            _player1grid!.Update();
+            _player2grid!.Update();
+
+            Tuple<int, int> currentPlayer1TileLocation = _player1grid.GridArray.CoordinatesOf(_player1grid.CurrentTile);
+            Tuple<int, int> currentPlayer2TileLocation = _player2grid.GridArray.CoordinatesOf(_player2grid.CurrentTile);
+
+            if (_shipManager!.IsPlayer1Placing && _player1grid.CurrentTile is not null)
+                _cursor.UpdateWhilePlacing(_player1grid.CurrentTile, currentPlayer1TileLocation, _shipManager.CurrentShipSize);
+            else if (_player1grid.CurrentTile is not null)
+                _cursor.UpdateWhilePlaying(_player1grid.CurrentTile, currentPlayer1TileLocation.Item1);
+            
+            if (_shipManager!.IsPlayer2Placing && _player2grid.CurrentTile is not null)
+                _cursor.UpdateWhilePlacing(_player2grid.CurrentTile, currentPlayer2TileLocation, _shipManager.CurrentShipSize);
+            else if (_player2grid.CurrentTile is not null)
+                _cursor.UpdateWhilePlaying(_player2grid.CurrentTile, currentPlayer2TileLocation.Item1);
+
+            if (_shipManager!.IsPlayer1Placing && _player1grid.CurrentTile is not null)
+                _shipManager.UpdateWhilePlacing(_player1grid.CurrentTile, _cursor.Orientation, 1);
+            if (_shipManager!.IsPlayer2Placing && _player2grid.CurrentTile is not null)
+                _shipManager.UpdateWhilePlacing(_player2grid.CurrentTile, _cursor.Orientation, 2);
 
             base.Update(gameTime);
         }
@@ -106,10 +146,12 @@ namespace Battleship
         {
             GraphicsDevice.Clear(Color.CornflowerBlue);
 
-            _spriteBatch.Begin(samplerState: SamplerState.PointClamp);
-            _player1grid.Draw(_spriteBatch);
-            _player2grid.Draw(_spriteBatch);
-            _spriteBatch.End();
+            _spriteBatch!.Begin(samplerState: SamplerState.PointClamp);
+            _player1grid!.Draw(_spriteBatch);
+            _player2grid!.Draw(_spriteBatch);
+            _cursor.Draw(_spriteBatch);
+            _shipManager!.Draw(_spriteBatch);
+            _spriteBatch!.End();
 
             base.Draw(gameTime);
         }
