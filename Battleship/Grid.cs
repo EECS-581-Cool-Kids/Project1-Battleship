@@ -17,8 +17,9 @@ namespace Battleship
         /// <summary>
         /// The number of pixels for the width and height of each square.
         /// </summary>
-        private const int SQUARE_SIZE = 9;
-
+        // private const int SQUARE_SIZE = 9;
+        private const int SQUARE_SIZE = 16;
+        
         /// <summary>
         /// The scale factor between the texture and actual display.
         /// </summary>

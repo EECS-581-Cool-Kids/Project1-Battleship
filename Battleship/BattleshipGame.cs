@@ -23,7 +23,7 @@ namespace Battleship
         ///<summary>
         /// Player 2 grid offset value.
         /// </summary>
-        private const int PLAYER_2_OFFSET = 500;
+        private const int PLAYER_2_OFFSET = 880; // should be SQUARE_SIZE * GRID_SIZE * 2 * SCALE, i.e. 16 * 11 * 2 * scale / 2
 
         /// <summary>
         /// The MonoGame Graphics Device Manager.
@@ -69,8 +69,8 @@ namespace Battleship
         protected override void Initialize()
         {
             _graphics.IsFullScreen = false;
-            _graphics.PreferredBackBufferWidth = 1000; // Increased width to fit both grids.
-            _graphics.PreferredBackBufferHeight = 495;
+            _graphics.PreferredBackBufferWidth = 1760; // should be SQUARE_SIZE * GRID_SIZE * 2 * SCALE, i.e. 16 * 11 * 2 * scale
+            _graphics.PreferredBackBufferHeight = 880; // should be SQUARE_SIZE * GRID_SIZE * SCALE, i.e. 16 * 11 * scale
             _graphics.ApplyChanges();
 
             Window.Title = "Battleship";

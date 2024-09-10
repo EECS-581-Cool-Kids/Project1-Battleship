@@ -16,8 +16,9 @@ namespace Battleship
         /// <summary>
         /// The number of pixels for the width and height of each square.
         /// </summary>
-        private const int SQUARE_SIZE = 9;
-
+        // private const int SQUARE_SIZE = 9;
+        private const int SQUARE_SIZE = 16;
+        
         /// <summary>
         /// The scale factor between the texture and actual display.
         /// </summary>
@@ -47,6 +48,32 @@ namespace Battleship
         /// The texture for the 1x5 ship.
         /// </summary>
         public Texture2D? ShipTexture1x5 { get; set; }
+        
+        /// <summary>
+        /// The texture for the 1x1 ship vertical rotation.
+        /// </summary>
+        public Texture2D? ShipTexture1x1vert { get; set; }
+        
+        /// <summary>
+        /// <summary>
+        /// The texture for the 1x2 ship vertical rotation.
+        /// </summary>
+        public Texture2D? ShipTexture1x2vert { get; set; }
+        
+        /// <summary>
+        /// The texture for the 1x3 ship vertical rotation.
+        /// </summary>
+        public Texture2D? ShipTexture1x3vert { get; set; }
+        
+        /// <summary>
+        /// The texture for the 1x4 ship vertical rotation.
+        /// </summary>
+        public Texture2D? ShipTexture1x4vert { get; set; }
+        
+        /// <summary>
+        /// The texture for the 1x5 ship vertical rotation.
+        /// </summary>
+        public Texture2D? ShipTexture1x5vert { get; set; }
 
         /// <summary>
         /// The collection of Player 1 ships.
@@ -130,6 +157,11 @@ namespace Battleship
             ShipTexture1x3 = content.Load<Texture2D>("ship1x3");
             ShipTexture1x4 = content.Load<Texture2D>("ship1x4");
             ShipTexture1x5 = content.Load<Texture2D>("ship1x5");
+            ShipTexture1x1vert = content.Load<Texture2D>("ship1x1vert");
+            ShipTexture1x2vert = content.Load<Texture2D>("ship1x2vert");
+            ShipTexture1x3vert = content.Load<Texture2D>("ship1x3vert");
+            ShipTexture1x4vert = content.Load<Texture2D>("ship1x4vert");
+            ShipTexture1x5vert = content.Load<Texture2D>("ship1x5vert");
         }
 
         /// <summary>
