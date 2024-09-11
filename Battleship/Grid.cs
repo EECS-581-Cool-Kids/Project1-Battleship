@@ -208,7 +208,7 @@ namespace Battleship
         /// </summary>
         /// <param name="grid"></param>
         /// <returns></returns>
-        public bool Shoot(Point position)
+        public bool Shoot(Point position, GridTile targetedTile)
         {
             // Convert the position to a GridTile.
             // To do this, we need to find the row and column of the GridTile.
@@ -220,13 +220,13 @@ namespace Battleship
             // Need to validate row and col to ensure they are within the bounds of the GridArray.
             // This is because the mouse can be clicked outside of the grid. And if that happens without this check, the game will crash.
             // We don't want to throw an exception here, so we just return false if the row or column is out of bounds.
-            if (row < 0 || row >= Size || col < 0 || col >= Size)
+            if (CurrentTile is null)
                 return false;
 
             GridTile targetTile = GridArray[row, col];
 
             // Only allow shooting on the 10x10 grid.
-            if (targetTile.CanSelect)
+            if (targetTile.CanSelect) //&& CurrentTile is not null)
             {
                 if (targetTile.HasShip)
                 {

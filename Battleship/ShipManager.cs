@@ -60,13 +60,11 @@ namespace Battleship
 
         /// <summary>
         /// Whether or not the game is in player 1's ship placement mode.
-        /// Currently defaults to true for testing.
         /// </summary>
         public bool IsPlayer1Placing { get; set; } = true;
 
         /// <summary>
         /// Whether or not the game is in player 2's ship placement mode.
-        /// Currently defaults to true for testing.
         /// </summary>
         public bool IsPlayer2Placing { get; set; } = false;
 
@@ -124,6 +122,16 @@ namespace Battleship
         /// A flag that indicates whether or not the player 2's ships should be hidden.
         /// </summary>
         public bool HideP2Ships { get; set; } = false;
+
+        /// <summary>
+        /// A boolean that indicates whether or not the game is in ship placement mode.
+        /// </summary>
+        public bool IsPlacingShips 
+        { get
+            {
+                return IsPlayer1Placing || IsPlayer2Placing;
+            } 
+        }
 
         public ShipManager(int numShips) 
         {
