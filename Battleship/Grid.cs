@@ -125,7 +125,7 @@ namespace Battleship
         public void Draw(SpriteBatch spriteBatch)
         {
             foreach (GridTile tile in GridArray)
-                spriteBatch.Draw(tile.GridTexture, tile.GridRectangle, Color.White);      
+                spriteBatch.Draw(tile.GridTexture, tile.GridRectangle, Color.White);
         }
 
         /// <summary>
@@ -142,7 +142,7 @@ namespace Battleship
             {
                 GridTile nextTile;
                 if (orientation.Equals(CursorOrientation.HORIZONTAL))
-                    nextTile = GridArray[currentTileLocation.Item2, currentTileLocation.Item1 + tileNum]; 
+                    nextTile = GridArray[currentTileLocation.Item2, currentTileLocation.Item1 + tileNum];
                 else
                     nextTile = GridArray[currentTileLocation.Item2 + tileNum, currentTileLocation.Item1];
 
@@ -210,23 +210,24 @@ namespace Battleship
         /// <returns></returns>
         public bool Shoot(Point position, GridTile targetedTile)
         {
-            // Convert the position to a GridTile.
-            // To do this, we need to find the row and column of the GridTile.
-            // The column is the X position minus the offset divided by the size of the GridTile.
-            // The row is the Y position divided by the size of the GridTile.
+            /* Convert the position to a GridTile.
+             * To do this, we need to find the row and column of the GridTile.
+             * The column is the X position minus the offset divided by the size of the GridTile.
+             * The row is the Y position divided by the size of the GridTile.*/
             int col = ((int)position.X - _offset) / (SQUARE_SIZE * SCALE);
             int row = position.Y / (SQUARE_SIZE * SCALE);
 
-            // Need to validate row and col to ensure they are within the bounds of the GridArray.
-            // This is because the mouse can be clicked outside of the grid. And if that happens without this check, the game will crash.
-            // We don't want to throw an exception here, so we just return false if the row or column is out of bounds.
+            /* We need to ensure that the mouse is clicked within the grid.
+             * This is because the mouse can be clicked outside of the grid.
+             * And if that happens without this check, the game will crash.
+             * We don't want to throw an exception here, so we just return false if the row or column is out of bounds. */
             if (CurrentTile is null)
                 return false;
 
             GridTile targetTile = GridArray[row, col];
 
             // Only allow shooting on the 10x10 grid.
-            if (targetTile.CanSelect) //&& CurrentTile is not null)
+            if (targetTile.CanSelect) 
             {
                 if (targetTile.HasShip)
                 {

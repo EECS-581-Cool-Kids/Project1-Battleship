@@ -140,7 +140,7 @@ namespace Battleship
             if (!_shipManager.IsPlacingShips)
             {
                 _shipManager.HideP2Ships = true;
-                HandleShooting(); // this method should 
+                HandleShooting();
             }
 
             base.Update(gameTime);
@@ -173,7 +173,6 @@ namespace Battleship
             {
                 Point mousePoint = new Point(mouseState.X, mouseState.Y);
                 bool hit = _player2grid!.Shoot(mousePoint, _player2grid.CurrentTile!);
-                
             }
         }
     }
