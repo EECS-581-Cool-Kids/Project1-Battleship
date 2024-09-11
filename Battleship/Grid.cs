@@ -125,7 +125,7 @@ namespace Battleship
         public void Draw(SpriteBatch spriteBatch)
         {
             foreach (GridTile tile in GridArray)
-                spriteBatch.Draw(tile.GridTexture, tile.GridRectangle, Color.White);
+                spriteBatch.Draw(tile.GridTexture, tile.GridRectangle, Color.White);      
         }
 
         /// <summary>

@@ -138,6 +138,7 @@ namespace Battleship
             // Check if all ships have been placed
             if (!_shipManager.IsPlayer1Placing && !_shipManager.IsPlayer2Placing)
             {
+                _shipManager.HideP2Ships = true;
                 HandleShooting();
             }
 

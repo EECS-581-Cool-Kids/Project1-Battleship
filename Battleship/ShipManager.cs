@@ -115,6 +115,16 @@ namespace Battleship
         /// </summary>
         public Func<GridTile, int, CursorOrientation, GridTile>? OnPlayer2AdjustedTileRequested;
 
+        /// <summary>
+        /// A flag that indicates whether or not the player 1's ships should be hidden.
+        /// </summary>
+        public bool HideP1Ships { get; set; } = false;
+
+        /// <summary>
+        /// A flag that indicates whether or not the player 2's ships should be hidden.
+        /// </summary>
+        public bool HideP2Ships { get; set; } = false;
+
         public ShipManager(int numShips) 
         {
             NumShips = numShips;
@@ -210,9 +220,11 @@ namespace Battleship
         public void Draw(SpriteBatch spriteBatch)
         {
             foreach (Ship ship in Player1Ships)
-                spriteBatch.Draw(ship.ShipTexture, ship.ShipRectangle, Color.White);
+                if (!HideP1Ships)
+                    spriteBatch.Draw(ship.ShipTexture, ship.ShipRectangle, Color.White);
             foreach (Ship ship in Player2Ships)
-                spriteBatch.Draw(ship.ShipTexture, ship.ShipRectangle, Color.White);
+                if (!HideP2Ships)
+                    spriteBatch.Draw(ship.ShipTexture, ship.ShipRectangle, Color.White);
         }
 
         /// <summary>
