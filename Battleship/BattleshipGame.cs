@@ -111,7 +111,7 @@ namespace Battleship
         /// <param name="gameTime">The current game time.</param>
         protected override void Update(GameTime gameTime)
         {
-            if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed || Keyboard.GetState().IsKeyDown(Keys.Escape))
+            if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed || Keyboard.GetState().IsKeyDown(Keys.Escape)) //
                 Exit();
 
             _player1grid!.Update();
@@ -135,6 +135,12 @@ namespace Battleship
             if (_shipManager!.IsPlayer2Placing && _player2grid.CurrentTile is not null)
                 _shipManager.UpdateWhilePlacing(_player2grid.CurrentTile, _cursor.Orientation, 2);
 
+            // Check if all ships have been placed
+            if (!_shipManager.IsPlayer1Placing && !_shipManager.IsPlayer2Placing)
+            {
+                HandleShooting();
+            }
+
             base.Update(gameTime);
         }
 
@@ -154,6 +160,16 @@ namespace Battleship
             _spriteBatch!.End();
 
             base.Draw(gameTime);
+        }
+        private void HandleShooting()
+        {
+            MouseState mouseState = Mouse.GetState();
+            if (mouseState.LeftButton == ButtonState.Pressed)
+            {
+                Point mousePoint = new Point(mouseState.X, mouseState.Y);
+                bool hit = _player2grid!.Shoot(mousePoint);
+                
+            }
         }
     }
 }
