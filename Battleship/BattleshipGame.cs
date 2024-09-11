@@ -1,4 +1,16 @@
-﻿using Microsoft.Xna.Framework;
+﻿/*  
+ *   Authors: Derek Norton, Ethan Berkley, Jacob Wilkus, Mo Morgan, and Richard Moser
+ *   Date 09/11/202
+ *   Last Modified 09/01/2022
+ *   Course and Instructor: EECS 581 Software Engineering II, Dr. David Johnson
+ *   Module Name: BattleshipGame.cs
+ *   Purpose: This module is the main game class for the Battleship game. 
+ *            It is responsible for managing all other subordinate manager objects needed to run the game. 
+ *   Inputs: None 
+ *   Outputs: None
+ */
+
+using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using System;
@@ -55,6 +67,9 @@ namespace Battleship
         /// </summary>
         private ShipManager? _shipManager;
 
+        /// <summary>
+        /// <c>BattleshipGame</c> class constructor.
+        /// </summary>
         public BattleshipGame()
         {
             _graphics = new GraphicsDeviceManager(this);
@@ -68,27 +83,30 @@ namespace Battleship
         /// </summary>
         protected override void Initialize()
         {
+            // Set the window size. Enable the game in windowed mode.
             _graphics.IsFullScreen = false;
             _graphics.PreferredBackBufferWidth = 1000; // Increased width to fit both grids.
             _graphics.PreferredBackBufferHeight = 495;
             _graphics.ApplyChanges();
 
-            Window.Title = "Battleship";
+            Window.Title = "Battleship"; // Set the window title.
 
+            // Initialize the player grid objects.
             _player1grid = new Grid(GRID_SIZE, PLAYER_1_OFFSET);
             _player2grid = new Grid(GRID_SIZE, PLAYER_2_OFFSET);
-            _shipManager = new ShipManager(5);
 
-            // add event handlers
+            _shipManager = new ShipManager(5); // Initialize the ship manager with the number of ships.
+                                               // The parameter will eventually be a constant int property whose value changes based on main menu option selection 
+
+            // add the event handlers for ship placement, tile adjustment, and ship placement validation for both players.
             _shipManager.OnPlayer1ShipPlaced = _player1grid.ShipPlaced;
             _shipManager.OnPlayer2ShipPlaced = _player2grid.ShipPlaced;
-            _shipManager.OnPlayer1AdjustedTileRequested = _player1grid.GetAdjustedCurrentTile;
+            _shipManager.OnPlayer1AdjustedTileRequested = _player1grid.GetAdjustedCurrentTile; 
             _shipManager.OnPlayer2AdjustedTileRequested = _player2grid.GetAdjustedCurrentTile;
             _shipManager.IsPlayer1PlacementValid = _player1grid.IsShipPlacementValid;
             _shipManager.IsPlayer2PlacementValid = _player2grid.IsShipPlacementValid;
 
-
-            base.Initialize();
+            base.Initialize(); // Ensures the framerwork-level logic in the base class is initialized.
         }
 
         /// <summary>
@@ -97,7 +115,7 @@ namespace Battleship
         /// </summary>
         protected override void LoadContent()
         {
-            _spriteBatch = new SpriteBatch(GraphicsDevice);
+            _spriteBatch = new SpriteBatch(GraphicsDevice); //
 
             _player1grid!.LoadContent(Content);
             _player2grid!.LoadContent(Content);
@@ -111,31 +129,37 @@ namespace Battleship
         /// <param name="gameTime">The current game time.</param>
         protected override void Update(GameTime gameTime)
         {
+            // Exit the game if the back button is pressed or the escape key is pressed.
             if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed || Keyboard.GetState().IsKeyDown(Keys.Escape))
                 Exit();
 
+            // Update the grid objects.
             _player1grid!.Update();
             _player2grid!.Update();
 
+            // Get the current tile location for each player.
             Tuple<int, int> currentPlayer1TileLocation = _player1grid.GridArray.CoordinatesOf(_player1grid.CurrentTile);
             Tuple<int, int> currentPlayer2TileLocation = _player2grid.GridArray.CoordinatesOf(_player2grid.CurrentTile);
 
+            // Update the cursor object depending on if player 1 is placing ships or shooting tiles.
             if (_shipManager!.IsPlayer1Placing && _player1grid.CurrentTile is not null)
                 _cursor.UpdateWhilePlacing(_player1grid.CurrentTile, currentPlayer1TileLocation, _shipManager.CurrentShipSize);
             else if (_player1grid.CurrentTile is not null)
                 _cursor.UpdateWhilePlaying(_player1grid.CurrentTile, currentPlayer1TileLocation.Item1);
-            
+
+            // Update the cursor object depending on if player 2 is placing ships or shooting tiles.
             if (_shipManager!.IsPlayer2Placing && _player2grid.CurrentTile is not null)
                 _cursor.UpdateWhilePlacing(_player2grid.CurrentTile, currentPlayer2TileLocation, _shipManager.CurrentShipSize);
             else if (_player2grid.CurrentTile is not null)
                 _cursor.UpdateWhilePlaying(_player2grid.CurrentTile, currentPlayer2TileLocation.Item1);
 
+            // Update the ship manager object while the players are in ship placing mode.
             if (_shipManager!.IsPlayer1Placing && _player1grid.CurrentTile is not null)
                 _shipManager.UpdateWhilePlacing(_player1grid.CurrentTile, _cursor.Orientation, 1);
             if (_shipManager!.IsPlayer2Placing && _player2grid.CurrentTile is not null)
                 _shipManager.UpdateWhilePlacing(_player2grid.CurrentTile, _cursor.Orientation, 2);
 
-            base.Update(gameTime);
+            base.Update(gameTime); // Ensures the framerwork-level logic in the base class is updated.
         }
 
         /// <summary>
@@ -144,16 +168,18 @@ namespace Battleship
         /// <param name="gameTime">The current game time.</param>
         protected override void Draw(GameTime gameTime)
         {
-            GraphicsDevice.Clear(Color.CornflowerBlue);
+            GraphicsDevice.Clear(Color.CornflowerBlue); // Clear the screen with a blue background color. 
 
+            // Draws the grid objects, cursor, and ship manager objects.
+            // The various Draw commands are batched together by being enclosed in a _spriteBatch!.Begin/End() block.
             _spriteBatch!.Begin(samplerState: SamplerState.PointClamp);
             _player1grid!.Draw(_spriteBatch);
             _player2grid!.Draw(_spriteBatch);
-            _cursor.Draw(_spriteBatch);
             _shipManager!.Draw(_spriteBatch);
+            _cursor.Draw(_spriteBatch); 
             _spriteBatch!.End();
 
-            base.Draw(gameTime);
+            base.Draw(gameTime); // Ensures the framerwork-level logic in the base class is drawn.
         }
     }
 }
