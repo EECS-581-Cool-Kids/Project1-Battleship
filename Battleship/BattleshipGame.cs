@@ -138,15 +138,23 @@ namespace Battleship
             else if (_player2grid.CurrentTile is not null)
                 _cursor.UpdateWhilePlaying(_player2grid.CurrentTile, currentPlayer2TileLocation.Item1);
 
+            if (Mouse.GetState().LeftButton == ButtonState.Released)
+            {
+                _shipManager!.ReadClick = true;
+                return;
+            } else if (_turnManager!.SwapWaiting && _shipManager!.ReadClick)
+            {
+                _shipManager!.ReadClick = false;
+                _turnManager.SwapWaiting = false;
+                return;
+            }
             if (_shipManager!.IsPlayer1Placing && _player1grid.CurrentTile is not null)
                 _shipManager.UpdateWhilePlacing(_player1grid.CurrentTile, _cursor.Orientation, 1);
             if (_shipManager!.IsPlayer2Placing && _player2grid.CurrentTile is not null)
                 _shipManager.UpdateWhilePlacing(_player2grid.CurrentTile, _cursor.Orientation, 2);
 
-            // Check if all ships have been placed
             if (!_shipManager.IsPlacingShips)
-            {
-                _shipManager.HideP2Ships = true;
+            {    
                 HandleShooting();
             }
 
@@ -164,7 +172,12 @@ namespace Battleship
             _spriteBatch!.Begin(samplerState: SamplerState.PointClamp);
             _player1grid!.Draw(_spriteBatch);
             _player2grid!.Draw(_spriteBatch);
-            _shipManager!.Draw(_spriteBatch, _turnManager.IsP1sTurn);
+
+            // Hide if (waiting for player swap) or (its p2's turn)
+            _shipManager!.HideP1Ships = _turnManager!.SwapWaiting || !_turnManager.IsP1sTurn;
+            _shipManager.HideP2Ships = _turnManager!.SwapWaiting || _turnManager.IsP1sTurn;
+            
+            _shipManager!.Draw(_spriteBatch);
             _cursor.Draw(_spriteBatch);
             _turnManager!.Draw(_spriteBatch);
             _spriteBatch!.End();
@@ -177,8 +190,9 @@ namespace Battleship
         private void HandleShooting()
         {
             MouseState mouseState = Mouse.GetState();
-            if (mouseState.LeftButton == ButtonState.Pressed)
+            if (_shipManager!.ReadClick == true && mouseState.LeftButton == ButtonState.Pressed )
             {
+                _shipManager.ReadClick = false;
                 bool success = false;
                 Point mousePoint = new Point(mouseState.X, mouseState.Y);
                 if (_turnManager!.IsP1sTurn)
@@ -195,7 +209,6 @@ namespace Battleship
                     _shipManager!.HideP1Ships = !_turnManager.IsP1sTurn;
                     _shipManager.HideP2Ships = _turnManager.IsP1sTurn;
                 }
-
             }
         }
     }

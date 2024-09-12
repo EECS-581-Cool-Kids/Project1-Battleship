@@ -138,6 +138,11 @@ namespace Battleship
             } 
         }
 
+        /// <summary>
+        /// When mouse down is first processed, set to false until mouse is up.
+        /// </summary>
+        public bool ReadClick = true;
+
         public ShipManager(int numShips) 
         {
             NumShips = numShips;
@@ -162,8 +167,9 @@ namespace Battleship
         {
             MouseState mouseState = Mouse.GetState();
 
-            if (mouseState.LeftButton == ButtonState.Pressed && (_placementTimeout is null || !_placementTimeout.Enabled))
+            if (ReadClick == true && mouseState.LeftButton == ButtonState.Pressed && (_placementTimeout is null || !_placementTimeout.Enabled))
             {
+                ReadClick = false;
                 if (OnPlayer1AdjustedTileRequested is not null && playerNum == 1)
                     currentTile = OnPlayer1AdjustedTileRequested.Invoke(currentTile, CurrentShipSize, orientation);
                 else if (OnPlayer2AdjustedTileRequested is not null && playerNum == 2)
@@ -220,7 +226,7 @@ namespace Battleship
                     _placementTimeout.Dispose();
                 }
 
-                _placementTimeout = new Timer(500);
+                _placementTimeout = new Timer(100);
                 _placementTimeout.Elapsed += OnTimeoutEvent!;
                 _placementTimeout.Start();
 
@@ -234,15 +240,15 @@ namespace Battleship
         /// <summary>
         /// Draw for the ship manager.
         /// </summary>
-        public void Draw(SpriteBatch spriteBatch, bool isP1sTurn)
+        public void Draw(SpriteBatch spriteBatch)
         {
-            if (isP1sTurn)
-                foreach (Ship ship in Player1Ships)
-                //if (!HideP1Ships)
+            
+            foreach (Ship ship in Player1Ships)
+                if (!HideP1Ships)
                     spriteBatch.Draw(ship.ShipTexture, ship.ShipRectangle, Color.White);
-            else
-                foreach (Ship ship in Player2Ships)
-                //if (!HideP2Ships)
+            
+            foreach (Ship ship in Player2Ships)
+                if (!HideP2Ships)
                     spriteBatch.Draw(ship.ShipTexture, ship.ShipRectangle, Color.White);
         }
 
