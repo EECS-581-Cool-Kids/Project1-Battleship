@@ -227,17 +227,19 @@ namespace Battleship
             GridTile targetTile = GridArray[row, col];
 
             // Only allow shooting on the 10x10 grid.
-            if (targetTile.CanSelect) 
+            if (targetTile.CanSelect && !targetTile.IsShot) 
             {
+                targetTile.IsShot = true;
                 if (targetTile.HasShip)
                 {
                     targetTile.GridTexture = SquareHitTexture;
+                    
                     return true;
                 }
                 else
                 {
                     targetTile.GridTexture = SquareMissedTexture;
-                    return false;
+                    return true;
                 }
             }
             return false; // If the tile is not selectable, return false. Might want to consider throwing an exception or returning null here.

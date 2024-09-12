@@ -220,7 +220,7 @@ namespace Battleship
                     _placementTimeout.Dispose();
                 }
 
-                _placementTimeout = new Timer(1000);
+                _placementTimeout = new Timer(500);
                 _placementTimeout.Elapsed += OnTimeoutEvent!;
                 _placementTimeout.Start();
 
@@ -234,13 +234,15 @@ namespace Battleship
         /// <summary>
         /// Draw for the ship manager.
         /// </summary>
-        public void Draw(SpriteBatch spriteBatch)
+        public void Draw(SpriteBatch spriteBatch, bool isP1sTurn)
         {
-            foreach (Ship ship in Player1Ships)
-                if (!HideP1Ships)
+            if (isP1sTurn)
+                foreach (Ship ship in Player1Ships)
+                //if (!HideP1Ships)
                     spriteBatch.Draw(ship.ShipTexture, ship.ShipRectangle, Color.White);
-            foreach (Ship ship in Player2Ships)
-                if (!HideP2Ships)
+            else
+                foreach (Ship ship in Player2Ships)
+                //if (!HideP2Ships)
                     spriteBatch.Draw(ship.ShipTexture, ship.ShipRectangle, Color.White);
         }
 

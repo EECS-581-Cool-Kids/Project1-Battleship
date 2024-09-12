@@ -164,8 +164,8 @@ namespace Battleship
             _spriteBatch!.Begin(samplerState: SamplerState.PointClamp);
             _player1grid!.Draw(_spriteBatch);
             _player2grid!.Draw(_spriteBatch);
+            _shipManager!.Draw(_spriteBatch, _turnManager.IsP1sTurn);
             _cursor.Draw(_spriteBatch);
-            _shipManager!.Draw(_spriteBatch, _turnManager!.IsP1sTurn);
             _turnManager!.Draw(_spriteBatch);
             _spriteBatch!.End();
 
@@ -179,8 +179,23 @@ namespace Battleship
             MouseState mouseState = Mouse.GetState();
             if (mouseState.LeftButton == ButtonState.Pressed)
             {
+                bool success = false;
                 Point mousePoint = new Point(mouseState.X, mouseState.Y);
-                bool hit = _player2grid!.Shoot(mousePoint, _player2grid.CurrentTile!);
+                if (_turnManager!.IsP1sTurn)
+                {
+                    success = _player2grid!.Shoot(mousePoint, _player2grid.CurrentTile!);
+                }
+                else if (!_turnManager.IsP1sTurn)
+                {
+                    success = _player1grid!.Shoot(mousePoint, _player1grid.CurrentTile!);
+                }
+                if (success)
+                {
+                    _turnManager.NextTurn();
+                    _shipManager!.HideP1Ships = !_turnManager.IsP1sTurn;
+                    _shipManager.HideP2Ships = _turnManager.IsP1sTurn;
+                }
+
             }
         }
     }
