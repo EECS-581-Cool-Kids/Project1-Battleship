@@ -201,19 +201,14 @@ namespace Battleship
         /// <returns></returns>
         public bool? Shoot(Point position)
         {
-
-            /* We need to ensure that the mouse is clicked within the grid.
-             * This is because the mouse can be clicked outside of the grid.
-             * And if that happens without this check, the game will crash.
-             * We don't want to throw an exception here, so we just return false if the row or column is out of bounds. */
             if (CurrentTile is null)
                 return null;
 
             // Only allow shooting on the 10x10 grid.
             if (!CurrentTile.CanSelect)
                 return null;
-            else 
-            { 
+            else
+            {
                 if (CurrentTile.HasShip)
                 {
                     CurrentTile.GridTexture = SquareHitTexture;

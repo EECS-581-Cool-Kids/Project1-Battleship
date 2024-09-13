@@ -11,16 +11,6 @@ namespace Battleship
     public class GridTile
     {
         /// <summary>
-        /// The number of pixels for the width and height of each square.
-        /// </summary>
-        private const int SQUARE_SIZE = 9;
-
-        /// <summary>
-        /// The scale factor between the texture and actual display.
-        /// </summary>
-        private const int SCALE = 5;
-
-        /// <summary>
         /// The rectangle object that stores the texture.
         /// </summary>
         public Rectangle GridRectangle { get; set; }
@@ -85,9 +75,9 @@ namespace Battleship
                 shipSize--;
             }
 
-            int xAdjust = SCALE * SQUARE_SIZE * squareAdjust;
+            int xAdjust = Constants.SCALE * Constants.SQUARE_SIZE * squareAdjust;
 
-            return new Point(GridRectangle.X - SCALE - xAdjust, GridRectangle.Y - SCALE);
+            return new Point(GridRectangle.X - Constants.SCALE - xAdjust, GridRectangle.Y - Constants.SCALE);
         }
 
         /// <summary>
@@ -100,14 +90,11 @@ namespace Battleship
         {
             if (shipSize > 5)
                 shipSize = 5;
+            // sets how far from the left cursor the right cursor should be
+            // scale factor * pixels per square * ship size + half of the scaled square size - 3 pixels to center it
+            int xAdjust = Constants.SCALE * Constants.SQUARE_SIZE * shipSize + Constants.SCALE * Constants.SQUARE_SIZE / 2 - 3;
 
-            while (squareCoord + shipSize > 11)
-                shipSize--;
-
-            int xPos = GridRectangle.X + (SCALE * 4);
-            xPos += (shipSize - 1) * SCALE * SQUARE_SIZE;
-
-            return new Point(xPos, GridRectangle.Y - SCALE);
+            return new Point(GridRectangle.X - Constants.SCALE - xAdjust, GridRectangle.Y - Constants.SCALE);
         }
 
         /// <summary>
@@ -128,9 +115,9 @@ namespace Battleship
                 shipSize--;
             }
 
-            int yAdjust = SCALE * SQUARE_SIZE * squareAdjust;
+            int yAdjust = Constants.SCALE * Constants.SQUARE_SIZE * squareAdjust;
 
-            return new Point(GridRectangle.X - SCALE, GridRectangle.Y - SCALE - yAdjust);
+            return new Point(GridRectangle.X - Constants.SCALE, GridRectangle.Y - Constants.SCALE - yAdjust);
         }
 
         /// <summary>
@@ -143,14 +130,11 @@ namespace Battleship
         {
             if (shipSize > 5)
                 shipSize = 5;
+            // set how far from the top cursor the bottom cursor should be
+            // scale factor * pixels per square * ship size + half of the scaled square size - 3 pixels to center it
+            int yAdjust = -Constants.SCALE * Constants.SQUARE_SIZE * shipSize + Constants.SCALE * Constants.SQUARE_SIZE / 2 - 3;
 
-            while (squareCoord + shipSize > 11)
-                shipSize--;
-
-            int yPos = GridRectangle.Y + (SCALE * 4);
-            yPos += (shipSize - 1) * SCALE * SQUARE_SIZE;
-
-            return new Point(GridRectangle.X - SCALE, yPos);
+            return new Point(GridRectangle.X - Constants.SCALE, GridRectangle.Y - Constants.SCALE - yAdjust);
         }
 
         /// <summary>
@@ -158,7 +142,7 @@ namespace Battleship
         /// </summary>
         public Point GetCursorAdjustedHorizontalSize()
         {
-            return new Point((SQUARE_SIZE + 1) * SCALE / 2, (SQUARE_SIZE + 1) * SCALE);
+            return new Point((Constants.SQUARE_SIZE + 1) * Constants.SCALE / 2, (Constants.SQUARE_SIZE + 1) * Constants.SCALE);
         }
 
         /// <summary>
@@ -166,7 +150,7 @@ namespace Battleship
         /// </summary>
         public Point GetCursorAdjustedVerticalSize()
         {
-            return new Point((SQUARE_SIZE + 1) * SCALE, (SQUARE_SIZE + 1) * SCALE / 2);
+            return new Point((Constants.SQUARE_SIZE + 1) * Constants.SCALE, (Constants.SQUARE_SIZE + 1) * Constants.SCALE / 2);
         }
 
         /// <summary>

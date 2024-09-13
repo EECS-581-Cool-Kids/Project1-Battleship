@@ -33,7 +33,7 @@ namespace Battleship
         ///<summary>
         ///Private backing field for IsSunk
         /// </summary>
-        private bool _isSunk = false; 
+        private bool _isSunk = false;
 
         /// <summary>
         /// Whether or not the ship has been sunk.
