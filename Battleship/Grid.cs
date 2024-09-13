@@ -194,29 +194,26 @@ namespace Battleship
 
         /// <summary>
         /// This method returns True if the GridTile clicked on is a hit, return False if it is a miss.
+        /// Returns null if the tile is not selectable.
         /// Also changes the GridTile texture to show the result of the shot.
         /// </summary>
         /// <param name="grid"></param>
         /// <returns></returns>
-        public bool Shoot(Point position)
+        public bool? Shoot(Point position)
         {
-            /* Convert the position to a GridTile.
-             * To do this, we need to find the row and column of the GridTile.
-             * The column is the X position minus the offset divided by the size of the GridTile.
-             * The row is the Y position divided by the size of the GridTile.*/
-            //int col = ((int)position.X - _offset) / (SQUARE_SIZE * SCALE);
-            //int row = position.Y / (SQUARE_SIZE * SCALE);
 
             /* We need to ensure that the mouse is clicked within the grid.
              * This is because the mouse can be clicked outside of the grid.
              * And if that happens without this check, the game will crash.
              * We don't want to throw an exception here, so we just return false if the row or column is out of bounds. */
             if (CurrentTile is null)
-                return false;
+                return null;
 
             // Only allow shooting on the 10x10 grid.
-            else if (CurrentTile.CanSelect) 
-            {
+            if (!CurrentTile.CanSelect)
+                return null;
+            else 
+            { 
                 if (CurrentTile.HasShip)
                 {
                     CurrentTile.GridTexture = SquareHitTexture;
@@ -228,7 +225,6 @@ namespace Battleship
                     return false;
                 }
             }
-            return false; // If the tile is not selectable, return false. Might want to consider throwing an exception or returning null here.
         }
     }
 }

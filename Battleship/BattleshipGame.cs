@@ -70,8 +70,8 @@ namespace Battleship
         protected override void Initialize()
         {
             _graphics.IsFullScreen = false;
-            _graphics.PreferredBackBufferWidth = 1000; // Increased width to fit both grids.
-            _graphics.PreferredBackBufferHeight = 495;
+            _graphics.PreferredBackBufferWidth = Constants.SQUARE_SIZE * Constants.GRID_SIZE * 2 * Constants.SCALE; // Increased width to fit both grids.
+            _graphics.PreferredBackBufferHeight = Constants.SQUARE_SIZE * Constants.GRID_SIZE * Constants.SCALE;
             _graphics.ApplyChanges();
 
             Window.Title = "Battleship";
@@ -172,7 +172,7 @@ namespace Battleship
             if (mouseState.LeftButton == ButtonState.Pressed)
             {
                 Point mousePoint = new Point(mouseState.X, mouseState.Y);
-                bool hit = _player2grid!.Shoot(mousePoint);
+                bool? hit = _player2grid!.Shoot(mousePoint);
             }
         }
     }
