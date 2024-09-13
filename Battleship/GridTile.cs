@@ -92,7 +92,7 @@ namespace Battleship
                 shipSize = 5;
             // sets how far from the left cursor the right cursor should be
             // scale factor * pixels per square * ship size + half of the scaled square size - 3 pixels to center it
-            int xAdjust = Constants.SCALE * Constants.SQUARE_SIZE * shipSize + Constants.SCALE * Constants.SQUARE_SIZE / 2 - 3;
+            int xAdjust = - Constants.SCALE * Constants.SQUARE_SIZE * shipSize + Constants.SCALE * Constants.SQUARE_SIZE / 2 - 3;
 
             return new Point(GridRectangle.X - Constants.SCALE - xAdjust, GridRectangle.Y - Constants.SCALE);
         }
@@ -130,9 +130,9 @@ namespace Battleship
         {
             if (shipSize > 5)
                 shipSize = 5;
-            // set how far from the top cursor the bottom cursor should be
+            // sets how far from the top cursor the bottom cursor should be
             // scale factor * pixels per square * ship size + half of the scaled square size - 3 pixels to center it
-            int yAdjust = -Constants.SCALE * Constants.SQUARE_SIZE * shipSize + Constants.SCALE * Constants.SQUARE_SIZE / 2 - 3;
+            int yAdjust = - Constants.SCALE * Constants.SQUARE_SIZE * shipSize + Constants.SCALE * Constants.SQUARE_SIZE / 2 - 3;
 
             return new Point(GridRectangle.X - Constants.SCALE, GridRectangle.Y - Constants.SCALE - yAdjust);
         }
