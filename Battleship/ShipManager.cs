@@ -17,53 +17,53 @@ namespace Battleship
         /// <summary>
         /// The texture for the 1x1 ship.
         /// </summary>
-        public Texture2D? ShipTexture1x1Horizontal{ get; set; }
+        public Texture2D? ShipTexture1x1Horizontal { get; set; }
 
         /// <summary>
         /// The texture for the 1x2 ship.
         /// </summary>
-        public Texture2D? ShipTexture1x2Horizontal{ get; set; }
+        public Texture2D? ShipTexture1x2Horizontal { get; set; }
 
         /// <summary>
         /// The texture for the 1x3 ship.
         /// </summary>
-        public Texture2D? ShipTexture1x3Horizontal{ get; set; }
+        public Texture2D? ShipTexture1x3Horizontal { get; set; }
 
         /// <summary>
         /// The texture for the 1x4 ship.
         /// </summary>
-        public Texture2D? ShipTexture1x4Horizontal{ get; set; }
+        public Texture2D? ShipTexture1x4Horizontal { get; set; }
 
         /// <summary>
         /// The texture for the 1x5 ship.
         /// </summary>
-        public Texture2D? ShipTexture1x5Horizontal{ get; set; }
+        public Texture2D? ShipTexture1x5Horizontal { get; set; }
         
         /// <summary>
-        /// The texture for the 1x1 ship vertical rotation.
+        /// The texture for the 1x1 ship Vertical rotation.
         /// </summary>
-        public Texture2D? ShipTexture1x1vertical { get; set; }
+        public Texture2D? ShipTexture1x1Vertical { get; set; }
         
         /// <summary>
         /// <summary>
-        /// The texture for the 1x2 ship vertical rotation.
+        /// The texture for the 1x2 ship Vertical rotation.
         /// </summary>
-        public Texture2D? ShipTexture1x2vertical { get; set; }
+        public Texture2D? ShipTexture1x2Vertical { get; set; }
         
         /// <summary>
-        /// The texture for the 1x3 ship vertical rotation.
+        /// The texture for the 1x3 ship Vertical rotation.
         /// </summary>
-        public Texture2D? ShipTexture1x3vertical { get; set; }
+        public Texture2D? ShipTexture1x3Vertical { get; set; }
         
         /// <summary>
-        /// The texture for the 1x4 ship vertical rotation.
+        /// The texture for the 1x4 ship Vertical rotation.
         /// </summary>
-        public Texture2D? ShipTexture1x4vertical { get; set; }
+        public Texture2D? ShipTexture1x4Vertical { get; set; }
         
         /// <summary>
-        /// The texture for the 1x5 ship vertical rotation.
+        /// The texture for the 1x5 ship Vertical rotation.
         /// </summary>
-        public Texture2D? ShipTexture1x5vertical { get; set; }
+        public Texture2D? ShipTexture1x5Vertical { get; set; }
 
         /// <summary>
         /// The collection of Player 1 ships.
@@ -142,16 +142,16 @@ namespace Battleship
         /// </summary>
         public void LoadContent(ContentManager content)
         {
-            ShipTexture1x1Horizontal= content.Load<Texture2D>("ship1x1horizontal");
-            ShipTexture1x2Horizontal= content.Load<Texture2D>("ship1x2horizontal");
-            ShipTexture1x3Horizontal= content.Load<Texture2D>("ship1x3horizontal");
-            ShipTexture1x4Horizontal= content.Load<Texture2D>("ship1x4horizontal");
-            ShipTexture1x5Horizontal= content.Load<Texture2D>("ship1x5horizontal");
-            ShipTexture1x1vertical = content.Load<Texture2D>("ship1x1vertical");
-            ShipTexture1x2vertical = content.Load<Texture2D>("ship1x2vertical");
-            ShipTexture1x3vertical = content.Load<Texture2D>("ship1x3vertical");
-            ShipTexture1x4vertical = content.Load<Texture2D>("ship1x4vertical");
-            ShipTexture1x5vertical = content.Load<Texture2D>("ship1x5vertical");
+            ShipTexture1x1Horizontal = content.Load<Texture2D>("ship1x1Horizontal");
+            ShipTexture1x2Horizontal = content.Load<Texture2D>("ship1x2Horizontal");
+            ShipTexture1x3Horizontal = content.Load<Texture2D>("ship1x3Horizontal");
+            ShipTexture1x4Horizontal = content.Load<Texture2D>("ship1x4Horizontal");
+            ShipTexture1x5Horizontal = content.Load<Texture2D>("ship1x5Horizontal");
+            ShipTexture1x1Vertical = content.Load<Texture2D>("ship1x1Vertical");
+            ShipTexture1x2Vertical = content.Load<Texture2D>("ship1x2Vertical");
+            ShipTexture1x3Vertical = content.Load<Texture2D>("ship1x3Vertical");
+            ShipTexture1x4Vertical = content.Load<Texture2D>("ship1x4Vertical");
+            ShipTexture1x5Vertical = content.Load<Texture2D>("ship1x5Vertical");
         }
 
         /// <summary>
@@ -175,25 +175,17 @@ namespace Battleship
                     return;
 
                 Point size;
-                switch (orientation)
-                {
-                    // set the size of the ship rectangle based on orientation
-                    // horizontal
-                    case CursorOrientation.HORIZONTAL:
-                        size = new Point(Static.SCALE * Static.SQUARE_SIZE * CurrentShipSize, Static.SCALE * Static.SQUARE_SIZE);
-                        break;
-                    // vertical
-                    default:
-                        size = new Point(Static.SCALE * Static.SQUARE_SIZE, Static.SCALE * Static.SQUARE_SIZE * CurrentShipSize);
-                        break;
-                }
+                if (orientation.Equals(CursorOrientation.HORIZONTAL))
+                    size = new Point(Constants.SCALE * Constants.SQUARE_SIZE * CurrentShipSize, Constants.SCALE * Constants.SQUARE_SIZE);
+                else
+                    size = new Point(Constants.SCALE * Constants.SQUARE_SIZE, Constants.SCALE * Constants.SQUARE_SIZE * CurrentShipSize);
 
                 Ship ship = new Ship(currentTile.GetLocation(), size, CurrentShipSize);
                 currentTile.Ship = ship;
                 
                 
                 // set the texture of the ship based on size and orientation
-                if (orientation.Equals(CursorOrientation.HORIZONTAL))  // horizontal
+                if (orientation.Equals(CursorOrientation.HORIZONTAL))  // Horizontal
                 {
                     ship.ShipTexture = CurrentShipSize switch
                     {
@@ -204,15 +196,15 @@ namespace Battleship
                         _ => ShipTexture1x1Horizontal
                     };
                 }
-                else  // vertical
+                else  // Vertical
                 {
                     ship.ShipTexture = CurrentShipSize switch
                     {
-                        2 => ShipTexture1x2vertical,
-                        3 => ShipTexture1x3vertical,
-                        4 => ShipTexture1x4vertical,
-                        5 => ShipTexture1x5vertical,
-                        _ => ShipTexture1x1vertical
+                        2 => ShipTexture1x2Vertical,
+                        3 => ShipTexture1x3Vertical,
+                        4 => ShipTexture1x4Vertical,
+                        5 => ShipTexture1x5Vertical,
+                        _ => ShipTexture1x1Vertical
                     };
                 }
 

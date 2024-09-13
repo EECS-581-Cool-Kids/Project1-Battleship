@@ -70,9 +70,9 @@ namespace Battleship
                 shipSize--;
             }
 
-            int xAdjust = Static.SCALE * Static.SQUARE_SIZE * squareAdjust;
+            int xAdjust = Constants.SCALE * Constants.SQUARE_SIZE * squareAdjust;
 
-            return new Point(GridRectangle.X - Static.SCALE - xAdjust, GridRectangle.Y - Static.SCALE);
+            return new Point(GridRectangle.X - Constants.SCALE - xAdjust, GridRectangle.Y - Constants.SCALE);
         }
 
         /// <summary>
@@ -87,10 +87,9 @@ namespace Battleship
                 shipSize = 5;
             // sets how far from the left cursor the right cursor should be
             // scale factor * pixels per square * ship size + half of the scaled square size - 3 pixels to center it
-            int xAdjust = - Static.SCALE * Static.SQUARE_SIZE * shipSize + Static.SCALE * Static.SQUARE_SIZE / 2 - 3;
+            int xAdjust = - Constants.SCALE * Constants.SQUARE_SIZE * shipSize + Constants.SCALE * Constants.SQUARE_SIZE / 2 - 3;
 
-            return new Point(GridRectangle.X - Static.SCALE - xAdjust, GridRectangle.Y - Static.SCALE);
-            
+            return new Point(GridRectangle.X - Constants.SCALE - xAdjust, GridRectangle.Y - Constants.SCALE);
         }
 
         /// <summary>
@@ -111,9 +110,9 @@ namespace Battleship
                 shipSize--;
             }
 
-            int yAdjust = Static.SCALE * Static.SQUARE_SIZE * squareAdjust;
+            int yAdjust = Constants.SCALE * Constants.SQUARE_SIZE * squareAdjust;
 
-            return new Point(GridRectangle.X - Static.SCALE, GridRectangle.Y - Static.SCALE - yAdjust);
+            return new Point(GridRectangle.X - Constants.SCALE, GridRectangle.Y - Constants.SCALE - yAdjust);
         }
 
         /// <summary>
@@ -128,9 +127,9 @@ namespace Battleship
                 shipSize = 5;
             // sets how far from the top cursor the bottom cursor should be
             // scale factor * pixels per square * ship size + half of the scaled square size - 3 pixels to center it
-            int yAdjust = - Static.SCALE * Static.SQUARE_SIZE * shipSize + Static.SCALE * Static.SQUARE_SIZE / 2 - 3;
+            int yAdjust = - Constants.SCALE * Constants.SQUARE_SIZE * shipSize + Constants.SCALE * Constants.SQUARE_SIZE / 2 - 3;
             
-            return new Point(GridRectangle.X - Static.SCALE, GridRectangle.Y - Static.SCALE - yAdjust);
+            return new Point(GridRectangle.X - Constants.SCALE, GridRectangle.Y - Constants.SCALE - yAdjust);
 
         }
 
@@ -139,7 +138,7 @@ namespace Battleship
         /// </summary>
         public Point GetCursorAdjustedHorizontalSize()
         {
-            return new Point((Static.SQUARE_SIZE + 1) * Static.SCALE / 2, (Static.SQUARE_SIZE + 1) * Static.SCALE);
+            return new Point((Constants.SQUARE_SIZE + 1) * Constants.SCALE / 2, (Constants.SQUARE_SIZE + 1) * Constants.SCALE);
         }
 
         /// <summary>
@@ -147,7 +146,7 @@ namespace Battleship
         /// </summary>
         public Point GetCursorAdjustedVerticalSize()
         {
-            return new Point((Static.SQUARE_SIZE + 1) * Static.SCALE, (Static.SQUARE_SIZE + 1) * Static.SCALE / 2);
+            return new Point((Constants.SQUARE_SIZE + 1) * Constants.SCALE, (Constants.SQUARE_SIZE + 1) * Constants.SCALE / 2);
         }
 
         /// <summary>

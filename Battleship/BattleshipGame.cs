@@ -9,21 +9,6 @@ namespace Battleship
 {
     public class BattleshipGame : Game
     {
-        /// <summary>
-        /// Internal grid object.
-        /// The grid size
-        /// </summary>
-        private const int GRID_SIZE = 11;
-
-        ///<summary>
-        /// Player 1 grid offset value.
-        /// </summary>
-        private const int PLAYER_1_OFFSET = 0;
-
-        ///<summary>
-        /// Player 2 grid offset value.
-        /// </summary>
-        private const int PLAYER_2_OFFSET = 880; // should be SQUARE_SIZE * GRID_SIZE * 2 * SCALE, i.e. 16 * 11 * 2 * scale / 2
 
         /// <summary>
         /// The MonoGame Graphics Device Manager.
@@ -69,14 +54,14 @@ namespace Battleship
         protected override void Initialize()
         {
             _graphics.IsFullScreen = false;
-            _graphics.PreferredBackBufferWidth = 1760; // should be SQUARE_SIZE * GRID_SIZE * 2 * SCALE, i.e. 16 * 11 * 2 * scale
-            _graphics.PreferredBackBufferHeight = 880; // should be SQUARE_SIZE * GRID_SIZE * SCALE, i.e. 16 * 11 * scale
+            _graphics.PreferredBackBufferWidth = Constants.SQUARE_SIZE * Constants.GRID_SIZE * 2 * Constants.SCALE;
+            _graphics.PreferredBackBufferHeight = Constants.SQUARE_SIZE * Constants.GRID_SIZE * Constants.SCALE;
             _graphics.ApplyChanges();
 
             Window.Title = "Battleship";
 
-            _player1grid = new Grid(GRID_SIZE, PLAYER_1_OFFSET);
-            _player2grid = new Grid(GRID_SIZE, PLAYER_2_OFFSET);
+            _player1grid = new Grid(Constants.GRID_SIZE, Constants.PLAYER_1_OFFSET);
+            _player2grid = new Grid(Constants.GRID_SIZE, Constants.PLAYER_2_OFFSET);
             _shipManager = new ShipManager(5);
 
             // add event handlers

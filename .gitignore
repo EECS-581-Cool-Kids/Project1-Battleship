@@ -364,3 +364,9 @@ MigrationBackup/
 
 # Fody - auto-generated XML schema
 FodyWeavers.xsd
+
+# Intelij IDEA files
+.idea/
+.idea.Battleship/
+.idea/indexLayout.xml
+.idea/misc.xml

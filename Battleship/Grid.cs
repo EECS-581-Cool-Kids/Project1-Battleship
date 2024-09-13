@@ -17,12 +17,12 @@ namespace Battleship
         /// <summary>
         /// The number of pixels for the width and height of each square.
         /// </summary>
-        private const int SQUARE_SIZE = Static.SQUARE_SIZE;
+        private const int SQUARE_SIZE = Constants.SQUARE_SIZE;
         
         /// <summary>
         /// The scale factor between the texture and actual display.
         /// </summary>
-        private const int SCALE = Static.SCALE;
+        private const int SCALE = Constants.SCALE;
         
         /// <summary>
         /// The 2D Array representing and storing the grid.
