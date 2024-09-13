@@ -14,39 +14,55 @@ namespace Battleship
     public class ShipManager
     {
         /// <summary>
-        /// The number of pixels for the width and height of each square.
-        /// </summary>
-        private const int SQUARE_SIZE = 9;
-
-        /// <summary>
-        /// The scale factor between the texture and actual display.
-        /// </summary>
-        private const int SCALE = 5;
-
-        /// <summary>
         /// The texture for the 1x1 ship.
         /// </summary>
-        public Texture2D? ShipTexture1x1 { get; set; }
+        public Texture2D? ShipTexture1x1Horizontal { get; set; }
 
         /// <summary>
         /// The texture for the 1x2 ship.
         /// </summary>
-        public Texture2D? ShipTexture1x2 { get; set; }
+        public Texture2D? ShipTexture1x2Horizontal { get; set; }
 
         /// <summary>
         /// The texture for the 1x3 ship.
         /// </summary>
-        public Texture2D? ShipTexture1x3 { get; set; }
+        public Texture2D? ShipTexture1x3Horizontal { get; set; }
 
         /// <summary>
         /// The texture for the 1x4 ship.
         /// </summary>
-        public Texture2D? ShipTexture1x4 { get; set; }
+        public Texture2D? ShipTexture1x4Horizontal { get; set; }
 
         /// <summary>
         /// The texture for the 1x5 ship.
         /// </summary>
-        public Texture2D? ShipTexture1x5 { get; set; }
+        public Texture2D? ShipTexture1x5Horizontal { get; set; }
+        
+        /// <summary>
+        /// The texture for the 1x1 ship Vertical rotation.
+        /// </summary>
+        public Texture2D? ShipTexture1x1Vertical { get; set; }
+        
+        /// <summary>
+        /// <summary>
+        /// The texture for the 1x2 ship Vertical rotation.
+        /// </summary>
+        public Texture2D? ShipTexture1x2Vertical { get; set; }
+        
+        /// <summary>
+        /// The texture for the 1x3 ship Vertical rotation.
+        /// </summary>
+        public Texture2D? ShipTexture1x3Vertical { get; set; }
+        
+        /// <summary>
+        /// The texture for the 1x4 ship Vertical rotation.
+        /// </summary>
+        public Texture2D? ShipTexture1x4Vertical { get; set; }
+        
+        /// <summary>
+        /// The texture for the 1x5 ship Vertical rotation.
+        /// </summary>
+        public Texture2D? ShipTexture1x5Vertical { get; set; }
 
         /// <summary>
         /// The collection of Player 1 ships.
@@ -143,11 +159,16 @@ namespace Battleship
         /// </summary>
         public void LoadContent(ContentManager content)
         {
-            ShipTexture1x1 = content.Load<Texture2D>("ship1x1");
-            ShipTexture1x2 = content.Load<Texture2D>("ship1x2");
-            ShipTexture1x3 = content.Load<Texture2D>("ship1x3");
-            ShipTexture1x4 = content.Load<Texture2D>("ship1x4");
-            ShipTexture1x5 = content.Load<Texture2D>("ship1x5");
+            ShipTexture1x1Horizontal = content.Load<Texture2D>("ship1x1Horizontal");
+            ShipTexture1x2Horizontal = content.Load<Texture2D>("ship1x2Horizontal");
+            ShipTexture1x3Horizontal = content.Load<Texture2D>("ship1x3Horizontal");
+            ShipTexture1x4Horizontal = content.Load<Texture2D>("ship1x4Horizontal");
+            ShipTexture1x5Horizontal = content.Load<Texture2D>("ship1x5Horizontal");
+            ShipTexture1x1Vertical = content.Load<Texture2D>("ship1x1Vertical");
+            ShipTexture1x2Vertical = content.Load<Texture2D>("ship1x2Vertical");
+            ShipTexture1x3Vertical = content.Load<Texture2D>("ship1x3Vertical");
+            ShipTexture1x4Vertical = content.Load<Texture2D>("ship1x4Vertical");
+            ShipTexture1x5Vertical = content.Load<Texture2D>("ship1x5Vertical");
         }
 
         /// <summary>
@@ -172,21 +193,37 @@ namespace Battleship
 
                 Point size;
                 if (orientation.Equals(CursorOrientation.HORIZONTAL))
-                    size = new Point(SCALE * SQUARE_SIZE * CurrentShipSize, SCALE * SQUARE_SIZE);
+                    size = new Point(Constants.SCALE * Constants.SQUARE_SIZE * CurrentShipSize, Constants.SCALE * Constants.SQUARE_SIZE);
                 else
-                    size = new Point(SCALE * SQUARE_SIZE, SCALE * SQUARE_SIZE * CurrentShipSize);
+                    size = new Point(Constants.SCALE * Constants.SQUARE_SIZE, Constants.SCALE * Constants.SQUARE_SIZE * CurrentShipSize);
 
                 Ship ship = new Ship(currentTile.GetLocation(), size, CurrentShipSize);
                 currentTile.Ship = ship;
-
-                ship.ShipTexture = CurrentShipSize switch
+                
+                
+                // set the texture of the ship based on size and orientation
+                if (orientation.Equals(CursorOrientation.HORIZONTAL))  // Horizontal
                 {
-                    2 => ShipTexture1x2,
-                    3 => ShipTexture1x3,
-                    4 => ShipTexture1x4,
-                    5 => ShipTexture1x5,
-                    _ => ShipTexture1x1,
-                };
+                    ship.ShipTexture = CurrentShipSize switch
+                    {
+                        2 => ShipTexture1x2Horizontal,
+                        3 => ShipTexture1x3Horizontal,
+                        4 => ShipTexture1x4Horizontal,
+                        5 => ShipTexture1x5Horizontal,
+                        _ => ShipTexture1x1Horizontal
+                    };
+                }
+                else  // Vertical
+                {
+                    ship.ShipTexture = CurrentShipSize switch
+                    {
+                        2 => ShipTexture1x2Vertical,
+                        3 => ShipTexture1x3Vertical,
+                        4 => ShipTexture1x4Vertical,
+                        5 => ShipTexture1x5Vertical,
+                        _ => ShipTexture1x1Vertical
+                    };
+                }
 
                 if (IsPlayer1Placing)
                     Player1Ships.Add(ship);
@@ -211,7 +248,7 @@ namespace Battleship
                     _placementTimeout.Dispose();
                 }
 
-                _placementTimeout = new Timer(1000);
+                _placementTimeout = new Timer(250);
                 _placementTimeout.Elapsed += OnTimeoutEvent!;
                 _placementTimeout.Start();
 
