@@ -13,8 +13,7 @@ using System.Threading.Tasks;
 namespace Battleship
 {
     public class Grid
-    {
-        
+    {      
         /// <summary>
         /// The 2D Array representing and storing the grid.
         /// </summary>
@@ -199,14 +198,14 @@ namespace Battleship
         /// </summary>
         /// <param name="grid"></param>
         /// <returns></returns>
-        public bool Shoot(Point position, GridTile targetedTile)
+        public bool Shoot(Point position)
         {
             /* Convert the position to a GridTile.
              * To do this, we need to find the row and column of the GridTile.
              * The column is the X position minus the offset divided by the size of the GridTile.
              * The row is the Y position divided by the size of the GridTile.*/
-            int col = ((int)position.X - _offset) / (SQUARE_SIZE * SCALE);
-            int row = position.Y / (SQUARE_SIZE * SCALE);
+            //int col = ((int)position.X - _offset) / (SQUARE_SIZE * SCALE);
+            //int row = position.Y / (SQUARE_SIZE * SCALE);
 
             /* We need to ensure that the mouse is clicked within the grid.
              * This is because the mouse can be clicked outside of the grid.
@@ -215,19 +214,17 @@ namespace Battleship
             if (CurrentTile is null)
                 return false;
 
-            GridTile targetTile = GridArray[row, col];
-
             // Only allow shooting on the 10x10 grid.
-            if (targetTile.CanSelect) 
+            else if (CurrentTile.CanSelect) 
             {
-                if (targetTile.HasShip)
+                if (CurrentTile.HasShip)
                 {
-                    targetTile.GridTexture = SquareHitTexture;
+                    CurrentTile.GridTexture = SquareHitTexture;
                     return true;
                 }
                 else
                 {
-                    targetTile.GridTexture = SquareMissedTexture;
+                    CurrentTile.GridTexture = SquareMissedTexture;
                     return false;
                 }
             }
