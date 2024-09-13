@@ -149,8 +149,9 @@ namespace Battleship
             _spriteBatch!.Begin(samplerState: SamplerState.PointClamp);
             _player1grid!.Draw(_spriteBatch);
             _player2grid!.Draw(_spriteBatch);
-            _cursor.Draw(_spriteBatch);
             _shipManager!.Draw(_spriteBatch);
+            _cursor.Draw(_spriteBatch);
+
             _spriteBatch!.End();
 
             base.Draw(gameTime);
