@@ -40,7 +40,6 @@ namespace Battleship
         /// </summary>
         public bool IsSunk
         {
-            //get { return _isSunk; }
             get
             {
                 _isSunk = true;
@@ -55,16 +54,7 @@ namespace Battleship
                 
                 return _isSunk;
             }
-            set
-            {
-                //foreach (GridTile tile in ShipTiles)
-                //{
-                //    if (!tile.IsHit)
-                //    {
-                //        _isSunk = true;
-                //    }
-                //}
-            }
+            set {}
         }
 
         /// <summary>

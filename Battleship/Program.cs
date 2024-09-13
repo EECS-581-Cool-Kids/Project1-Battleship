@@ -1,3 +1,4 @@
 ﻿
 using var game = new Battleship.BattleshipGame();
-game.Run();
+while (true)
+    game.Run();

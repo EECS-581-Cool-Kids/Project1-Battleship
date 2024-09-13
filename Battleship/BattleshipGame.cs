@@ -10,7 +10,7 @@ namespace Battleship
 {
     public class BattleshipGame : Game
     {
-       /// <summary>
+        /// <summary>
         /// The MonoGame Graphics Device Manager.
         /// </summary>
         private GraphicsDeviceManager _graphics;
@@ -78,13 +78,6 @@ namespace Battleship
             _shipManager.IsPlayer1PlacementValid = _player1grid.IsShipPlacementValid;
             _shipManager.IsPlayer2PlacementValid = _player2grid.IsShipPlacementValid;
             _shipManager.OnPlayerChange = _turnManager.NextTurn;
-            //_shipManager.getTiles = List < GridTile > getTiles(bool isP1, Point pos, CursorOrientation orientation, int shipLength) {
-            //    if(isP1)
-            //    {
-            //        return _player1grid.
-            //    }
-            //}
-
 
             base.Initialize();
         }
