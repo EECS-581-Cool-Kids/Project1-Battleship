@@ -14,7 +14,6 @@ namespace Battleship
 {
     public class Grid
     {
-        
         /// <summary>
         /// The 2D Array representing and storing the grid.
         /// </summary>
@@ -191,6 +190,36 @@ namespace Battleship
             }
 
             return true;
+        }
+
+        /// <summary>
+        /// This method returns True if the GridTile clicked on is a hit, return False if it is a miss.
+        /// Returns null if the tile is not selectable.
+        /// Also changes the GridTile texture to show the result of the shot.
+        /// </summary>
+        /// <param name="grid"></param>
+        /// <returns></returns>
+        public bool? Shoot(Point position)
+        {
+            if (CurrentTile is null)
+                return null;
+
+            // Only allow shooting on the 10x10 grid.
+            if (!CurrentTile.CanSelect)
+                return null;
+            else
+            {
+                if (CurrentTile.HasShip)
+                {
+                    CurrentTile.GridTexture = SquareHitTexture;
+                    return true;
+                }
+                else
+                {
+                    CurrentTile.GridTexture = SquareMissedTexture;
+                    return false;
+                }
+            }
         }
     }
 }

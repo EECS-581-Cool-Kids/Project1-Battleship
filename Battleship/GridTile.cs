@@ -47,6 +47,11 @@ namespace Battleship
             }
         }
 
+        /// <summary>
+        /// Whether or not the grid tile has been hit.
+        /// </summary>
+        public bool IsHit { get; set; } = false;
+
         public GridTile(Point location, Point size)
         {
             GridRectangle = new Rectangle(location, size);
@@ -128,9 +133,8 @@ namespace Battleship
             // sets how far from the top cursor the bottom cursor should be
             // scale factor * pixels per square * ship size + half of the scaled square size - 3 pixels to center it
             int yAdjust = - Constants.SCALE * Constants.SQUARE_SIZE * shipSize + Constants.SCALE * Constants.SQUARE_SIZE / 2 - 3;
-            
-            return new Point(GridRectangle.X - Constants.SCALE, GridRectangle.Y - Constants.SCALE - yAdjust);
 
+            return new Point(GridRectangle.X - Constants.SCALE, GridRectangle.Y - Constants.SCALE - yAdjust);
         }
 
         /// <summary>
