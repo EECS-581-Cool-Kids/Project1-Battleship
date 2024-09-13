@@ -2,31 +2,15 @@
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.Diagnostics.Tracing;
-using System.Runtime.CompilerServices;
 
 namespace Battleship
 {
     public class BattleshipGame : Game
     {
-        /// <summary>
-        /// Internal grid object.
-        /// The grid size
-        /// </summary>
-        private const int GRID_SIZE = 11;
-
-        ///<summary>
-        /// Player 1 grid offset value.
-        /// </summary>
-        private const int PLAYER_1_OFFSET = 0;
-
-        ///<summary>
-        /// Player 2 grid offset value.
-        /// </summary>
-        private const int PLAYER_2_OFFSET = 500;
-
-        /// <summary>
+       /// <summary>
         /// The MonoGame Graphics Device Manager.
         /// </summary>
         private GraphicsDeviceManager _graphics;
@@ -67,6 +51,7 @@ namespace Battleship
             Content.RootDirectory = "Content";
             IsMouseVisible = true;
         }
+        
 
         /// <summary>
         /// Initializes the relevant objects and window. 
@@ -75,16 +60,16 @@ namespace Battleship
         protected override void Initialize()
         {
             _graphics.IsFullScreen = false;
-            _graphics.PreferredBackBufferWidth = 1000; // Increased width to fit both grids.
-            _graphics.PreferredBackBufferHeight = 495;
+            _graphics.PreferredBackBufferWidth = Constants.SQUARE_SIZE * Constants.GRID_SIZE * 2 * Constants.SCALE;
+            _graphics.PreferredBackBufferHeight = Constants.SQUARE_SIZE * Constants.GRID_SIZE * Constants.SCALE;
             _graphics.ApplyChanges();
 
             Window.Title = "Battleship";
 
-            _player1grid = new Grid(GRID_SIZE, PLAYER_1_OFFSET);
-            _player2grid = new Grid(GRID_SIZE, PLAYER_2_OFFSET);
+            _player1grid = new Grid(Constants.GRID_SIZE, Constants.PLAYER_1_OFFSET);
+            _player2grid = new Grid(Constants.GRID_SIZE, Constants.PLAYER_2_OFFSET);
             _shipManager = new ShipManager(5);
-            _turnManager = new TurnManager(new Point(PLAYER_2_OFFSET, 0), new Point(9 * 4, 9 * 4));
+            _turnManager = new TurnManager(new Point(Constants.PLAYER_2_OFFSET, 0), new Point(9 * 4, 9 * 4));
             // add event handlers
             _shipManager.OnPlayer1ShipPlaced = _player1grid.ShipPlaced;
             _shipManager.OnPlayer2ShipPlaced = _player2grid.ShipPlaced;
@@ -93,6 +78,12 @@ namespace Battleship
             _shipManager.IsPlayer1PlacementValid = _player1grid.IsShipPlacementValid;
             _shipManager.IsPlayer2PlacementValid = _player2grid.IsShipPlacementValid;
             _shipManager.OnPlayerChange = _turnManager.NextTurn;
+            //_shipManager.getTiles = List < GridTile > getTiles(bool isP1, Point pos, CursorOrientation orientation, int shipLength) {
+            //    if(isP1)
+            //    {
+            //        return _player1grid.
+            //    }
+            //}
 
 
             base.Initialize();
@@ -170,14 +161,18 @@ namespace Battleship
             GraphicsDevice.Clear(Color.CornflowerBlue);
 
             _spriteBatch!.Begin(samplerState: SamplerState.PointClamp);
-            _player1grid!.Draw(_spriteBatch);
-            _player2grid!.Draw(_spriteBatch);
+            _player1grid!.Draw1(_spriteBatch);
+            _player2grid!.Draw1(_spriteBatch);
 
             // Hide if (waiting for player swap) or (its p2's turn)
             _shipManager!.HideP1Ships = _turnManager!.SwapWaiting || !_turnManager.IsP1sTurn;
             _shipManager.HideP2Ships = _turnManager!.SwapWaiting || _turnManager.IsP1sTurn;
             
             _shipManager!.Draw(_spriteBatch);
+
+            _player1grid!.Draw2(_spriteBatch);
+            _player2grid!.Draw2(_spriteBatch);
+
             _cursor.Draw(_spriteBatch);
             _turnManager!.Draw(_spriteBatch);
             _spriteBatch!.End();
@@ -193,17 +188,17 @@ namespace Battleship
             if (_shipManager!.ReadClick == true && mouseState.LeftButton == ButtonState.Pressed )
             {
                 _shipManager.ReadClick = false;
-                bool success = false;
+                bool? success = false;
                 Point mousePoint = new Point(mouseState.X, mouseState.Y);
                 if (_turnManager!.IsP1sTurn)
                 {
-                    success = _player2grid!.Shoot(mousePoint, _player2grid.CurrentTile!);
+                    success = _player2grid!.Shoot(mousePoint);
                 }
                 else if (!_turnManager.IsP1sTurn)
                 {
-                    success = _player1grid!.Shoot(mousePoint, _player1grid.CurrentTile!);
+                    success = _player1grid!.Shoot(mousePoint);
                 }
-                if (success)
+                if (success is not null)
                 {
                     _turnManager.NextTurn();
                     _shipManager!.HideP1Ships = !_turnManager.IsP1sTurn;

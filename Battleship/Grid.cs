@@ -15,16 +15,6 @@ namespace Battleship
     public class Grid
     {
         /// <summary>
-        /// The number of pixels for the width and height of each square.
-        /// </summary>
-        private const int SQUARE_SIZE = 9;
-
-        /// <summary>
-        /// The scale factor between the texture and actual display.
-        /// </summary>
-        private const int SCALE = 5;
-
-        /// <summary>
         /// The 2D Array representing and storing the grid.
         /// </summary>
         public GridTile[,] GridArray { get; set; }
@@ -67,8 +57,8 @@ namespace Battleship
             {
                 for (int colNum = 0; colNum < size; colNum++)
                 {
-                    Point squarePosition = new Point(colNum * SQUARE_SIZE * SCALE + _offset, rowNum * SQUARE_SIZE * SCALE);
-                    Point squareSize = new Point(SQUARE_SIZE * SCALE, SQUARE_SIZE * SCALE);
+                    Point squarePosition = new Point(colNum * Constants.SQUARE_SIZE * Constants.SCALE + _offset, rowNum * Constants.SQUARE_SIZE * Constants.SCALE);
+                    Point squareSize = new Point(Constants.SQUARE_SIZE * Constants.SCALE, Constants.SQUARE_SIZE * Constants.SCALE);
 
                     GridArray[rowNum, colNum] = new GridTile(squarePosition, squareSize);
                 }
@@ -122,11 +112,19 @@ namespace Battleship
         /// <summary>
         /// Draw for the grid.
         /// </summary>
-        public void Draw(SpriteBatch spriteBatch)
+        public void Draw1(SpriteBatch spriteBatch)
         {
             foreach (GridTile tile in GridArray)
-                spriteBatch.Draw(tile.GridTexture, tile.GridRectangle, Color.White);
+                if (!tile.IsHit)
+                    spriteBatch.Draw(tile.GridTexture, tile.GridRectangle, Color.White);
         }
+        public void Draw2(SpriteBatch spriteBatch)
+        {
+            foreach (GridTile tile in GridArray)
+                if (tile.IsHit)
+                    spriteBatch.Draw(tile.GridTexture, tile.GridRectangle, Color.White);
+        }
+
 
         /// <summary>
         /// Handles updating all grid tiles to indicate that a ship has been placed upon it.
@@ -138,7 +136,7 @@ namespace Battleship
         {
             Tuple<int, int> currentTileLocation = GridArray.CoordinatesOf(tile);
 
-            for (int tileNum = 1; tileNum < ship.Length; tileNum++)
+            for (int tileNum = 0; tileNum < ship.Length; tileNum++)
             {
                 GridTile nextTile;
                 if (orientation.Equals(CursorOrientation.HORIZONTAL))
@@ -147,6 +145,7 @@ namespace Battleship
                     nextTile = GridArray[currentTileLocation.Item2 + tileNum, currentTileLocation.Item1];
 
                 nextTile.Ship = ship;
+                ship.ShipTiles.Add(nextTile);
             }
         }
 
@@ -204,45 +203,33 @@ namespace Battleship
 
         /// <summary>
         /// This method returns True if the GridTile clicked on is a hit, return False if it is a miss.
+        /// Returns null if the tile is not selectable.
         /// Also changes the GridTile texture to show the result of the shot.
         /// </summary>
         /// <param name="grid"></param>
         /// <returns></returns>
-        public bool Shoot(Point position, GridTile targetedTile)
+        public bool? Shoot(Point position)
         {
-            /* Convert the position to a GridTile.
-             * To do this, we need to find the row and column of the GridTile.
-             * The column is the X position minus the offset divided by the size of the GridTile.
-             * The row is the Y position divided by the size of the GridTile.*/
-            int col = ((int)position.X - _offset) / (SQUARE_SIZE * SCALE);
-            int row = position.Y / (SQUARE_SIZE * SCALE);
-
-            /* We need to ensure that the mouse is clicked within the grid.
-             * This is because the mouse can be clicked outside of the grid.
-             * And if that happens without this check, the game will crash.
-             * We don't want to throw an exception here, so we just return false if the row or column is out of bounds. */
             if (CurrentTile is null)
-                return false;
-
-            GridTile targetTile = GridArray[row, col];
+                return null;
 
             // Only allow shooting on the 10x10 grid.
-            if (targetTile.CanSelect && !targetTile.IsShot) 
+            if (!CurrentTile.CanSelect)
+                return null;
+            else
             {
-                targetTile.IsShot = true;
-                if (targetTile.HasShip)
+                if (CurrentTile.HasShip)
                 {
-                    targetTile.GridTexture = SquareHitTexture;
-                    
+                    CurrentTile.IsHit = true;
+                    CurrentTile.GridTexture = SquareHitTexture;
                     return true;
                 }
                 else
                 {
-                    targetTile.GridTexture = SquareMissedTexture;
-                    return true;
+                    CurrentTile.GridTexture = SquareMissedTexture;
+                    return false;
                 }
             }
-            return false; // If the tile is not selectable, return false. Might want to consider throwing an exception or returning null here.
         }
     }
 }
