@@ -21,21 +21,6 @@ namespace Battleship
 {
     public class BattleshipGame : Game
     {
-        /// <summary>
-        /// Internal grid object.
-        /// The grid size
-        /// </summary>
-        private const int GRID_SIZE = 11;
-
-        ///<summary>
-        /// Player 1 grid offset value.
-        /// </summary>
-        private const int PLAYER_1_OFFSET = 0;
-
-        ///<summary>
-        /// Player 2 grid offset value.
-        /// </summary>
-        private const int PLAYER_2_OFFSET = 500;
 
         /// <summary>
         /// The MonoGame Graphics Device Manager.
@@ -85,15 +70,15 @@ namespace Battleship
         {
             // Set the window size. Enable the game in windowed mode.
             _graphics.IsFullScreen = false;
-            _graphics.PreferredBackBufferWidth = 1000; // Increased width to fit both grids.
-            _graphics.PreferredBackBufferHeight = 495;
+            _graphics.PreferredBackBufferWidth = Constants.SQUARE_SIZE * Constants.GRID_SIZE * 2 * Constants.SCALE;
+            _graphics.PreferredBackBufferHeight = Constants.SQUARE_SIZE * Constants.GRID_SIZE * Constants.SCALE;
             _graphics.ApplyChanges();
 
             Window.Title = "Battleship"; // Set the window title.
 
-            // Initialize the player grid objects.
-            _player1grid = new Grid(GRID_SIZE, PLAYER_1_OFFSET);
-            _player2grid = new Grid(GRID_SIZE, PLAYER_2_OFFSET);
+            _player1grid = new Grid(Constants.GRID_SIZE, Constants.PLAYER_1_OFFSET);
+            _player2grid = new Grid(Constants.GRID_SIZE, Constants.PLAYER_2_OFFSET);
+            _shipManager = new ShipManager(5);
 
             _shipManager = new ShipManager(5); // Initialize the ship manager with the number of ships.
                                                // The parameter will eventually be a constant int property whose value changes based on main menu option selection 
@@ -176,7 +161,8 @@ namespace Battleship
             _player1grid!.Draw(_spriteBatch);
             _player2grid!.Draw(_spriteBatch);
             _shipManager!.Draw(_spriteBatch);
-            _cursor.Draw(_spriteBatch); 
+            _cursor.Draw(_spriteBatch);
+
             _spriteBatch!.End();
 
             base.Draw(gameTime); // Ensures the framerwork-level logic in the base class is drawn.

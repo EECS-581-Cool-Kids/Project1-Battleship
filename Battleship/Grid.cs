@@ -14,16 +14,7 @@ namespace Battleship
 {
     public class Grid
     {
-        /// <summary>
-        /// The number of pixels for the width and height of each square.
-        /// </summary>
-        private const int SQUARE_SIZE = 9;
-
-        /// <summary>
-        /// The scale factor between the texture and actual display.
-        /// </summary>
-        private const int SCALE = 5;
-
+        
         /// <summary>
         /// The 2D Array representing and storing the grid.
         /// </summary>
@@ -67,8 +58,8 @@ namespace Battleship
             {
                 for (int colNum = 0; colNum < size; colNum++)
                 {
-                    Point squarePosition = new Point(colNum * SQUARE_SIZE * SCALE + _offset, rowNum * SQUARE_SIZE * SCALE);
-                    Point squareSize = new Point(SQUARE_SIZE * SCALE, SQUARE_SIZE * SCALE);
+                    Point squarePosition = new Point(colNum * Constants.SQUARE_SIZE * Constants.SCALE + _offset, rowNum * Constants.SQUARE_SIZE * Constants.SCALE);
+                    Point squareSize = new Point(Constants.SQUARE_SIZE * Constants.SCALE, Constants.SQUARE_SIZE * Constants.SCALE);
 
                     GridArray[rowNum, colNum] = new GridTile(squarePosition, squareSize);
                 }
