@@ -13,7 +13,6 @@ namespace Battleship
 {
     public class ShipManager
     {
-
         /// <summary>
         /// The texture for the 1x1 ship.
         /// </summary>
