@@ -13,7 +13,7 @@ using System.Threading.Tasks;
 namespace Battleship
 {
     public class Grid
-    {      
+    {
         /// <summary>
         /// The 2D Array representing and storing the grid.
         /// </summary>
