@@ -1,13 +1,13 @@
 ﻿/*  
- *   Authors: Derek Norton, Ethan Berkley, Jacob Wilkus, Mo Morgan, and Richard Moser
- *   Date 09/11/202
- *   Last Modified 09/01/2022
- *   Course and Instructor: EECS 581 Software Engineering II, Dr. David Johnson
  *   Module Name: BattleshipGame.cs
  *   Purpose: This module is the main game class for the Battleship game. 
- *            It is responsible for managing all other subordinate manager objects needed to run the game. 
+ *            It is responsible for managing all other subordinate manager objects needed to run the game.Authors: Derek Norton, Ethan Berkley, Jacob Wilkus, Mo Morgan, and Richard Moser
  *   Inputs: None 
- *   Outputs: None
+ *   Output: None
+ *   Additional code sources:
+ *   Developers: Derek Norton, Ethan Berkley, Jacob Wilkus, Mo Morgan, and Richard Moser
+ *   Date: 09/11/2024
+ *   Last Modified: 09/13/2024
  */
 
 using Microsoft.Xna.Framework;
