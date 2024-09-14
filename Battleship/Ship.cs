@@ -30,26 +30,21 @@ namespace Battleship
         /// </summary>
         public bool IsPlaced { get; set; }
 
-        ///<summary>
-        ///Private backing field for IsSunk
-        /// </summary>
-        private bool _isSunk = false;
-
         /// <summary>
         /// Whether or not the ship has been sunk.
         /// </summary>
         public bool IsSunk
         {
-            get { return _isSunk; }
-            set
+            get
             {
                 foreach (GridTile tile in ShipTiles)
                 {
                     if (!tile.IsHit)
                     {
-                        _isSunk = true;
-                    }
+                        return false;           
+                    } 
                 }
+                return true;
             }
         }
 

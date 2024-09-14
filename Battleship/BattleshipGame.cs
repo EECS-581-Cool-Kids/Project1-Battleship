@@ -14,6 +14,7 @@ using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.Diagnostics.Tracing;
 
@@ -52,14 +53,17 @@ namespace Battleship
         private ShipManager? _shipManager;
 
         /// <summary>
-        /// <c>BattleshipGame</c> class constructor.
+        /// The internal turn manager object.
         /// </summary>
+        private TurnManager? _turnManager;
+
         public BattleshipGame()
         {
             _graphics = new GraphicsDeviceManager(this);
             Content.RootDirectory = "Content";
             IsMouseVisible = true;
         }
+        
 
         /// <summary>
         /// Initializes the relevant objects and window. 
@@ -77,11 +81,9 @@ namespace Battleship
 
             _player1grid = new Grid(Constants.GRID_SIZE, Constants.PLAYER_1_OFFSET);
             _player2grid = new Grid(Constants.GRID_SIZE, Constants.PLAYER_2_OFFSET);
-            _shipManager = new ShipManager(5);
-
-            _shipManager = new ShipManager(5); // Initialize the ship manager with the number of ships.
-                                               // The parameter will eventually be a constant int property whose value changes based on main menu option selection 
-
+            _shipManager = new ShipManager(5);  // Initialize the ship manager with the number of ships.
+                                                // The parameter will eventually be a constant int property whose value
+            _turnManager = new TurnManager();
             // add the event handlers for ship placement, tile adjustment, and ship placement validation for both players.
             _shipManager.OnPlayer1ShipPlaced = _player1grid.ShipPlaced;
             _shipManager.OnPlayer2ShipPlaced = _player2grid.ShipPlaced;
@@ -89,6 +91,7 @@ namespace Battleship
             _shipManager.OnPlayer2AdjustedTileRequested = _player2grid.GetAdjustedCurrentTile;
             _shipManager.IsPlayer1PlacementValid = _player1grid.IsShipPlacementValid;
             _shipManager.IsPlayer2PlacementValid = _player2grid.IsShipPlacementValid;
+            _shipManager.OnPlayerChange = _turnManager.NextTurn;
 
             base.Initialize(); // Ensures the framerwork-level logic in the base class is initialized.
         }
@@ -105,6 +108,7 @@ namespace Battleship
             _player2grid!.LoadContent(Content);
             _shipManager!.LoadContent(Content);
             _cursor.LoadContent(Content);
+            _turnManager!.LoadContent(Content);
         }
         
         /// <summary>
@@ -137,20 +141,41 @@ namespace Battleship
             else if (_player2grid.CurrentTile is not null)
                 _cursor.UpdateWhilePlaying(_player2grid.CurrentTile, currentPlayer2TileLocation.Item1);
 
+            if (Mouse.GetState().LeftButton == ButtonState.Released)
+            {
+                _shipManager!.ReadClick = true;
+            } else if (_turnManager!.SwapWaiting && _shipManager!.ReadClick)
+            {
+                _shipManager!.ReadClick = false;
+                _turnManager.SwapWaiting = false;
+            }
+            else
+            {
+                if (_shipManager!.IsPlayer1Placing && _player1grid.CurrentTile is not null)
+                    _shipManager.UpdateWhilePlacing(_player1grid.CurrentTile, _cursor.Orientation, 1);
+                if (_shipManager!.IsPlayer2Placing && _player2grid.CurrentTile is not null)
+                    _shipManager.UpdateWhilePlacing(_player2grid.CurrentTile, _cursor.Orientation, 2);
+
             // Update the ship manager object while the players are in ship placing mode.
             if (_shipManager!.IsPlayer1Placing && _player1grid.CurrentTile is not null)
                 _shipManager.UpdateWhilePlacing(_player1grid.CurrentTile, _cursor.Orientation, 1);
             if (_shipManager!.IsPlayer2Placing && _player2grid.CurrentTile is not null)
                 _shipManager.UpdateWhilePlacing(_player2grid.CurrentTile, _cursor.Orientation, 2);
 
-            // Check if all ships have been placed
-            if (!_shipManager.IsPlacingShips)
-            {
-                _shipManager.HideP2Ships = true;
-                HandleShooting();
+
+
+                if (!_shipManager.IsPlacingShips)
+                {
+                    HandleShooting();
+                }
+
             }
 
-            base.Update(gameTime); // Ensures the framerwork-level logic in the base class is updated.
+            // Hide if (waiting for player swap) or (its p2's turn)
+            _shipManager!.HideP1Ships = _turnManager!.SwapWaiting || !_turnManager.IsP1sTurn;
+            _shipManager.HideP2Ships = _turnManager!.SwapWaiting || _turnManager.IsP1sTurn;
+
+            base.Update(gameTime);
         }
 
         /// <summary>
@@ -164,11 +189,16 @@ namespace Battleship
             // Draws the grid objects, cursor, and ship manager objects.
             // The various Draw commands are batched together by being enclosed in a _spriteBatch!.Begin/End() block.
             _spriteBatch!.Begin(samplerState: SamplerState.PointClamp);
-            _player1grid!.Draw(_spriteBatch);
-            _player2grid!.Draw(_spriteBatch);
-            _shipManager!.Draw(_spriteBatch);
-            _cursor.Draw(_spriteBatch);
+            _player1grid!.DrawBackground(_spriteBatch);
+            _player2grid!.DrawBackground(_spriteBatch);
 
+            _shipManager!.Draw(_spriteBatch);
+
+            _player1grid!.DrawForeground(_spriteBatch);
+            _player2grid!.DrawForeground(_spriteBatch);
+
+            _cursor.Draw(_spriteBatch);
+            _turnManager!.Draw(_spriteBatch);
             _spriteBatch!.End();
 
             base.Draw(gameTime); // Ensures the framerwork-level logic in the base class is drawn.
@@ -183,6 +213,32 @@ namespace Battleship
             {
                 Point mousePoint = new Point(mouseState.X, mouseState.Y);
                 bool? hit = _player2grid!.Shoot(mousePoint);
+            }
+        }
+        /// <summary>
+        /// Handles shooting logic for the game.
+        /// </summary>
+        private void HandleShooting()
+        {
+            MouseState mouseState = Mouse.GetState();
+            if (_shipManager!.ReadClick && mouseState.LeftButton == ButtonState.Pressed)
+            {
+                _shipManager.ReadClick = false;
+                bool? success = false;
+                if (_turnManager!.IsP1sTurn)
+                {
+                    success = _player2grid!.Shoot();
+                }
+                else
+                {
+                    success = _player1grid!.Shoot();
+                }
+                if (success is not null)
+                {
+                    _turnManager.NextTurn();
+                    _shipManager!.HideP1Ships = !_turnManager.IsP1sTurn;
+                    _shipManager.HideP2Ships = _turnManager.IsP1sTurn;
+                }
             }
         }
     }

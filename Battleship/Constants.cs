@@ -10,7 +10,7 @@ namespace Battleship
         /// <summary>
         /// The scale factor between the texture and actual display.
         /// </summary>
-        public const int SCALE = 5;
+        public const int SCALE = 4;
         /// <summary>
         /// Internal grid object.
         /// The grid size
@@ -25,6 +25,6 @@ namespace Battleship
         ///<summary>
         /// Player 2 grid offset value.
         /// </summary>
-        public const int PLAYER_2_OFFSET = 880; // should be SQUARE_SIZE * GRID_SIZE * 2 * SCALE, i.e. 16 * 11 * 2 * scale / 2
+        public const int PLAYER_2_OFFSET = SQUARE_SIZE * GRID_SIZE * SCALE; // should be SQUARE_SIZE * GRID_SIZE * 2 * SCALE, i.e. 16 * 11 * 2 * scale / 2
     }
 }
