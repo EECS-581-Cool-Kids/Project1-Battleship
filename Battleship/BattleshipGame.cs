@@ -187,7 +187,7 @@ namespace Battleship
                 {
                     success = _player2grid!.Shoot(mousePoint);
                 }
-                else if (!_turnManager.IsP1sTurn)
+                else
                 {
                     success = _player1grid!.Shoot(mousePoint);
                 }
