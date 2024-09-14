@@ -190,7 +190,7 @@ namespace Battleship
         {
             MouseState mouseState = Mouse.GetState();
 
-            if (ReadClick == true && mouseState.LeftButton == ButtonState.Pressed && (_placementTimeout is null || !_placementTimeout.Enabled))
+            if (ReadClick && mouseState.LeftButton == ButtonState.Pressed && (_placementTimeout is null || !_placementTimeout.Enabled))
             {
                 ReadClick = false;
                 if (OnPlayer1AdjustedTileRequested is not null && playerNum == 1)
