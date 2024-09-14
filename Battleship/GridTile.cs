@@ -57,11 +57,6 @@ namespace Battleship
         /// </summary>
         public bool IsHit { get; set; } = false;
 
-        /// <summary>
-        /// Whether or not the grid tile has been hit.
-        /// </summary>
-        public bool IsHit { get; set; } = false;
-
         public GridTile(Point location, Point size)
         {
             GridRectangle = new Rectangle(location, size);

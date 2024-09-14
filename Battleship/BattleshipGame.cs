@@ -208,18 +208,7 @@ namespace Battleship
 
             base.Draw(gameTime); // Ensures the framerwork-level logic in the base class is drawn.
         }
-        /// <summary>
-        /// Handles shooting logic for the game.
-        /// </summary>
-        private void HandleShooting()
-        {
-            MouseState mouseState = Mouse.GetState();
-            if (mouseState.LeftButton == ButtonState.Pressed)
-            {
-                Point mousePoint = new Point(mouseState.X, mouseState.Y);
-                bool? hit = _player2grid!.Shoot(mousePoint);
-            }
-        }
+
         /// <summary>
         /// Handles shooting logic for the game.
         /// </summary>
