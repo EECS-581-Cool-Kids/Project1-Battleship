@@ -1,8 +1,8 @@
-﻿/*   
- *   Module Name: BattleshipGame.cs  
- *   Purpose: This module is the main game class for the Battleship game. 
+﻿/*
+ *   Module Name: BattleshipGame.cs
+ *   Purpose: This module is the main game class for the Battleship game.
  *            It is responsible for managing all other subordinate manager objects needed to run the game.Authors: Derek Norton, Ethan Berkley, Jacob Wilkus, Mo Morgan, and Richard Moser
- *   Inputs: None 
+ *   Inputs: None
  *   Output: None
  *   Additional code sources:
  *   Developers: Derek Norton, Ethan Berkley, Jacob Wilkus, Mo Morgan, and Richard Moser
@@ -57,13 +57,15 @@ namespace Battleship
         /// </summary>
         private TurnManager? _turnManager;
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="BattleshipGame"/> class.
+        ///</summary>
         public BattleshipGame()
         {
             _graphics = new GraphicsDeviceManager(this);
             Content.RootDirectory = "Content";
             IsMouseVisible = true;
         }
-        
 
         /// <summary>
         /// Initializes the relevant objects and window. 
@@ -83,7 +85,10 @@ namespace Battleship
             _player2grid = new Grid(Constants.GRID_SIZE, Constants.PLAYER_2_OFFSET);
             _shipManager = new ShipManager(5);  // Initialize the ship manager with the number of ships.
                                                 // The parameter will eventually be a constant int property whose value
+                                                // is determined by the number of ships chosen at the main menu.
+
             _turnManager = new TurnManager();
+
             // add the event handlers for ship placement, tile adjustment, and ship placement validation for both players.
             _shipManager.OnPlayer1ShipPlaced = _player1grid.ShipPlaced;
             _shipManager.OnPlayer2ShipPlaced = _player2grid.ShipPlaced;
