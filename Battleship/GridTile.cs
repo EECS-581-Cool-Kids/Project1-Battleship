@@ -46,6 +46,11 @@ namespace Battleship
                 return Ship is not null;
             }
         }
+        /// <summary>
+        /// Once the tile has been shot, prevent it from being shot again.
+        /// Set by the Grid object that owns this instance.
+        /// </summary>
+        public bool IsShot { get; set;} = false;
 
         /// <summary>
         /// Whether or not the grid tile has been hit.

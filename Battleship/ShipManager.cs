@@ -112,6 +112,11 @@ namespace Battleship
         public Action<GridTile, Ship, CursorOrientation>? OnPlayer2ShipPlaced;
 
         /// <summary>
+        /// Event called when a player has completed their turn.
+        /// </summary>
+        public Action? OnPlayerChange;
+
+        /// <summary>
         /// Event called to check if a position on player 1's board is valid.
         /// </summary>
         public Func<GridTile, int, CursorOrientation, bool>? IsPlayer1PlacementValid;
@@ -151,6 +156,11 @@ namespace Battleship
             }
         }
 
+        /// <summary>
+        /// When mouse down is first processed, set to false until mouse is up.
+        /// </summary>
+        public bool ReadClick = true;
+
         public ShipManager(int numShips) 
         {
             NumShips = numShips;
@@ -180,8 +190,9 @@ namespace Battleship
         {
             MouseState mouseState = Mouse.GetState();
 
-            if (mouseState.LeftButton == ButtonState.Pressed && (_placementTimeout is null || !_placementTimeout.Enabled))
+            if (ReadClick && mouseState.LeftButton == ButtonState.Pressed && (_placementTimeout is null || !_placementTimeout.Enabled))
             {
+                ReadClick = false;
                 if (OnPlayer1AdjustedTileRequested is not null && playerNum == 1)
                     currentTile = OnPlayer1AdjustedTileRequested.Invoke(currentTile, CurrentShipSize, orientation);
                 else if (OnPlayer2AdjustedTileRequested is not null && playerNum == 2)
@@ -238,10 +249,14 @@ namespace Battleship
                     IsPlayer1Placing = false;
                     IsPlayer2Placing = true;
                     CurrentShipSize = 1;
+                    if (OnPlayerChange is not null)
+                        OnPlayerChange();
                 }
                 else if (CurrentShipSize > NumShips && IsPlayer2Placing)
                 {
                     IsPlayer2Placing = false;
+                    if (OnPlayerChange is not null)
+                        OnPlayerChange();
                 }
 
                 if (_placementTimeout is not null)
@@ -250,7 +265,7 @@ namespace Battleship
                     _placementTimeout.Dispose();
                 }
 
-                _placementTimeout = new Timer(250);
+                _placementTimeout = new Timer(100);
                 _placementTimeout.Elapsed += OnTimeoutEvent!;
                 _placementTimeout.Start();
 
@@ -267,10 +282,11 @@ namespace Battleship
         public void Draw(SpriteBatch spriteBatch)
         {
             foreach (Ship ship in Player1Ships)
-            if (!HideP1Ships)
+                if (!HideP1Ships || ship.IsSunk)
                     spriteBatch.Draw(ship.ShipTexture, ship.ShipRectangle, Color.White);
+            
             foreach (Ship ship in Player2Ships)
-                if (!HideP2Ships)
+                if (!HideP2Ships || ship.IsSunk)
                     spriteBatch.Draw(ship.ShipTexture, ship.ShipRectangle, Color.White);
         }
 

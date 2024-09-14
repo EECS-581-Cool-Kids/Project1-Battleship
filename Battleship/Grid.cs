@@ -110,13 +110,29 @@ namespace Battleship
         }
 
         /// <summary>
-        /// Draw for the grid.
+        /// First draw pass for the grid.
+        /// Draws the base grid texture, which happens behinds the ships.
+        /// Should be called before ships are drawn.
         /// </summary>
-        public void Draw(SpriteBatch spriteBatch)
+        public void DrawBackground(SpriteBatch spriteBatch)
         {
             foreach (GridTile tile in GridArray)
-                spriteBatch.Draw(tile.GridTexture, tile.GridRectangle, Color.White);
+                if (!tile.IsHit)
+                    spriteBatch.Draw(tile.GridTexture, tile.GridRectangle, Color.White);
         }
+
+        /// <summary>
+        /// Second draw pass for the grid.
+        /// Draws the base grid texture, which happens in front of the ships.
+        /// Should be called afer ships are drawn.
+        /// </summary>
+        public void DrawForeground(SpriteBatch spriteBatch)
+        {
+            foreach (GridTile tile in GridArray)
+                if (tile.IsHit)
+                    spriteBatch.Draw(tile.GridTexture, tile.GridRectangle, Color.White);
+        }
+
 
         /// <summary>
         /// Handles updating all grid tiles to indicate that a ship has been placed upon it.
@@ -128,7 +144,7 @@ namespace Battleship
         {
             Tuple<int, int> currentTileLocation = GridArray.CoordinatesOf(tile);
 
-            for (int tileNum = 1; tileNum < ship.Length; tileNum++)
+            for (int tileNum = 0; tileNum < ship.Length; tileNum++)
             {
                 GridTile nextTile;
                 if (orientation.Equals(CursorOrientation.HORIZONTAL))
@@ -137,6 +153,7 @@ namespace Battleship
                     nextTile = GridArray[currentTileLocation.Item2 + tileNum, currentTileLocation.Item1];
 
                 nextTile.Ship = ship;
+                ship.ShipTiles.Add(nextTile);
             }
         }
 
@@ -197,9 +214,8 @@ namespace Battleship
         /// Returns null if the tile is not selectable.
         /// Also changes the GridTile texture to show the result of the shot.
         /// </summary>
-        /// <param name="grid"></param>
         /// <returns></returns>
-        public bool? Shoot(Point position)
+        public bool? Shoot()
         {
             if (CurrentTile is null)
                 return null;
@@ -207,10 +223,16 @@ namespace Battleship
             // Only allow shooting on the 10x10 grid.
             if (!CurrentTile.CanSelect)
                 return null;
+
+            // Don't allow shooting the same spot again.
+            if (CurrentTile.IsShot)
+                return null;
             else
             {
+                CurrentTile.IsShot = true;
                 if (CurrentTile.HasShip)
                 {
+                    CurrentTile.IsHit = true;
                     CurrentTile.GridTexture = SquareHitTexture;
                     return true;
                 }

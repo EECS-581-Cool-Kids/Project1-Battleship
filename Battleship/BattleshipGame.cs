@@ -2,6 +2,7 @@
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.Diagnostics.Tracing;
 
@@ -9,7 +10,7 @@ namespace Battleship
 {
     public class BattleshipGame : Game
     {
-       /// <summary>
+        /// <summary>
         /// The MonoGame Graphics Device Manager.
         /// </summary>
         private GraphicsDeviceManager _graphics;
@@ -39,12 +40,18 @@ namespace Battleship
         /// </summary>
         private ShipManager? _shipManager;
 
+        /// <summary>
+        /// The internal turn manager object.
+        /// </summary>
+        private TurnManager? _turnManager;
+
         public BattleshipGame()
         {
             _graphics = new GraphicsDeviceManager(this);
             Content.RootDirectory = "Content";
             IsMouseVisible = true;
         }
+        
 
         /// <summary>
         /// Initializes the relevant objects and window. 
@@ -62,7 +69,7 @@ namespace Battleship
             _player1grid = new Grid(Constants.GRID_SIZE, Constants.PLAYER_1_OFFSET);
             _player2grid = new Grid(Constants.GRID_SIZE, Constants.PLAYER_2_OFFSET);
             _shipManager = new ShipManager(5);
-
+            _turnManager = new TurnManager();
             // add event handlers
             _shipManager.OnPlayer1ShipPlaced = _player1grid.ShipPlaced;
             _shipManager.OnPlayer2ShipPlaced = _player2grid.ShipPlaced;
@@ -70,7 +77,7 @@ namespace Battleship
             _shipManager.OnPlayer2AdjustedTileRequested = _player2grid.GetAdjustedCurrentTile;
             _shipManager.IsPlayer1PlacementValid = _player1grid.IsShipPlacementValid;
             _shipManager.IsPlayer2PlacementValid = _player2grid.IsShipPlacementValid;
-
+            _shipManager.OnPlayerChange = _turnManager.NextTurn;
 
             base.Initialize();
         }
@@ -87,6 +94,7 @@ namespace Battleship
             _player2grid!.LoadContent(Content);
             _shipManager!.LoadContent(Content);
             _cursor.LoadContent(Content);
+            _turnManager!.LoadContent(Content);
         }
         
         /// <summary>
@@ -114,17 +122,33 @@ namespace Battleship
             else if (_player2grid.CurrentTile is not null)
                 _cursor.UpdateWhilePlaying(_player2grid.CurrentTile, currentPlayer2TileLocation.Item1);
 
-            if (_shipManager!.IsPlayer1Placing && _player1grid.CurrentTile is not null)
-                _shipManager.UpdateWhilePlacing(_player1grid.CurrentTile, _cursor.Orientation, 1);
-            if (_shipManager!.IsPlayer2Placing && _player2grid.CurrentTile is not null)
-                _shipManager.UpdateWhilePlacing(_player2grid.CurrentTile, _cursor.Orientation, 2);
-
-            // Check if all ships have been placed
-            if (!_shipManager.IsPlacingShips)
+            if (Mouse.GetState().LeftButton == ButtonState.Released)
             {
-                _shipManager.HideP2Ships = true;
-                HandleShooting();
+                _shipManager!.ReadClick = true;
+            } else if (_turnManager!.SwapWaiting && _shipManager!.ReadClick)
+            {
+                _shipManager!.ReadClick = false;
+                _turnManager.SwapWaiting = false;
             }
+            else
+            {
+                if (_shipManager!.IsPlayer1Placing && _player1grid.CurrentTile is not null)
+                    _shipManager.UpdateWhilePlacing(_player1grid.CurrentTile, _cursor.Orientation, 1);
+                if (_shipManager!.IsPlayer2Placing && _player2grid.CurrentTile is not null)
+                    _shipManager.UpdateWhilePlacing(_player2grid.CurrentTile, _cursor.Orientation, 2);
+
+
+
+                if (!_shipManager.IsPlacingShips)
+                {
+                    HandleShooting();
+                }
+
+            }
+
+            // Hide if (waiting for player swap) or (its p2's turn)
+            _shipManager!.HideP1Ships = _turnManager!.SwapWaiting || !_turnManager.IsP1sTurn;
+            _shipManager.HideP2Ships = _turnManager!.SwapWaiting || _turnManager.IsP1sTurn;
 
             base.Update(gameTime);
         }
@@ -138,10 +162,16 @@ namespace Battleship
             GraphicsDevice.Clear(Color.CornflowerBlue);
 
             _spriteBatch!.Begin(samplerState: SamplerState.PointClamp);
-            _player1grid!.Draw(_spriteBatch);
-            _player2grid!.Draw(_spriteBatch);
+            _player1grid!.DrawBackground(_spriteBatch);
+            _player2grid!.DrawBackground(_spriteBatch);
+
             _shipManager!.Draw(_spriteBatch);
+
+            _player1grid!.DrawForeground(_spriteBatch);
+            _player2grid!.DrawForeground(_spriteBatch);
+
             _cursor.Draw(_spriteBatch);
+            _turnManager!.Draw(_spriteBatch);
             _spriteBatch!.End();
 
             base.Draw(gameTime);
@@ -152,10 +182,24 @@ namespace Battleship
         private void HandleShooting()
         {
             MouseState mouseState = Mouse.GetState();
-            if (mouseState.LeftButton == ButtonState.Pressed)
+            if (_shipManager!.ReadClick && mouseState.LeftButton == ButtonState.Pressed)
             {
-                Point mousePoint = new Point(mouseState.X, mouseState.Y);
-                bool? hit = _player2grid!.Shoot(mousePoint);
+                _shipManager.ReadClick = false;
+                bool? success = false;
+                if (_turnManager!.IsP1sTurn)
+                {
+                    success = _player2grid!.Shoot();
+                }
+                else
+                {
+                    success = _player1grid!.Shoot();
+                }
+                if (success is not null)
+                {
+                    _turnManager.NextTurn();
+                    _shipManager!.HideP1Ships = !_turnManager.IsP1sTurn;
+                    _shipManager.HideP2Ships = _turnManager.IsP1sTurn;
+                }
             }
         }
     }
