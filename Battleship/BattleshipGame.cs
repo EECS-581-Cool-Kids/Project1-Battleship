@@ -21,7 +21,6 @@ namespace Battleship
 {
     public class BattleshipGame : Game
     {
-
         /// <summary>
         /// The MonoGame Graphics Device Manager.
         /// </summary>
@@ -100,7 +99,7 @@ namespace Battleship
         /// </summary>
         protected override void LoadContent()
         {
-            _spriteBatch = new SpriteBatch(GraphicsDevice); //
+            _spriteBatch = new SpriteBatch(GraphicsDevice);
 
             _player1grid!.LoadContent(Content);
             _player2grid!.LoadContent(Content);
@@ -144,6 +143,13 @@ namespace Battleship
             if (_shipManager!.IsPlayer2Placing && _player2grid.CurrentTile is not null)
                 _shipManager.UpdateWhilePlacing(_player2grid.CurrentTile, _cursor.Orientation, 2);
 
+            // Check if all ships have been placed
+            if (!_shipManager.IsPlacingShips)
+            {
+                _shipManager.HideP2Ships = true;
+                HandleShooting();
+            }
+
             base.Update(gameTime); // Ensures the framerwork-level logic in the base class is updated.
         }
 
@@ -166,6 +172,18 @@ namespace Battleship
             _spriteBatch!.End();
 
             base.Draw(gameTime); // Ensures the framerwork-level logic in the base class is drawn.
+        }
+        /// <summary>
+        /// Handles shooting logic for the game.
+        /// </summary>
+        private void HandleShooting()
+        {
+            MouseState mouseState = Mouse.GetState();
+            if (mouseState.LeftButton == ButtonState.Pressed)
+            {
+                Point mousePoint = new Point(mouseState.X, mouseState.Y);
+                bool? hit = _player2grid!.Shoot(mousePoint);
+            }
         }
     }
 }
