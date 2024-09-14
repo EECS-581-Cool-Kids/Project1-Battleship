@@ -178,7 +178,7 @@ namespace Battleship
         private void HandleShooting()
         {
             MouseState mouseState = Mouse.GetState();
-            if (_shipManager!.ReadClick == true && mouseState.LeftButton == ButtonState.Pressed )
+            if (_shipManager!.ReadClick == true && mouseState.LeftButton == ButtonState.Pressed)
             {
                 _shipManager.ReadClick = false;
                 bool? success = false;
