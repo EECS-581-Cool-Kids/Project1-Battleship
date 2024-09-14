@@ -1,5 +1,5 @@
-﻿/*  
- *   Module Name: BattleshipGame.cs
+﻿/*   
+ *   Module Name: BattleshipGame.cs  
  *   Purpose: This module is the main game class for the Battleship game. 
  *            It is responsible for managing all other subordinate manager objects needed to run the game.Authors: Derek Norton, Ethan Berkley, Jacob Wilkus, Mo Morgan, and Richard Moser
  *   Inputs: None 
@@ -85,7 +85,7 @@ namespace Battleship
             // add the event handlers for ship placement, tile adjustment, and ship placement validation for both players.
             _shipManager.OnPlayer1ShipPlaced = _player1grid.ShipPlaced;
             _shipManager.OnPlayer2ShipPlaced = _player2grid.ShipPlaced;
-            _shipManager.OnPlayer1AdjustedTileRequested = _player1grid.GetAdjustedCurrentTile; 
+            _shipManager.OnPlayer1AdjustedTileRequested = _player1grid.GetAdjustedCurrentTile;
             _shipManager.OnPlayer2AdjustedTileRequested = _player2grid.GetAdjustedCurrentTile;
             _shipManager.IsPlayer1PlacementValid = _player1grid.IsShipPlacementValid;
             _shipManager.IsPlayer2PlacementValid = _player2grid.IsShipPlacementValid;
@@ -130,7 +130,7 @@ namespace Battleship
                 _cursor.UpdateWhilePlacing(_player1grid.CurrentTile, currentPlayer1TileLocation, _shipManager.CurrentShipSize);
             else if (_player1grid.CurrentTile is not null)
                 _cursor.UpdateWhilePlaying(_player1grid.CurrentTile, currentPlayer1TileLocation.Item1);
-
+            
             // Update the cursor object depending on if player 2 is placing ships or shooting tiles.
             if (_shipManager!.IsPlayer2Placing && _player2grid.CurrentTile is not null)
                 _cursor.UpdateWhilePlacing(_player2grid.CurrentTile, currentPlayer2TileLocation, _shipManager.CurrentShipSize);

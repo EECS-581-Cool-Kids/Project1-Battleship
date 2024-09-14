@@ -268,10 +268,10 @@ namespace Battleship
         {
             foreach (Ship ship in Player1Ships)
             if (!HideP1Ships)
-                spriteBatch.Draw(ship.ShipTexture, ship.ShipRectangle, Color.White);
+                    spriteBatch.Draw(ship.ShipTexture, ship.ShipRectangle, Color.White);
             foreach (Ship ship in Player2Ships)
                 if (!HideP2Ships)
-                spriteBatch.Draw(ship.ShipTexture, ship.ShipRectangle, Color.White);
+                    spriteBatch.Draw(ship.ShipTexture, ship.ShipRectangle, Color.White);
         }
 
         /// <summary>
