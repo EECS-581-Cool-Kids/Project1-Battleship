@@ -69,7 +69,7 @@ namespace Battleship
             _player1grid = new Grid(Constants.GRID_SIZE, Constants.PLAYER_1_OFFSET);
             _player2grid = new Grid(Constants.GRID_SIZE, Constants.PLAYER_2_OFFSET);
             _shipManager = new ShipManager(5);
-            _turnManager = new TurnManager(new Point(Constants.PLAYER_2_OFFSET, 0), new Point(9 * 4, 9 * 4));
+            _turnManager = new TurnManager();
             // add event handlers
             _shipManager.OnPlayer1ShipPlaced = _player1grid.ShipPlaced;
             _shipManager.OnPlayer2ShipPlaced = _player2grid.ShipPlaced;
@@ -125,22 +125,30 @@ namespace Battleship
             if (Mouse.GetState().LeftButton == ButtonState.Released)
             {
                 _shipManager!.ReadClick = true;
-                return;
             } else if (_turnManager!.SwapWaiting && _shipManager!.ReadClick)
             {
                 _shipManager!.ReadClick = false;
                 _turnManager.SwapWaiting = false;
-                return;
             }
-            if (_shipManager!.IsPlayer1Placing && _player1grid.CurrentTile is not null)
-                _shipManager.UpdateWhilePlacing(_player1grid.CurrentTile, _cursor.Orientation, 1);
-            if (_shipManager!.IsPlayer2Placing && _player2grid.CurrentTile is not null)
-                _shipManager.UpdateWhilePlacing(_player2grid.CurrentTile, _cursor.Orientation, 2);
+            else
+            {
+                if (_shipManager!.IsPlayer1Placing && _player1grid.CurrentTile is not null)
+                    _shipManager.UpdateWhilePlacing(_player1grid.CurrentTile, _cursor.Orientation, 1);
+                if (_shipManager!.IsPlayer2Placing && _player2grid.CurrentTile is not null)
+                    _shipManager.UpdateWhilePlacing(_player2grid.CurrentTile, _cursor.Orientation, 2);
 
-            if (!_shipManager.IsPlacingShips)
-            {    
-                HandleShooting();
+
+
+                if (!_shipManager.IsPlacingShips)
+                {
+                    HandleShooting();
+                }
+
             }
+
+            // Hide if (waiting for player swap) or (its p2's turn)
+            _shipManager!.HideP1Ships = _turnManager!.SwapWaiting || !_turnManager.IsP1sTurn;
+            _shipManager.HideP2Ships = _turnManager!.SwapWaiting || _turnManager.IsP1sTurn;
 
             base.Update(gameTime);
         }
@@ -154,17 +162,13 @@ namespace Battleship
             GraphicsDevice.Clear(Color.CornflowerBlue);
 
             _spriteBatch!.Begin(samplerState: SamplerState.PointClamp);
-            _player1grid!.Draw1(_spriteBatch);
-            _player2grid!.Draw1(_spriteBatch);
+            _player1grid!.DrawBackground(_spriteBatch);
+            _player2grid!.DrawBackground(_spriteBatch);
 
-            // Hide if (waiting for player swap) or (its p2's turn)
-            _shipManager!.HideP1Ships = _turnManager!.SwapWaiting || !_turnManager.IsP1sTurn;
-            _shipManager.HideP2Ships = _turnManager!.SwapWaiting || _turnManager.IsP1sTurn;
-            
             _shipManager!.Draw(_spriteBatch);
 
-            _player1grid!.Draw2(_spriteBatch);
-            _player2grid!.Draw2(_spriteBatch);
+            _player1grid!.DrawForeground(_spriteBatch);
+            _player2grid!.DrawForeground(_spriteBatch);
 
             _cursor.Draw(_spriteBatch);
             _turnManager!.Draw(_spriteBatch);
@@ -182,14 +186,13 @@ namespace Battleship
             {
                 _shipManager.ReadClick = false;
                 bool? success = false;
-                Point mousePoint = new Point(mouseState.X, mouseState.Y);
                 if (_turnManager!.IsP1sTurn)
                 {
-                    success = _player2grid!.Shoot(mousePoint);
+                    success = _player2grid!.Shoot();
                 }
                 else if (!_turnManager.IsP1sTurn)
                 {
-                    success = _player1grid!.Shoot(mousePoint);
+                    success = _player1grid!.Shoot();
                 }
                 if (success is not null)
                 {

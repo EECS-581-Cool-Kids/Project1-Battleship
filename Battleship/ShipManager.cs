@@ -281,7 +281,6 @@ namespace Battleship
         /// </summary>
         public void Draw(SpriteBatch spriteBatch)
         {
-   
             foreach (Ship ship in Player1Ships)
                 if (!HideP1Ships || ship.IsSunk)
                     spriteBatch.Draw(ship.ShipTexture, ship.ShipRectangle, Color.White);

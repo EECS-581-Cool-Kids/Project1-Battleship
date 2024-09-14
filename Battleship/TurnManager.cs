@@ -20,14 +20,17 @@ namespace Battleship
         /// The texture object for the P1 indicator.
         /// </summary>
         public Texture2D? P1Texture { get; set; }
+        
         /// <summary>
         /// The texture object for the P2 indicator.
         /// </summary>
         public Texture2D? P2Texture { get; set; }
+
         /// <summary>
         /// The texture object for the swap indicator.
         /// </summary>
         public Texture2D? SwapTexture { get; set; }
+
         /// <summary>
         /// If it is currently P1's turn.
         /// </summary>
@@ -39,33 +42,31 @@ namespace Battleship
         /// </summary>
         public bool SwapWaiting = false;
 
-
-        public TurnManager(Point location, Point size) {
-            TurnIndicatorRectangle = new Rectangle(location, size);
+        public TurnManager() {
+            TurnIndicatorRectangle = new Rectangle(new Point(Constants.PLAYER_2_OFFSET, 0), new Point(Constants.SQUARE_SIZE * Constants.SCALE, Constants.SQUARE_SIZE * Constants.SCALE));
         }
 
+        /// <summary>
+        /// Load content for the ship manager.
+        /// </summary>
         public void LoadContent(ContentManager content)
         {
-
             P1Texture = content.Load<Texture2D>("P1");
             P2Texture = content.Load<Texture2D>("P2");
             SwapTexture = content.Load<Texture2D>("swap");
         }
 
+        /// <summary>
+        /// Draw for the ship manager.
+        /// </summary>
         public void Draw(SpriteBatch spriteBatch)
         {
             if (SwapWaiting)
-            {
                 spriteBatch.Draw(SwapTexture, TurnIndicatorRectangle, Color.White);
-            }
             else if (IsP1sTurn)
-            {
                 spriteBatch.Draw(P1Texture, TurnIndicatorRectangle, Color.White);
-            }
             else
-            {
                 spriteBatch.Draw(P2Texture, TurnIndicatorRectangle, Color.White);
-            }
         }
 
         /// <summary>
@@ -73,20 +74,9 @@ namespace Battleship
         /// </summary>
         public void NextTurn()
         {
-            
             IsP1sTurn = !IsP1sTurn;
             SwapWaiting = true;
 
-        }
-
-        private static void OnTimeoutEvent(object source, ElapsedEventArgs e)
-        {
-            if (source is not null)
-            {
-                Timer timer = (Timer)source;
-                timer.Stop();
-                timer.Dispose();
-            }
         }
     }
 }

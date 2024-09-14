@@ -110,15 +110,23 @@ namespace Battleship
         }
 
         /// <summary>
-        /// Draw for the grid.
+        /// First draw pass for the grid.
+        /// Draws the base grid texture, which happens behinds the ships.
+        /// Should be called before ships are drawn.
         /// </summary>
-        public void Draw1(SpriteBatch spriteBatch)
+        public void DrawBackground(SpriteBatch spriteBatch)
         {
             foreach (GridTile tile in GridArray)
                 if (!tile.IsHit)
                     spriteBatch.Draw(tile.GridTexture, tile.GridRectangle, Color.White);
         }
-        public void Draw2(SpriteBatch spriteBatch)
+
+        /// <summary>
+        /// Second draw pass for the grid.
+        /// Draws the base grid texture, which happens in front of the ships.
+        /// Should be called afer ships are drawn.
+        /// </summary>
+        public void DrawForeground(SpriteBatch spriteBatch)
         {
             foreach (GridTile tile in GridArray)
                 if (tile.IsHit)
@@ -206,9 +214,8 @@ namespace Battleship
         /// Returns null if the tile is not selectable.
         /// Also changes the GridTile texture to show the result of the shot.
         /// </summary>
-        /// <param name="grid"></param>
         /// <returns></returns>
-        public bool? Shoot(Point position)
+        public bool? Shoot()
         {
             if (CurrentTile is null)
                 return null;
@@ -216,8 +223,13 @@ namespace Battleship
             // Only allow shooting on the 10x10 grid.
             if (!CurrentTile.CanSelect)
                 return null;
+
+            // Don't allow shooting the same spot again.
+            if (CurrentTile.IsShot)
+                return null;
             else
             {
+                CurrentTile.IsShot = true;
                 if (CurrentTile.HasShip)
                 {
                     CurrentTile.IsHit = true;
