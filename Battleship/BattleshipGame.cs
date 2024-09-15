@@ -162,6 +162,8 @@ namespace Battleship
         /// <param name="gameTime">The current game time.</param>
         protected override void Update(GameTime gameTime)
         {
+            if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed || Keyboard.GetState().IsKeyDown(Keys.Escape))
+                Exit();
 
             if (!inGame)
             {
@@ -191,6 +193,8 @@ namespace Battleship
                             inGame = true;
                             currentGameState = GameState.Playing;  // Transition to the gameplay state
                             base.Initialize();
+                            
+                            _shipManager!.ReadClick = false;
                         }
                         else if (shipSelectionMenu.back)
                         {
@@ -226,7 +230,7 @@ namespace Battleship
                 base.Initialize();
                 return;
             }
-
+            
             
 
             _player1grid!.Update();
