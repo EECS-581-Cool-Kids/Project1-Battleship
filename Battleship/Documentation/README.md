@@ -33,7 +33,7 @@ major issues with the setup process using both the Visual Studio and Jetbrains R
   
 
 ### Aseprite setup
-###### **You only need Aseprite if you want to create or modify the pixel art textures used in the game.**
+#### **You only need Aseprite if you want to create or modify the pixel art textures used in the game.**
   - other free tools exist including online pixel art sites whic would also work but the Content directory does include the 
   original .aseprite files with the textures in addition to the .png files.
 - Aseprite is available for purchase from the Steam store and other online sources. 
