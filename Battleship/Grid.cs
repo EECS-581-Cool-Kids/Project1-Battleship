@@ -1,4 +1,14 @@
-﻿using Microsoft.Xna.Framework;
+﻿/*
+ *   Module Name: Grid.cs
+ *   Purpose: This module is the Grid class for the Battleship game. It represents a grid of tiles that a player places their ships on.
+ *   Inputs: None
+ *   Output: None
+ *   Additional code sources:
+ *   Developers: Derek Norton, Ethan Berkley, Jacob Wilkus, Mo Morgan, and Richard Moser
+ *   Date: 09/11/2024
+ *   Last Modified: 09/14/2024
+ */
+using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
@@ -45,22 +55,28 @@ namespace Battleship
         /// </summary>
         private int _offset { get; set; }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="size">The size of the grid.</param>
+        /// <param name="offset">The horizontal offset value used for drawing the grid.</param>
         public Grid(int size, int offset)
         {
-            // Initialize the 2D Array. 
-            GridArray = new GridTile[size, size];
-            Size = size;
-            _offset = offset;
+            // Initialize some properties 
+            GridArray = new GridTile[size, size]; // Initialize the 2D array that holds the gridtiles
+            Size = size; // Set the size of the grid. The grid is always square, so only one size is needed.
+            _offset = offset; // Set the horizontal offset value used for drawing the grid.
 
             // Initialize each GridTile
             for (int rowNum = 0; rowNum < size; rowNum++)
             {
                 for (int colNum = 0; colNum < size; colNum++)
                 {
+                    // Calculate and assign the position and size of the GridTile
                     Point squarePosition = new Point(colNum * Constants.SQUARE_SIZE * Constants.SCALE + _offset, rowNum * Constants.SQUARE_SIZE * Constants.SCALE);
                     Point squareSize = new Point(Constants.SQUARE_SIZE * Constants.SCALE, Constants.SQUARE_SIZE * Constants.SCALE);
 
-                    GridArray[rowNum, colNum] = new GridTile(squarePosition, squareSize);
+                    GridArray[rowNum, colNum] = new GridTile(squarePosition, squareSize); // Create a new GridTile object at the index of the 2D array
                 }
             }
         }
@@ -68,16 +84,19 @@ namespace Battleship
         /// <summary>
         /// LoadContent for the grid.
         /// </summary>
+        /// <param name="content">The content manager.</param>
         public void LoadContent(ContentManager content)
         {
-            GridArray[0, 0].GridTexture = content.Load<Texture2D>("top_corner");
+            GridArray[0, 0].GridTexture = content.Load<Texture2D>("top_corner"); // Load the top left corner texture
 
+            // Load the textures for the top row and left column
             for (int tileNum = 1; tileNum < Size; tileNum++)
             {
                 GridArray[0, tileNum].GridTexture = content.Load<Texture2D>($"column_{tileNum}");
                 GridArray[tileNum, 0].GridTexture = content.Load<Texture2D>($"row_{tileNum}");
             }
 
+            // Load the textures for the rest of the grid
             for (int colNum = 1; colNum < Size; colNum++)
             {
                 for (int rowNum = 1; rowNum < Size; rowNum++)
@@ -87,6 +106,7 @@ namespace Battleship
                 }
             }
 
+            // Load the textures for the "miss" and "hit" squares
             SquareMissedTexture = content.Load<Texture2D>("square_miss");
             SquareHitTexture = content.Load<Texture2D>("square_hit");
         }
@@ -96,12 +116,14 @@ namespace Battleship
         /// </summary>
         public void Update()
         {
+            // Get the current mouse state and position
             MouseState mouseState = Mouse.GetState();
             Point mousePoint = new Point(mouseState.X, mouseState.Y);
 
-            // Get which square the mouse is inside of
+            // Get which tile the mouse is inside of
             foreach (GridTile tile in GridArray)
             {
+                // If the mouse is inside the tile, set the current tile to that tile, otherwise set it to null
                 if (tile.GridRectangle.Contains(mousePoint) && tile.CanSelect)
                     CurrentTile = tile;
                 else if (!tile.GridRectangle.Contains(mousePoint) && (CurrentTile?.Equals(tile) ?? false))
@@ -114,8 +136,10 @@ namespace Battleship
         /// Draws the base grid texture, which happens behinds the ships.
         /// Should be called before ships are drawn.
         /// </summary>
+        /// <param name="spriteBatch">The sprite batch to draw with.</param>
         public void DrawBackground(SpriteBatch spriteBatch)
         {
+            // If the tile is not hit, draw the background grid texture
             foreach (GridTile tile in GridArray)
                 if (!tile.IsHit)
                     spriteBatch.Draw(tile.GridTexture, tile.GridRectangle, Color.White);
@@ -128,6 +152,7 @@ namespace Battleship
         /// </summary>
         public void DrawForeground(SpriteBatch spriteBatch)
         {
+            // If the tile is hit, draw the foreground grid texture
             foreach (GridTile tile in GridArray)
                 if (tile.IsHit)
                     spriteBatch.Draw(tile.GridTexture, tile.GridRectangle, Color.White);
@@ -142,18 +167,22 @@ namespace Battleship
         /// <param name="orientation">The current cursor orientation.</param>
         public void ShipPlaced(GridTile tile, Ship ship, CursorOrientation orientation)
         {
-            Tuple<int, int> currentTileLocation = GridArray.CoordinatesOf(tile);
+            Tuple<int, int> currentTileLocation = GridArray.CoordinatesOf(tile); // Get the coordinates of the selected tile
 
+            // Update the grid tiles to indicate that a ship has been placed on them
             for (int tileNum = 0; tileNum < ship.Length; tileNum++)
             {
-                GridTile nextTile;
+                GridTile nextTile; // The next tile to be updated
+
+                // If the orientation is horizontal, asign the tile to the right of the current tile.
+                // If the orientation is vertical, assign the tile below the current tile.
                 if (orientation.Equals(CursorOrientation.HORIZONTAL))
                     nextTile = GridArray[currentTileLocation.Item2, currentTileLocation.Item1 + tileNum];
                 else
                     nextTile = GridArray[currentTileLocation.Item2 + tileNum, currentTileLocation.Item1];
 
-                nextTile.Ship = ship;
-                ship.ShipTiles.Add(nextTile);
+                nextTile.Ship = ship; // Assign the ship to the next tile
+                ship.ShipTiles.Add(nextTile); // Add the next tile to the ship's list of tiles that it occupies
             }
         }
 
@@ -166,14 +195,15 @@ namespace Battleship
         /// <param name="orientation">The cursor's orientation</param>
         public GridTile GetAdjustedCurrentTile(GridTile currentTile, int shipLength, CursorOrientation orientation)
         {
-            Tuple<int, int> currentTileLocation = GridArray.CoordinatesOf(currentTile);
+            Tuple<int, int> currentTileLocation = GridArray.CoordinatesOf(currentTile); // Get the coordinates of the current tile
 
-            if (orientation.Equals(CursorOrientation.HORIZONTAL) && currentTileLocation.Item1 + shipLength >= Size)
-                return GridArray[currentTileLocation.Item2, Size - shipLength];
-            else if (orientation.Equals(CursorOrientation.VERTICAL) && currentTileLocation.Item2 + shipLength >= Size)
-                return GridArray[Size - shipLength, currentTileLocation.Item1];
+            // If the ship is too close to the edge, adjust the current tile to be the edge tile
+            if (orientation.Equals(CursorOrientation.HORIZONTAL) && currentTileLocation.Item1 + shipLength >= Size) // If the ship is too close to the right edge
+                return GridArray[currentTileLocation.Item2, Size - shipLength]; // Set the current tile to the right edge tile
+            else if (orientation.Equals(CursorOrientation.VERTICAL) && currentTileLocation.Item2 + shipLength >= Size) // If the ship is too close to the bottom edge
+                return GridArray[Size - shipLength, currentTileLocation.Item1]; // Set the current tile to the bottom edge tile
             else
-                return currentTile;
+                return currentTile; // Otherwise, return the current tile
         }
 
         /// <summary>
@@ -185,13 +215,15 @@ namespace Battleship
         /// <returns></returns>
         public bool IsShipPlacementValid(GridTile selectedTile, int shipLength, CursorOrientation orientation)
         {
+            // If the selected tile already has a ship, return false
             if (selectedTile.HasShip)
                 return false;
 
-            Tuple<int, int> currentTileLocation = GridArray.CoordinatesOf(selectedTile);
+            Tuple<int, int> currentTileLocation = GridArray.CoordinatesOf(selectedTile); // Get the coordinates of the selected tile
 
-            List<GridTile> tiles = new();
+            List<GridTile> tiles = new(); // Create a list of tiles to check if they have ships on them
 
+            // Add the tiles that the ship will occupy to the list depending on the orientation of the cursor
             for (int tileNum = 1; tileNum < shipLength; tileNum++)
             {
                 if (orientation.Equals(CursorOrientation.HORIZONTAL))
@@ -200,13 +232,14 @@ namespace Battleship
                     tiles.Add(GridArray[currentTileLocation.Item2 + tileNum, currentTileLocation.Item1]);
             }
 
+            // Check if any of the tiles have ships on them. If so, return false.
             foreach (GridTile tile in tiles)
             {
                 if (tile.HasShip)
                     return false;
             }
 
-            return true;
+            return true; // If no tiles have ships on them, return true
         }
 
         /// <summary>
@@ -214,7 +247,9 @@ namespace Battleship
         /// Returns null if the tile is not selectable.
         /// Also changes the GridTile texture to show the result of the shot.
         /// </summary>
-        /// <returns></returns>
+        /// <returns>
+        /// True if the GridTile clicked on is a hit, return False if it is a miss, return null if the current tile has already been shot, is null, or isn't on the 10x10 grid.
+        ///</returns>
         public bool? Shoot()
         {
             if (CurrentTile is null)
@@ -229,6 +264,7 @@ namespace Battleship
                 return null;
             else
             {
+                // Mark the tile as shot and change the texture to show the result of the shot.
                 CurrentTile.IsShot = true;
                 if (CurrentTile.HasShip)
                 {
