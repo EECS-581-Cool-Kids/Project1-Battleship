@@ -45,13 +45,50 @@ namespace Battleship
         /// </summary>
         private TurnManager? _turnManager;
 
+        /// <summary>
+        /// Boolean representing if user is in game or in the menu.
+        /// </summary>
+        private bool inGame = false;
+
+        /// <summary>
+        /// Game state object.
+        /// </summary>
+        private GameState currentGameState;
+
+        /// <summary>
+        /// Main menu object.
+        /// </summary>
+        private Menu menu;
+
+        /// <summary>
+        /// Ship selection menu object.
+        /// </summary>
+        private ShipSelectionMenu shipSelectionMenu;
+
+        //private Postgame postgame;
+
+        /// <summary>
+        /// Object containing the font used in menu
+        /// </summary>
+        private SpriteFont font;
+
+        /// <summary>
+        /// Variable containing the number of ships used in game.
+        /// </summary>
+        public int shipCount;
+
+        public int P1HitLimit;
+        public int P2HitLimit;
+
+        SpriteBatch spriteBatch;
+
         public BattleshipGame()
         {
             _graphics = new GraphicsDeviceManager(this);
             Content.RootDirectory = "Content";
             IsMouseVisible = true;
         }
-        
+
 
         /// <summary>
         /// Initializes the relevant objects and window. 
@@ -88,6 +125,28 @@ namespace Battleship
         /// </summary>
         protected override void LoadContent()
         {
+            if (!inGame)
+            {
+                _spriteBatch = new SpriteBatch(GraphicsDevice);
+                font = Content.Load<SpriteFont>("defaultFont");
+
+                // Initialize the main menu and ship selection menu
+                menu = new Menu(font);
+                shipSelectionMenu = new ShipSelectionMenu(font);
+                return;
+            }
+            _player1grid = new Grid(Constants.GRID_SIZE, Constants.PLAYER_1_OFFSET);
+            _player2grid = new Grid(Constants.GRID_SIZE, Constants.PLAYER_2_OFFSET);
+            _shipManager = new ShipManager(shipCount);
+            _turnManager = new TurnManager();
+            // add event handlers
+            _shipManager.OnPlayer1ShipPlaced = _player1grid.ShipPlaced;
+            _shipManager.OnPlayer2ShipPlaced = _player2grid.ShipPlaced;
+            _shipManager.OnPlayer1AdjustedTileRequested = _player1grid.GetAdjustedCurrentTile;
+            _shipManager.OnPlayer2AdjustedTileRequested = _player2grid.GetAdjustedCurrentTile;
+            _shipManager.IsPlayer1PlacementValid = _player1grid.IsShipPlacementValid;
+            _shipManager.IsPlayer2PlacementValid = _player2grid.IsShipPlacementValid;
+            _shipManager.OnPlayerChange = _turnManager.NextTurn;
             _spriteBatch = new SpriteBatch(GraphicsDevice);
 
             _player1grid!.LoadContent(Content);
@@ -96,15 +155,79 @@ namespace Battleship
             _cursor.LoadContent(Content);
             _turnManager!.LoadContent(Content);
         }
-        
+
         /// <summary>
         /// Checks if any game logic has updated. Called constantly in a loop.
         /// </summary>
         /// <param name="gameTime">The current game time.</param>
         protected override void Update(GameTime gameTime)
         {
-            if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed || Keyboard.GetState().IsKeyDown(Keys.Escape))
-                Exit();
+
+            if (!inGame)
+            {
+                switch (currentGameState)
+                {
+                    case GameState.MainMenu:
+                        menu.Update();
+                        if (menu.SelectedState == GameState.ShipSelection)
+                        {
+                            currentGameState = GameState.ShipSelection;
+                        }
+                        else if (menu.SelectedState == GameState.Exit)
+                        {
+                            Exit();
+                        }
+                        break;
+
+                    case GameState.ShipSelection:
+                        shipSelectionMenu.Update();
+
+                        // When "Start Game" is clicked, transition to playing
+                        if (shipSelectionMenu.IsSelectionMade)
+                        {
+                            shipCount = shipSelectionMenu.SelectedShipCount;  // Store the selected ship count
+                            P1HitLimit = shipCount * (shipCount + 1) / 2;
+                            P2HitLimit = shipCount * (shipCount + 1) / 2;
+                            inGame = true;
+                            currentGameState = GameState.Playing;  // Transition to the gameplay state
+                            base.Initialize();
+                        }
+                        else if (shipSelectionMenu.back)
+                        {
+                            currentGameState = GameState.MainMenu; //Transistions back to main menu
+                            base.Initialize();
+                        }
+                        break;
+
+                    case GameState.Playing:
+                        // Add your game logic here
+                        // When the game is over, reset to main menu
+
+                        break;
+
+                    case GameState.Settings:
+                        // Add settings logic here (not implemented)
+                        break;
+
+                    case GameState.Exit:
+
+                        Exit();
+
+                        break;
+                }
+
+                base.Update(gameTime);
+                return;
+            }
+            if (P1HitLimit == 0 || P2HitLimit == 0)
+            {
+                inGame = false;
+                currentGameState = GameState.MainMenu;
+                base.Initialize();
+                return;
+            }
+
+            
 
             _player1grid!.Update();
             _player2grid!.Update();
@@ -116,7 +239,7 @@ namespace Battleship
                 _cursor.UpdateWhilePlacing(_player1grid.CurrentTile, currentPlayer1TileLocation, _shipManager.CurrentShipSize);
             else if (_player1grid.CurrentTile is not null)
                 _cursor.UpdateWhilePlaying(_player1grid.CurrentTile, currentPlayer1TileLocation.Item1);
-            
+
             if (_shipManager!.IsPlayer2Placing && _player2grid.CurrentTile is not null)
                 _cursor.UpdateWhilePlacing(_player2grid.CurrentTile, currentPlayer2TileLocation, _shipManager.CurrentShipSize);
             else if (_player2grid.CurrentTile is not null)
@@ -125,7 +248,8 @@ namespace Battleship
             if (Mouse.GetState().LeftButton == ButtonState.Released)
             {
                 _shipManager!.ReadClick = true;
-            } else if (_turnManager!.SwapWaiting && _shipManager!.ReadClick)
+            }
+            else if (_turnManager!.SwapWaiting && _shipManager!.ReadClick)
             {
                 _shipManager!.ReadClick = false;
                 _turnManager.SwapWaiting = false;
@@ -159,6 +283,30 @@ namespace Battleship
         /// <param name="gameTime">The current game time.</param>
         protected override void Draw(GameTime gameTime)
         {
+            if (!inGame)
+            {
+                GraphicsDevice.Clear(Color.CornflowerBlue);
+
+                _spriteBatch.Begin();
+
+                if (currentGameState == GameState.MainMenu)
+                {
+                    menu.Draw(_spriteBatch);
+                }
+                else if (currentGameState == GameState.ShipSelection)
+                {
+                    shipSelectionMenu.Draw(_spriteBatch);
+                }
+                else if (currentGameState == GameState.Playing)
+                {
+                    // Add drawing code for the game here
+                }
+
+                _spriteBatch.End();
+
+                base.Draw(gameTime);
+                return;
+            }
             GraphicsDevice.Clear(Color.CornflowerBlue);
 
             _spriteBatch!.Begin(samplerState: SamplerState.PointClamp);
@@ -176,11 +324,16 @@ namespace Battleship
 
             base.Draw(gameTime);
         }
+
         /// <summary>
         /// Handles shooting logic for the game.
         /// </summary>
         private void HandleShooting()
         {
+            if (!inGame)
+            {
+                return;
+            }
             MouseState mouseState = Mouse.GetState();
             if (_shipManager!.ReadClick && mouseState.LeftButton == ButtonState.Pressed)
             {
@@ -189,10 +342,18 @@ namespace Battleship
                 if (_turnManager!.IsP1sTurn)
                 {
                     success = _player2grid!.Shoot();
+                    if (success == true)
+                    {
+                        P2HitLimit = P2HitLimit - 1;
+                    }
                 }
                 else
                 {
                     success = _player1grid!.Shoot();
+                    if (success == true)
+                    {
+                        P1HitLimit = P1HitLimit - 1;
+                    }
                 }
                 if (success is not null)
                 {
@@ -200,6 +361,19 @@ namespace Battleship
                     _shipManager!.HideP1Ships = !_turnManager.IsP1sTurn;
                     _shipManager.HideP2Ships = _turnManager.IsP1sTurn;
                 }
+                if (P1HitLimit == 0)
+                {
+                    inGame = false;
+                    currentGameState = GameState.MainMenu;
+                    base.Initialize();
+                }
+                else if (P2HitLimit == 0)
+                {
+                    inGame = false;
+                    currentGameState = GameState.MainMenu;
+                    base.Initialize();
+                }
+
             }
         }
     }
