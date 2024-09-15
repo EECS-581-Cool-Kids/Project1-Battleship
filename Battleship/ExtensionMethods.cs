@@ -3,7 +3,7 @@
  *   Purpose: This module contains the extension methods for the Battleship game. It contains the CoordinatesOf method which finds the x and y coordinate of a given value in the matrix.
  *   Inputs: None
  *   Output: None
- *   Additional code sources:
+ *   Additional code sources: StackOverflow.com
  *   Developers: Derek Norton, Ethan Berkley, Jacob Wilkus, Mo Morgan, and Richard Moser
  *   Date: 09/11/2024
  *   Last Modified: 09/14/2024
