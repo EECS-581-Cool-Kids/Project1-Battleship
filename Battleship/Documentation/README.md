@@ -4,8 +4,7 @@ and no team member had experience with the Monogame engine. Setting up the envir
 not provide major hurtles and the code should be relatively easy to understand. Textures were produced in Asesprite, a 
 common pixel art tool, and the game was developed in Visual Studio 2022 and Jetbrains Rider.
 
-## Installing and Running
-### Monogame engine setup
+### Required: Monogame engine setup
 NOTE: these instructions are copied from the Monogame website at https://docs.monogame.net/articles/getting_started/aindex.html. 
 If you have any questions or issues, please refer to the original documentation and their support forums. Our team had no 
 major issues with the setup process using both the Visual Studio and Jetbrains Rider IDEs.
@@ -32,7 +31,7 @@ major issues with the setup process using both the Visual Studio and Jetbrains R
     understand based on what is already there.
   
 
-### Aseprite setup
+## Optional: Aseprite installation
 #### **You only need Aseprite if you want to create or modify the pixel art textures used in the game.**
   - other free tools exist including online pixel art sites whic would also work but the Content directory does include the 
   original .aseprite files with the textures in addition to the .png files.
