@@ -1,5 +1,5 @@
 /*
- *   Module Name: BattleshipGame.cs
+ *   Module Name: Constants.cs
  *   Purpose: This module is the Constants class for the Battleship game. It contains all the constant values used in the game.
  *   Inputs: None
  *   Output: None
