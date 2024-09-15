@@ -1,4 +1,15 @@
-﻿using Microsoft.Xna.Framework;
+﻿/*
+ *   Module Name: Cursor.cs
+ *   Purpose: This module is the Cursor class for the Battleship game. It is responsible for managing the cursor object in the game.
+ *   Inputs: None
+ *   Output: None
+ *   Additional code sources:
+ *   Developers: Derek Norton, Ethan Berkley, Jacob Wilkus, Mo Morgan, and Richard Moser
+ *   Date: 09/11/2024
+ *   Last Modified: 09/14/2024
+ */
+
+using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
@@ -11,6 +22,9 @@ using System.Timers;
 
 namespace Battleship
 {
+    /// <summary>
+    /// <c>Cursor</c> class is used to represent the cursor object in the game.
+    /// </summary>
     public class Cursor
     {
         /// <summary>
@@ -55,6 +69,7 @@ namespace Battleship
 
         /// <summary>
         /// LoadContent for the cursor.
+        /// Sets the textures for the cursor.
         /// </summary>
         public void LoadContent(ContentManager content)
         {
@@ -72,25 +87,30 @@ namespace Battleship
         /// <param name="shipSize">The size of the currently selected ship</param>
         public void UpdateWhilePlacing(GridTile? currentTile, Tuple<int, int> tileLocation, int shipSize)
         {
+            // Rotate the cursor if the R key is pressed and the timer isn't running.
             if (Keyboard.GetState().IsKeyDown(Keys.R) && (_rotateTimeout is null || !_rotateTimeout.Enabled))
             {
                 FlipOrientation();
-                _rotateTimeout = new Timer(500);
-                _rotateTimeout.Elapsed += OnTimeoutEvent!;
-                _rotateTimeout.Start();
+                _rotateTimeout = new Timer(200); // Set the timer to 200ms.
+                _rotateTimeout.Elapsed += OnTimeoutEvent!; // Call the OnTimeoutEvent method when the timer times out. Prevents the cursor from rotating more than 1 time per 200ms.
+                _rotateTimeout.Start(); // Start the timer
             }
 
+            // Update the rectangles based on the current tile to make the cursor the same size as the ship it is placing.
+            // Otherwise, remove the cursor.
             if (currentTile is not null)
             {
-                if (Orientation.Equals(CursorOrientation.HORIZONTAL))
-                    UpdateRectangles(currentTile.GetCursorLeftHalfLocation(tileLocation.Item1, shipSize),
+                if (Orientation.Equals(CursorOrientation.HORIZONTAL)) // If the cursor is horizontal
+                    UpdateRectangles(currentTile.GetCursorLeftHalfLocation(tileLocation.Item1, shipSize), // Update the rectangles based on where the left and right half of the cursor is.
                                      currentTile.GetCursorRightHalfLocation(tileLocation.Item1, shipSize),
                                      currentTile.GetCursorAdjustedHorizontalSize());
-                else
+                else // Otherwise, do the same for the vertical cursor.
                     UpdateRectangles(currentTile.GetCursorTopHalfLocation(tileLocation.Item2, shipSize),
                                      currentTile.GetCursorBottomHalfLocation(tileLocation.Item2, shipSize),
-                                     currentTile.GetCursorAdjustedVerticalSize());
+                                     currentTile.GetCursorAdjustedVerticalSize())
             }
+
+            // Otherwise, if either end of the rectangle is null, remove the cursor.
             else if (CursorStartRectangle is not null || CursorEndRectangle is not null)
                 RemoveCursor();
         }
@@ -102,13 +122,17 @@ namespace Battleship
         /// <param name="tileLocation">The location of currentTile in the GridArray</param>
         public void UpdateWhilePlaying(GridTile? currentTile, int tileLocation)
         {
+            // If the cursor is vertical, flip it to horizontal. The shot cursor is always horizontal.
             if (Orientation.Equals(CursorOrientation.VERTICAL))
                 FlipOrientation();
 
+            // Update the rectangles based on the current tile. The second argument is always 1 for the shot cursor, so that only one tile is highlighted and shot.
             if (currentTile is not null)
                 UpdateRectangles(currentTile.GetCursorLeftHalfLocation(tileLocation, 1),
                                  currentTile.GetCursorRightHalfLocation(tileLocation, 1),
                                  currentTile.GetCursorAdjustedHorizontalSize());
+
+            // Otherwise, remove the cursor if either end of the cursor's rectangle is null.
             else if (CursorStartRectangle is not null || CursorEndRectangle is not null)
                 RemoveCursor();
         }
@@ -118,8 +142,11 @@ namespace Battleship
         /// </summary>
         public void Draw(SpriteBatch spriteBatch)
         {
+            // Initialize the textures for the cursor halves.
             Texture2D texture1;
             Texture2D texture2;
+
+            // Set the textures based on the orientation of the cursor.
             if (Orientation.Equals(CursorOrientation.HORIZONTAL))
             {
                 texture1 = CursorLeftHalfTexture!;
@@ -131,6 +158,7 @@ namespace Battleship
                 texture2 = CursorBottomHalfTexture!;
             }
 
+            // Draw the cursor if the end rectangles are on the grid.
             if (CursorStartRectangle is not null && CursorEndRectangle is not null)
             {
                 spriteBatch.Draw(texture1, (Rectangle)CursorStartRectangle, Color.White);
@@ -139,13 +167,14 @@ namespace Battleship
         }
 
         /// <summary>
-        /// Updates the info for the rectangle objects.
+        /// Updates start and end locations for the rectangle objects.
         /// </summary>
         /// <param name="startLocation">The start coordinates for the cursor rectangle.</param>
         /// <param name="endLocation">The end coordinates for the cursor rectangle.</param>
         /// <param name="size">The size of the rectangles.</param>
         private void UpdateRectangles(Point startLocation, Point endLocation, Point size)
         {
+            // If the rectangles are null or the start and end locations are different from startLocation and endLocation, update the rectangles.
             if (CursorStartRectangle is null || CursorStartRectangle.Value.X != startLocation.X || CursorStartRectangle.Value.Y != startLocation.Y ||
                 CursorEndRectangle is null || CursorEndRectangle.Value.X != endLocation.X || CursorEndRectangle.Value.Y != endLocation.Y)
             {
@@ -159,12 +188,13 @@ namespace Battleship
         /// </summary>
         private void RemoveCursor()
         {
+            // Set the start and end rectangles to null, which prevents them from being drawn.
             CursorStartRectangle = null;
             CursorEndRectangle = null;
         }
 
         /// <summary>
-        /// Flips the orientation of the cursor
+        /// Flips the orientation of the cursor.
         /// </summary>
         private void FlipOrientation()
         {
@@ -174,10 +204,14 @@ namespace Battleship
         /// <summary>
         /// Event called when the rotate timer times out.
         /// </summary>
+        /// <param name="source">The source of the event.</param>
+        /// <param name="e">The event arguments.</param>
         private static void OnTimeoutEvent(object source, ElapsedEventArgs e)
         {
+            // Type cast the source of the event to a Timer object and dispose of it. The source will always be a Timer object, since this event is only called when a timer times out.
+            // However, coding the logic this way is more robust and prevents potential errors.
             Timer timer = (Timer)source;
-            timer.Dispose();
+            timer.Dispose(); // Dispose of the timer
         }
     }
 }

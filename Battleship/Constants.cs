@@ -1,5 +1,19 @@
+/*
+ *   Module Name: BattleshipGame.cs
+ *   Purpose: This module is the Constants class for the Battleship game. It contains all the constant values used in the game.
+ *   Inputs: None
+ *   Output: None
+ *   Additional code sources:
+ *   Developers: Derek Norton, Ethan Berkley, Jacob Wilkus, Mo Morgan, and Richard Moser
+ *   Date: 09/11/2024
+ *   Last Modified: 09/14/2024
+ */
+
 namespace Battleship
 {
+    /// <summary>
+    /// The Constants class contains all the constant values used in the game.
+    /// </summary>
     public static class Constants
     {
         /// <summary>
@@ -11,6 +25,7 @@ namespace Battleship
         /// The scale factor between the texture and actual display.
         /// </summary>
         public const int SCALE = 4;
+
         /// <summary>
         /// Internal grid object.
         /// The grid size

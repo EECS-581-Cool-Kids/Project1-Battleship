@@ -44,7 +44,6 @@ namespace Battleship
         public Texture2D? ShipTexture1x1Vertical { get; set; }
         
         /// <summary>
-        /// <summary>
         /// The texture for the 1x2 ship Vertical rotation.
         /// </summary>
         public Texture2D? ShipTexture1x2Vertical { get; set; }

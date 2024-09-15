@@ -1,7 +1,7 @@
 ﻿/*
  *   Module Name: BattleshipGame.cs
  *   Purpose: This module is the main game class for the Battleship game.
- *            It is responsible for managing all other subordinate manager objects needed to run the game.Authors: Derek Norton, Ethan Berkley, Jacob Wilkus, Mo Morgan, and Richard Moser
+ *            It is responsible for managing all other subordinate manager objects needed to run the game.
  *   Inputs: None
  *   Output: None
  *   Additional code sources:
@@ -202,7 +202,7 @@ namespace Battleship
             // The various Draw commands are batched together by being enclosed in a _spriteBatch!.Begin/End() block.
             _spriteBatch!.Begin(samplerState: SamplerState.PointClamp);
             _player1grid!.DrawBackground(_spriteBatch);
-            _player2grid!.DrawBackground(_spriteBatch)
+            _player2grid!.DrawBackground(_spriteBatch);
             _shipManager!.Draw(_spriteBatch);
             _player1grid!.DrawForeground(_spriteBatch);
             _player2grid!.DrawForeground(_spriteBatch);
@@ -217,13 +217,14 @@ namespace Battleship
         /// Handles shooting logic for the game.
         /// </summary>
         private void HandleShooting()
+        { 
         
             MouseState mouseState = Mouse.GetState(); // Get the current mouse state.
 
-            // If the left mouse button is pressed and the read click is true, .
+            // If the left mouse button is pressed and the read click is true, shoot the tile.
             if (_shipManager!.ReadClick && mouseState.LeftButton == ButtonState.Pressed)
             {
-                _shipManager.ReadClick = false;
+                _shipManager.ReadClick = false; // Set the read click to false to prevent multiple shots per click.
                 bool? success = false; // This variable will store the result of the shot. Initialized to false.
 
                 // Shoot the tile for the player whose turn it is.
@@ -236,8 +237,8 @@ namespace Battleship
                     success = _player1grid!.Shoot();
                 }
 
-// If the shot was valid (a hit or a miss), move to the next turn and hide the ships of the player who is not taking their turn.
-if (success is not null)
+                // If the shot was valid (a hit or a miss), move to the next turn and hide the ships of the player who is not taking their turn.
+                if (success is not null)
                 {
                     _turnManager.NextTurn();
                     _shipManager!.HideP1Ships = !_turnManager.IsP1sTurn;
