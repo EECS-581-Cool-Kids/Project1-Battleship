@@ -1,4 +1,16 @@
-﻿using Microsoft.Xna.Framework;
+﻿/*
+ *   Module Name: GridTile.cs
+ *   Purpose: This module is the main game class for the Battleship game.
+ *            It is responsible for managing all other subordinate manager objects needed to run the game.Authors: Derek Norton, Ethan Berkley, Jacob Wilkus, Mo Morgan, and Richard Moser
+ *   Inputs: None
+ *   Output: None
+ *   Additional code sources:
+ *   Developers: Derek Norton, Ethan Berkley, Jacob Wilkus, Mo Morgan, and Richard Moser
+ *   Date: 09/11/2024
+ *   Last Modified: 09/13/2024
+ */
+
+using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using System;
 using System.Collections.Generic;
