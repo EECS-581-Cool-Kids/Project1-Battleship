@@ -1,8 +1,23 @@
-﻿using Microsoft.Xna.Framework;
+﻿/*
+ *   Module Name: ShipSelectionMenu.cs
+ *   Purpose: This module is the ship selection menu for the Battleship game. It is used to select the number of ships to play with and render the menu.
+ *   Inputs: None
+ *   Output: None
+ *   Additional code sources: None
+ *   Developers: Derek Norton, Ethan Berkley, Jacob Wilkus, Mo Morgan, and Richard Moser
+ *   Date: 09/15/2024
+ *   Last Modified: 09/15/2024
+ */
+
+using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using System.Collections.Generic;
 
+/// <summary>
+/// The ship selection menu for the Battleship game.
+/// It is used to select the number of ships to play with and conditionally render the menu.
+/// </summary>
 public class ShipSelectionMenu
 {
     /// <summary>
@@ -122,7 +137,32 @@ public class ShipSelectionMenu
             }
         }
 
-        // Handle interaction with the "Start Game" and "Return to Main Menu" buttons
+        // Set the selected ship count and change the button color based on the button clicked
+        switch (SelectedShipCount)
+        {
+            case 1:
+                buttonColors[1] = Color.Red;
+                SelectedShipCount = 1;
+                break;
+            case 2:
+                buttonColors[2] = Color.Red;
+                SelectedShipCount = 2;
+                break;
+            case 3:
+                buttonColors[3] = Color.Red;
+                SelectedShipCount = 3;
+                break;
+            case 4:
+                buttonColors[4] = Color.Red;
+                SelectedShipCount = 4;
+                break;
+            case 5:
+                buttonColors[5] = Color.Red;
+                SelectedShipCount = 5;
+                break;
+        }
+
+        // Handle interaction with the "Start Game" button
         if (startGameButtonRect.Contains(mouseState.Position))
         {
             startGameButtonColor = Color.Gray;  // Change color on hover
@@ -136,6 +176,8 @@ public class ShipSelectionMenu
         {
             startGameButtonColor = Color.White;  // Reset button color
         }
+
+        // Handle interaction with the "Return to Main Menu" button
         if (backButtonRect.Contains(mouseState.Position))
         {
             backButtonColor = Color.Gray;  // Change color on hover
@@ -150,10 +192,10 @@ public class ShipSelectionMenu
             backButtonColor = Color.White;  // Reset button color
         }
     }
+
     /// <summary>
     /// Draws the ship selection menu on the screen.
-    /// </summary>
-    /// <param name="spriteBatch">The sprite batch used for drawing.</param>
+    ///</summary>
     public void Draw(SpriteBatch spriteBatch)
     {
         // Create a 1x1 pixel texture that we can scale to draw as a rectangle
@@ -177,8 +219,8 @@ public class ShipSelectionMenu
             // Draw the button label (number of ships) in black
             spriteBatch.DrawString(font, buttonText, textPosition, Color.Black);
         }
-        // Draw "Start Game" button
-        spriteBatch.Draw(rectangleTexture, startGameButtonRect, startGameButtonColor);
+
+        spriteBatch.Draw(rectangleTexture, startGameButtonRect, startGameButtonColor); // Draw the "Start Game" button
 
         // Center the text in the "Start Game" button
         string startGameText = "Start Game";
@@ -187,11 +229,12 @@ public class ShipSelectionMenu
             startGameButtonRect.X + (startGameButtonRect.Width / 2) - (startGameTextSize.X / 2),
             startGameButtonRect.Y + (startGameButtonRect.Height / 2) - (startGameTextSize.Y / 2)
         );
-        spriteBatch.DrawString(font, startGameText, startGameTextPosition, Color.Black);
 
-        // Draw "Retrun to Main Menu" button
-        spriteBatch.Draw(rectangleTexture, backButtonRect, backButtonColor);
+        spriteBatch.DrawString(font, startGameText, startGameTextPosition, Color.Black); // Draw the "Start Game" button text
 
+        spriteBatch.Draw(rectangleTexture, backButtonRect, backButtonColor); // Draw "Return to Main Menu" button
+
+        // Center the text in the "Return to Main Menu" button
         string backText = "Return to Main Menu";
         Vector2 backTextSize = font.MeasureString(backText);
         Vector2 backTextPosition = new Vector2(
@@ -199,6 +242,6 @@ public class ShipSelectionMenu
             backButtonRect.Y + (backButtonRect.Height / 2) - (backTextSize.Y / 2)
         );
 
-        spriteBatch.DrawString(font, backText, backTextPosition, Color.Black);
+        spriteBatch.DrawString(font, backText, backTextPosition, Color.Black); // Draw the "Return to Main Menu" button text
     }
 }
