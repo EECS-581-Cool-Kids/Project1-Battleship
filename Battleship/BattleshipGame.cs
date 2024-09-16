@@ -166,6 +166,19 @@ namespace Battleship
                 shipSelectionMenu = new ShipSelectionMenu(font);
                 return;
             }
+            _player1grid = new Grid(Constants.GRID_SIZE, Constants.PLAYER_1_OFFSET);
+            _player2grid = new Grid(Constants.GRID_SIZE, Constants.PLAYER_2_OFFSET);
+            _shipManager = new ShipManager(shipCount);
+            _turnManager = new TurnManager();
+            // add event handlers
+            _shipManager.OnPlayer1ShipPlaced = _player1grid.ShipPlaced;
+            _shipManager.OnPlayer2ShipPlaced = _player2grid.ShipPlaced;
+            _shipManager.OnPlayer1AdjustedTileRequested = _player1grid.GetAdjustedCurrentTile;
+            _shipManager.OnPlayer2AdjustedTileRequested = _player2grid.GetAdjustedCurrentTile;
+            _shipManager.IsPlayer1PlacementValid = _player1grid.IsShipPlacementValid;
+            _shipManager.IsPlayer2PlacementValid = _player2grid.IsShipPlacementValid;
+            _shipManager.OnPlayerChange = _turnManager.NextTurn;
+            _spriteBatch = new SpriteBatch(GraphicsDevice);
 
             /* Load the content for the grid objects, cursor, and ship manager objects.
              * The Content property is inherited from the base Game class. It is used to load content from the Content.mgcb file.
@@ -217,12 +230,13 @@ namespace Battleship
                             P2HitLimit = shipCount * (shipCount + 1) / 2; // Calculate the hit limit for player 2.
                             inGame = true; // Set the game to be in progress. This will skip the main menu and ship selection menu logic from all subsequent calls to Update().
                             currentGameState = GameState.Playing;  // Transition to the gameplay state
-
+                            base.Initialize();
                             _shipManager!.ReadClick = false; // Set the read click to false ensure catching the positive end of the next click.
                         }
                         else if (shipSelectionMenu.back) // If the "Back" button is clicked, transition back to the main menu.
                         {
                             currentGameState = GameState.MainMenu; // Transition back to main menu
+                            base.Initialize();
                         }
                         break;
 
@@ -249,6 +263,7 @@ namespace Battleship
             {
                 inGame = false; // reset the inGame variable to false to enable the main menu and ship selection menu to be displayed.
                 currentGameState = GameState.MainMenu; // Transition back to the main menu.
+                base.Initialize();
                 return;
             }
 
