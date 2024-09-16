@@ -95,6 +95,9 @@ public class ShipSelectionMenu
         backButtonRect = new Rectangle(600, 520, 200, 50);
     }
 
+    /// <summary>
+    /// Updates the ship selection menu based on user input.
+    ///</summary>
     public void Update()
     {
         mouseState = Mouse.GetState();
@@ -104,43 +107,22 @@ public class ShipSelectionMenu
         {
             if (button.Value.Contains(mouseState.Position))
             {
-                buttonColors[button.Key] = Color.Gray;
+                buttonColors[button.Key] = Color.Gray; // Change color on hover
 
                 // If the left mouse button is clicked, register the selection
                 if (mouseState.LeftButton == ButtonState.Pressed)
                 {
                     SelectedShipCount = button.Key;  // Store the number of selected ships
-                    buttonColors[button.Key] = Color.Red;
+                    buttonColors[button.Key] = Color.Red; // Change color to red to indicate selection
                 }
             }
             else
             {
-                buttonColors[button.Key] = Color.White;
+                buttonColors[button.Key] = Color.White; // Reset button color
             }
         }
-        switch (SelectedShipCount)
-        {
-            case 1:
-                buttonColors[1] = Color.Red;
-                SelectedShipCount = 1;
-                break;
-            case 2:
-                buttonColors[2] = Color.Red;
-                SelectedShipCount = 2;
-                break;
-            case 3:
-                buttonColors[3] = Color.Red;
-                SelectedShipCount = 3;
-                break;
-            case 4:
-                buttonColors[4] = Color.Red;
-                SelectedShipCount = 4;
-                break;
-            case 5:
-                buttonColors[5] = Color.Red;
-                SelectedShipCount = 5;
-                break;
-        }
+
+        // Handle interaction with the "Start Game" and "Return to Main Menu" buttons
         if (startGameButtonRect.Contains(mouseState.Position))
         {
             startGameButtonColor = Color.Gray;  // Change color on hover
@@ -167,9 +149,11 @@ public class ShipSelectionMenu
         {
             backButtonColor = Color.White;  // Reset button color
         }
-
     }
-
+    /// <summary>
+    /// Draws the ship selection menu on the screen.
+    /// </summary>
+    /// <param name="spriteBatch">The sprite batch used for drawing.</param>
     public void Draw(SpriteBatch spriteBatch)
     {
         // Create a 1x1 pixel texture that we can scale to draw as a rectangle
@@ -196,6 +180,7 @@ public class ShipSelectionMenu
         // Draw "Start Game" button
         spriteBatch.Draw(rectangleTexture, startGameButtonRect, startGameButtonColor);
 
+        // Center the text in the "Start Game" button
         string startGameText = "Start Game";
         Vector2 startGameTextSize = font.MeasureString(startGameText);
         Vector2 startGameTextPosition = new Vector2(

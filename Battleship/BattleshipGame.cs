@@ -6,8 +6,8 @@
  *   Output: None
  *   Additional code sources:
  *   Developers: Derek Norton, Ethan Berkley, Jacob Wilkus, Mo Morgan, and Richard Moser
- *   Date: 09/11/2024
- *   Last Modified: 09/14/2024
+ *   Date: 09/15/2024
+ *   Last Modified: 09/15/2024
  */
 
 using Microsoft.Xna.Framework;
@@ -112,7 +112,6 @@ namespace Battleship
             Content.RootDirectory = "Content";
             IsMouseVisible = true;
         }
-
 
         /// <summary>
         /// Initializes the relevant objects and window. 
