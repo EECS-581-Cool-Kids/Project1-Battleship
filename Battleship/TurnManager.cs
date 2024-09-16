@@ -3,10 +3,10 @@
  *   Purpose: This module is the TurnManager class that handles the turn indicator and the logic for switching turns.
  *   Inputs: None
  *   Output: None
- *   Additional code sources:
+ *   Additional code sources: None
  *   Developers: Derek Norton, Ethan Berkley, Jacob Wilkus, Mo Morgan, and Richard Moser
  *   Date: 09/11/2024
- *   Last Modified: 09/14/2024
+ *   Last Modified: 09/15/2024
  */
 
 using Microsoft.Xna.Framework;

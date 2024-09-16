@@ -3,10 +3,10 @@
  *   Purpose: This module is the Constants class for the Battleship game. It contains all the constant values used in the game.
  *   Inputs: None
  *   Output: None
- *   Additional code sources:
+ *   Additional code sources: None
  *   Developers: Derek Norton, Ethan Berkley, Jacob Wilkus, Mo Morgan, and Richard Moser
  *   Date: 09/11/2024
- *   Last Modified: 09/14/2024
+ *   Last Modified: 09/15/2024
  */
 
 namespace Battleship

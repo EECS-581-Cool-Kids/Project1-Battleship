@@ -4,7 +4,7 @@
  *            It is responsible for managing all other subordinate manager objects needed to run the game.
  *   Inputs: None
  *   Output: None
- *   Additional code sources:
+ *   Additional code sources: None
  *   Developers: Derek Norton, Ethan Berkley, Jacob Wilkus, Mo Morgan, and Richard Moser
  *   Date: 09/03/2024
  *   Last Modified: 09/15/2024
