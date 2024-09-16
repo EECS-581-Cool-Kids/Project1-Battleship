@@ -107,7 +107,7 @@ namespace Battleship
                 else // Otherwise, do the same for the vertical cursor.
                     UpdateRectangles(currentTile.GetCursorTopHalfLocation(tileLocation.Item2, shipSize),
                                      currentTile.GetCursorBottomHalfLocation(tileLocation.Item2, shipSize),
-                                     currentTile.GetCursorAdjustedVerticalSize())
+                                     currentTile.GetCursorAdjustedVerticalSize());
             }
 
             // Otherwise, if either end of the rectangle is null, remove the cursor.
