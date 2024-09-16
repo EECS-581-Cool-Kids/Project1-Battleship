@@ -1,4 +1,15 @@
-﻿using Microsoft.Xna.Framework;
+﻿/*
+ *   Module Name: GridTile.cs
+ *   Purpose: This module is the GridTile class for the Battleship game. It represents a single tile on the grid.
+ *   Inputs: None
+ *   Output: None
+ *   Additional code sources:
+ *   Developers: Derek Norton, Ethan Berkley, Jacob Wilkus, Mo Morgan, and Richard Moser
+ *   Date: 09/11/2024
+ *   Last Modified: 09/14/2024
+ */
+
+using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using System;
 using System.Collections.Generic;
@@ -46,6 +57,7 @@ namespace Battleship
                 return Ship is not null;
             }
         }
+
         /// <summary>
         /// Once the tile has been shot, prevent it from being shot again.
         /// Set by the Grid object that owns this instance.
@@ -67,22 +79,24 @@ namespace Battleship
         /// </summary>
         /// <param name="squareCoord">The X coordinate of this tile</param>
         /// <param name="shipSize">The currently selected ship size.</param>
-        /// <returns></returns>
         public Point GetCursorLeftHalfLocation(int squareCoord, int shipSize)
         {
+            // validates the ship size. The maximum ship size is 5.
             if (shipSize > 5)
                 shipSize = 5;
 
-            int squareAdjust = 0;
+            int squareAdjust = 0; // a variable to adjust the x coordinate of the cursor
+
+            // this while loop sets the squareAdjust variable to the offset needed to keep the cursor within the grid
             while (squareCoord + shipSize > 11)
             {
                 squareAdjust++;
                 shipSize--;
             }
 
-            int xAdjust = Constants.SCALE * Constants.SQUARE_SIZE * squareAdjust;
+            int xAdjust = Constants.SCALE * Constants.SQUARE_SIZE * squareAdjust; // setting the xAdjust variable to the offset needed to keep the cursor within the grid
 
-            return new Point(GridRectangle.X - Constants.SCALE - xAdjust, GridRectangle.Y - Constants.SCALE);
+            return new Point(GridRectangle.X - Constants.SCALE - xAdjust, GridRectangle.Y - Constants.SCALE); // returns the location of the left half of the cursor using the calculated offset.
         }
 
         /// <summary>
@@ -93,9 +107,11 @@ namespace Battleship
         /// <returns></returns>
         public Point GetCursorRightHalfLocation(int squareCoord, int shipSize)
         {
+            // validates the ship size. The maximum ship size is 5.
             if (shipSize > 5)
                 shipSize = 5;
-            // sets how far from the left cursor the right cursor should be
+
+            // sets the variable that offsets how far from the left cursor the right cursor should be
             // scale factor * pixels per square * ship size + half of the scaled square size - 3 pixels to center it
             int xAdjust = - Constants.SCALE * Constants.SQUARE_SIZE * shipSize + Constants.SCALE * Constants.SQUARE_SIZE / 2 - 3;
 
@@ -110,19 +126,22 @@ namespace Battleship
         /// <returns></returns>
         public Point GetCursorTopHalfLocation(int squareCoord, int shipSize)
         {
+            // validates the ship size. The maximum ship size is 5.
             if (shipSize > 5)
-                shipSize = 5;
+                shipSize = 5; // The ship size will be used to determine where the cursor should be
 
-            int squareAdjust = 0;
+            int squareAdjust = 0; // a variable to adjust the y coordinate of the cursor, if needed
+
+            // this while loop sets the squareAdjust variable to the offset needed to keep the cursor within the grid
             while (squareCoord + shipSize > 11)
             {
-                squareAdjust++;
+                squareAdjust++; 
                 shipSize--;
             }
 
-            int yAdjust = Constants.SCALE * Constants.SQUARE_SIZE * squareAdjust;
+            int yAdjust = Constants.SCALE * Constants.SQUARE_SIZE * squareAdjust; // how far from the top cursor the bottom cursor should be
 
-            return new Point(GridRectangle.X - Constants.SCALE, GridRectangle.Y - Constants.SCALE - yAdjust);
+            return new Point(GridRectangle.X - Constants.SCALE, GridRectangle.Y - Constants.SCALE - yAdjust); // returns the location of the top half of the cursor using the calculated offset.
         }
 
         /// <summary>
@@ -133,13 +152,15 @@ namespace Battleship
         /// <returns></returns>
         public Point GetCursorBottomHalfLocation(int squareCoord, int shipSize)
         {
+            // validates the ship size. The maximum ship size is 5.
             if (shipSize > 5)
                 shipSize = 5;
+
             // sets how far from the top cursor the bottom cursor should be
             // scale factor * pixels per square * ship size + half of the scaled square size - 3 pixels to center it
             int yAdjust = - Constants.SCALE * Constants.SQUARE_SIZE * shipSize + Constants.SCALE * Constants.SQUARE_SIZE / 2 - 3;
 
-            return new Point(GridRectangle.X - Constants.SCALE, GridRectangle.Y - Constants.SCALE - yAdjust);
+            return new Point(GridRectangle.X - Constants.SCALE, GridRectangle.Y - Constants.SCALE - yAdjust); // returns the location of the bottom half of the cursor using the calculated offset.
         }
 
         /// <summary>

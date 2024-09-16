@@ -1,4 +1,15 @@
-﻿using Microsoft.Xna.Framework;
+﻿/*
+ *   Module Name: ShipManager.cs
+ *   Purpose: This module is the ShipManager class for the Battleship game. It manages the ships for each player.
+ *   Inputs: None
+ *   Output: None
+ *   Additional code sources:
+ *   Developers: Derek Norton, Ethan Berkley, Jacob Wilkus, Mo Morgan, and Richard Moser
+ *   Date: 09/11/2024
+ *   Last Modified: 09/14/2024
+ */
+
+using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
@@ -11,6 +22,9 @@ using System.Timers;
 
 namespace Battleship
 {
+    /// <summary>
+    /// The ShipManager class manages the ships for each player.
+    /// </summary>
     public class ShipManager
     {
         /// <summary>
@@ -43,7 +57,6 @@ namespace Battleship
         /// </summary>
         public Texture2D? ShipTexture1x1Vertical { get; set; }
         
-        /// <summary>
         /// <summary>
         /// The texture for the 1x2 ship Vertical rotation.
         /// </summary>
@@ -161,6 +174,10 @@ namespace Battleship
         /// </summary>
         public bool ReadClick = true;
 
+        /// <summary>
+        /// Initializes a new instance of the ShipManager class.
+        /// </summary>
+        /// <param name="numShips">The number of ships each player starts the game with.</param>
         public ShipManager(int numShips) 
         {
             NumShips = numShips;
@@ -171,6 +188,7 @@ namespace Battleship
         /// </summary>
         public void LoadContent(ContentManager content)
         {
+            // Load the ship textures. Each ship has a horizontal and vertical texture.
             ShipTexture1x1Horizontal = content.Load<Texture2D>("ship1x1Horizontal");
             ShipTexture1x2Horizontal = content.Load<Texture2D>("ship1x2Horizontal");
             ShipTexture1x3Horizontal = content.Load<Texture2D>("ship1x3Horizontal");
@@ -186,34 +204,44 @@ namespace Battleship
         /// <summary>
         /// Update for the ship manager.
         /// </summary>
+        /// <param name="currentTile">The current grid tile the cursor is over.</param>
+        /// <param name="orientation">The orientation of the cursor.</param>
+        /// <param name="playerNum">The player number.</param>
         public void UpdateWhilePlacing(GridTile currentTile, CursorOrientation orientation, int playerNum)
         {
-            MouseState mouseState = Mouse.GetState();
+            MouseState mouseState = Mouse.GetState(); // Get the current mouse state
 
+            // If the mouse is clicked and the placement timeout is not active, place the ship
             if (ReadClick && mouseState.LeftButton == ButtonState.Pressed && (_placementTimeout is null || !_placementTimeout.Enabled))
             {
-                ReadClick = false;
-                if (OnPlayer1AdjustedTileRequested is not null && playerNum == 1)
+                ReadClick = false; // Set the read click flag to false so it can be set to true the next time the mouse is clicked
+
+                // Adjust the tile if the adjustment event is not null
+                if (OnPlayer1AdjustedTileRequested is not null && playerNum == 1) // Player 1
                     currentTile = OnPlayer1AdjustedTileRequested.Invoke(currentTile, CurrentShipSize, orientation);
-                else if (OnPlayer2AdjustedTileRequested is not null && playerNum == 2)
+                else if (OnPlayer2AdjustedTileRequested is not null && playerNum == 2) // Player 2
                     currentTile = OnPlayer2AdjustedTileRequested.Invoke(currentTile, CurrentShipSize, orientation);
 
+                // Check if the ship placement is valid for the current player
                 bool isShipPlacementValid = playerNum == 1 ? IsPlayer1PlacementValid!.Invoke(currentTile, CurrentShipSize, orientation)
                                                            : IsPlayer2PlacementValid!.Invoke(currentTile, CurrentShipSize, orientation);
 
+                // If the ship placement is not valid, return without placing the ship
                 if (!isShipPlacementValid)
                     return;
 
-                Point size;
+                Point size; // The size of the ship
+
+                // assign the ship's size based on orientation of the cursor
                 if (orientation.Equals(CursorOrientation.HORIZONTAL))
                     size = new Point(Constants.SCALE * Constants.SQUARE_SIZE * CurrentShipSize, Constants.SCALE * Constants.SQUARE_SIZE);
                 else
                     size = new Point(Constants.SCALE * Constants.SQUARE_SIZE, Constants.SCALE * Constants.SQUARE_SIZE * CurrentShipSize);
 
+                // Create the ship object and assign it to the current tile's Ship property
                 Ship ship = new Ship(currentTile.GetLocation(), size, CurrentShipSize);
                 currentTile.Ship = ship;
-                
-                
+
                 // set the texture of the ship based on size and orientation
                 if (orientation.Equals(CursorOrientation.HORIZONTAL))  // Horizontal
                 {
@@ -238,20 +266,29 @@ namespace Battleship
                     };
                 }
 
+                // Add the ship to the appropriate player's ship list
                 if (IsPlayer1Placing)
                     Player1Ships.Add(ship);
                 else
                     Player2Ships.Add(ship);
+
+                // Increment the current ship size
                 CurrentShipSize++;
 
+                // If the current ship size is greater than the number of ships and player 1 is placing, switch to player 2
                 if (CurrentShipSize > NumShips && IsPlayer1Placing)
                 {
+                    // Switch to player 2
                     IsPlayer1Placing = false;
                     IsPlayer2Placing = true;
-                    CurrentShipSize = 1;
+
+                    CurrentShipSize = 1; // Reset the current ship size
+
+                    // Call the player change event
                     if (OnPlayerChange is not null)
                         OnPlayerChange();
                 }
+                // If the current ship size is greater than the number of ships and player 2 is placing, exit placing mode and switch to player 1
                 else if (CurrentShipSize > NumShips && IsPlayer2Placing)
                 {
                     IsPlayer2Placing = false;
@@ -259,16 +296,19 @@ namespace Battleship
                         OnPlayerChange();
                 }
 
+                // If the placement timeout is not null, stop and dispose of it
                 if (_placementTimeout is not null)
                 {
                     _placementTimeout.Stop();
                     _placementTimeout.Dispose();
                 }
 
+                // Start the placement timeout. This prevents the player from placing ships faster than 100ms apart.
                 _placementTimeout = new Timer(100);
                 _placementTimeout.Elapsed += OnTimeoutEvent!;
                 _placementTimeout.Start();
 
+                // Call the ship placed event for the current player
                 if (OnPlayer1ShipPlaced is not null && playerNum == 1)
                     OnPlayer1ShipPlaced.Invoke(currentTile, ship, orientation);
                 else if (OnPlayer2ShipPlaced is not null && playerNum == 2)
@@ -279,8 +319,10 @@ namespace Battleship
         /// <summary>
         /// Draw for the ship manager.
         /// </summary>
+        /// <param name="spriteBatch">The sprite batch object.</param>
         public void Draw(SpriteBatch spriteBatch)
         {
+            // Draw sunk ships and ships that aren't being hidden. 
             foreach (Ship ship in Player1Ships)
                 if (!HideP1Ships || ship.IsSunk)
                     spriteBatch.Draw(ship.ShipTexture, ship.ShipRectangle, Color.White);
@@ -295,6 +337,7 @@ namespace Battleship
         /// </summary>
         private static void OnTimeoutEvent(object source, ElapsedEventArgs e)
         {
+            // Stop and dispose of the timer
             Timer timer = (Timer)source;
             timer.Stop();
             timer.Dispose();

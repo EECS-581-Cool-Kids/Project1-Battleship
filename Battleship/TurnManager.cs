@@ -1,4 +1,15 @@
-﻿using Microsoft.Xna.Framework;
+﻿/*
+ *   Module Name: TurnManager.cs
+ *   Purpose: This module is the TurnManager class that handles the turn indicator and the logic for switching turns.
+ *   Inputs: None
+ *   Output: None
+ *   Additional code sources: None
+ *   Developers: Derek Norton, Ethan Berkley, Jacob Wilkus, Mo Morgan, and Richard Moser
+ *   Date: 09/11/2024
+ *   Last Modified: 09/15/2024
+ */
+
+using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
 using System;
@@ -9,6 +20,9 @@ using System.Timers;
 
 namespace Battleship
 {
+    /// <summary>
+    /// The TurnManager class handles the turn indicator and the logic for switching turns.
+    /// </summary>
     public class TurnManager
     {
         /// <summary>
@@ -38,12 +52,17 @@ namespace Battleship
 
         /// <summary>
         /// When turn is swapped, this is true and no ships render at first.
-        /// Once player has confirmed they are ready by clicking again, this goes back to false.
+        /// Once player has confirmed they are ready by clicking again, this goes back to false which renders the current players ships and sunken opponent's ships.
         /// </summary>
         public bool SwapWaiting = false;
 
+        /// <summary>
+        /// Initializes an instance of the TurnManager class.
+        /// The Rectangle is set to the top leftmost corner of the P2's grid.
+        /// </summary>  
         public TurnManager() {
-            TurnIndicatorRectangle = new Rectangle(new Point(Constants.PLAYER_2_OFFSET, 0), new Point(Constants.SQUARE_SIZE * Constants.SCALE, Constants.SQUARE_SIZE * Constants.SCALE));
+            TurnIndicatorRectangle = new Rectangle(new Point(Constants.PLAYER_2_OFFSET, 0), 
+                                                   new Point(Constants.SQUARE_SIZE * Constants.SCALE, Constants.SQUARE_SIZE * Constants.SCALE));
         }
 
         /// <summary>
@@ -51,6 +70,7 @@ namespace Battleship
         /// </summary>
         public void LoadContent(ContentManager content)
         {
+            // Load the textures for the turn indicators.
             P1Texture = content.Load<Texture2D>("P1");
             P2Texture = content.Load<Texture2D>("P2");
             SwapTexture = content.Load<Texture2D>("swap");
@@ -61,8 +81,11 @@ namespace Battleship
         /// </summary>
         public void Draw(SpriteBatch spriteBatch)
         {
+            // Draw the indicator for the swap state, if the SwapWaiting flag is set.
             if (SwapWaiting)
                 spriteBatch.Draw(SwapTexture, TurnIndicatorRectangle, Color.White);
+
+            // Draw the indicator for the current player's turn.
             else if (IsP1sTurn)
                 spriteBatch.Draw(P1Texture, TurnIndicatorRectangle, Color.White);
             else
@@ -74,6 +97,7 @@ namespace Battleship
         /// </summary>
         public void NextTurn()
         {
+            // toggle the P1sTurn flag, and set the SwapWaiting flag.
             IsP1sTurn = !IsP1sTurn;
             SwapWaiting = true;
 
