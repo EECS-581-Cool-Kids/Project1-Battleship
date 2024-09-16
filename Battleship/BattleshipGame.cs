@@ -196,7 +196,7 @@ namespace Battleship
                             
                             _shipManager!.ReadClick = false;
                         }
-                        else if (shipSelectionMenu.back)
+                        else if (shipSelectionMenu.back && Mouse.GetState().LeftButton == ButtonState.Released)
                         {
                             currentGameState = GameState.MainMenu; //Transistions back to main menu
                             base.Initialize();
