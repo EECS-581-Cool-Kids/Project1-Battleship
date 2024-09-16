@@ -6,8 +6,8 @@
  *   Output: None
  *   Additional code sources:
  *   Developers: Derek Norton, Ethan Berkley, Jacob Wilkus, Mo Morgan, and Richard Moser
- *   Date: 09/11/2024
- *   Last Modified: 09/14/2024
+ *   Date: 09/03/2024
+ *   Last Modified: 09/15/2024
  */
 
 using Microsoft.Xna.Framework;
@@ -112,7 +112,6 @@ namespace Battleship
             Content.RootDirectory = "Content";
             IsMouseVisible = true;
         }
-
 
         /// <summary>
         /// Initializes the relevant objects and window. 
@@ -233,7 +232,7 @@ namespace Battleship
                             base.Initialize();
                             _shipManager!.ReadClick = false; // Set the read click to false ensure catching the positive end of the next click.
                         }
-                        else if (shipSelectionMenu.back) // If the "Back" button is clicked, transition back to the main menu.
+                        else if (shipSelectionMenu.back && Mouse.GetState().LeftButton == ButtonState.Released) // If the back button is clicked, return to the main menu.
                         {
                             currentGameState = GameState.MainMenu; // Transition back to main menu
                             base.Initialize();
@@ -331,15 +330,15 @@ namespace Battleship
             // If the game hasn't started, draw the main menu and ship selection menu.
             if (!inGame)
             {
-                GraphicsDevice.Clear(Color.CornflowerBlue);
+                GraphicsDevice.Clear(Color.CornflowerBlue); // Clear the screen with a blue color.
 
-                _spriteBatch.Begin();
+                _spriteBatch!.Begin(); // Begin the sprite batch for drawing.
 
-                if (currentGameState! == GameState.MainMenu)
+                if (currentGameState! == GameState.MainMenu) // Draw the main menu if the current game state is the main menu.
                 {
                     menu.Draw(_spriteBatch);
                 }
-                else if (currentGameState == GameState.ShipSelection)
+                else if (currentGameState == GameState.ShipSelection) // Draw the ship selection menu if the current game state is the ship selection menu.
                 {
                     shipSelectionMenu.Draw(_spriteBatch);
                 }
@@ -348,12 +347,14 @@ namespace Battleship
                     // Add drawing code for the game here
                 }
 
-                _spriteBatch.End();
+                _spriteBatch.End(); // End the sprite batch for drawing.
 
-                base.Draw(gameTime);
+                base.Draw(gameTime); // Ensures the framerwork-level logic in the base class is drawn.
                 return;
             }
-            GraphicsDevice.Clear(Color.CornflowerBlue);
+
+            // If the game has started, draw the grid objects, cursor, and ship manager and turn manager objects.
+            GraphicsDevice.Clear(Color.CornflowerBlue); // Clear the screen with a blue color.
 
             // Draws the grid objects, cursor, and ship manager objects.
             // The various Draw commands are batched together by being enclosed in a _spriteBatch!.Begin/End() block.
@@ -375,6 +376,7 @@ namespace Battleship
         /// </summary>
         private void HandleShooting()
         {
+            // If the game is not in progress, return because there's nothing to shoot.
             if (!inGame)
             {
                 return;
@@ -394,7 +396,7 @@ namespace Battleship
                     success = _player2grid!.Shoot();
                     if (success == true)
                     {
-                        P2HitLimit = P2HitLimit - 1;
+                        P2HitLimit = P2HitLimit - 1; // Decrement the hit limit for player 2 if the shot was successful.
                     }
                 }
                 else
@@ -402,7 +404,7 @@ namespace Battleship
                     success = _player1grid!.Shoot();
                     if (success == true)
                     {
-                        P1HitLimit = P1HitLimit - 1;
+                        P1HitLimit = P1HitLimit - 1; // Decrement the hit limit for player 1 if the shot was successful.
                     }
                 }
 
