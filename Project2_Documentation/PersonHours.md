@@ -2,17 +2,20 @@
 
 ## Estimate Person Hours: 20 Hours
 
-- We estimate that each person will spend roughly 4 hours each trying to understand the previous team's implemntation, learning the language, and implementing the new functionality.
+- Placeholder
 
-## Actual Person Hours:
+## Actual Person Hours
 
-### Peter Pham:
-- 1.5 (9/16) - Build for Mac (attempted to get environment working; MonoGame's native support for Apple Sillicon does not work so we need to find a workaround: https://github.com/MonoGame/MonoGame/issues/8124)
+### Peter Pham
 
-### Ian Wilson:
+- 1 (9/19)
 
-### Andrew Uriell:
+- 1.5 (9/16)
 
-### Michael Oliver:
+### Ian Wilson
 
-### Jack Youngquist:  
+### Andrew Uriell
+
+### Michael Oliver
+
+### Jack Youngquist
