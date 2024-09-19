@@ -1,2 +1,0 @@
-TO DO:
- - Build for Mac (attempted to get environment working; MonoGame's native support for Apple Sillicon does not work so we need to find a workaround: https://github.com/MonoGame/MonoGame/issues/8124)
