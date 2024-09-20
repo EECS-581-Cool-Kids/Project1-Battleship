@@ -8,7 +8,7 @@
   - [ ] Create UML diagram
   - [ ] Implement idea
 - [ ] AI Opponent
-  - [ ] Create AI Opponent Selection interface
+  - [X] Create AI Opponent Selection interface
   - [ ] Create AI Easy Difficulty Level
   - [ ] Create AI Medium Difficulty Level
   - [ ] Create AI Hard Difficulty Level

@@ -7,7 +7,7 @@
  *   Additional code sources: None
  *   Developers: Derek Norton, Ethan Berkley, Jacob Wilkus, Mo Morgan, and Richard Moser
  *   Date: 09/03/2024
- *   Last Modified: 09/15/2024
+ *   Last Modified: 09/20/2024
  */
 
 using Microsoft.Xna.Framework;
@@ -80,6 +80,16 @@ namespace Battleship
         /// Ship selection menu object.
         /// </summary>
         private ShipSelectionMenu shipSelectionMenu;
+
+        /// <summary>
+        /// Settings menu object.
+        /// </summary>
+        private SettingsMenu SettingsMenu;
+
+        /// <summary>
+        /// Creates object to store the selected difficulty for the AI; Sets the default state to disabled
+        /// </summary>
+        public DifficultyState selectedDifficulty = DifficultyState.Disabled;
 
         //private Postgame postgame;
 
@@ -162,6 +172,7 @@ namespace Battleship
 
                 // Initialize the main menu and ship selection menu
                 menu = new Menu(font);
+                SettingsMenu = new SettingsMenu(font);
                 shipSelectionMenu = new ShipSelectionMenu(font);
                 return;
             }
@@ -211,6 +222,10 @@ namespace Battleship
                         {
                             currentGameState = GameState.ShipSelection; // Transition to the ship selection menu.
                         }
+                        else if (menu.SelectedState == GameState.Settings) // If the "Settings" button is clicked, go to the settings menu.
+                        {
+                            currentGameState = GameState.Settings; // Transition to the settings menu.
+                        }
                         else if (menu.SelectedState == GameState.Exit) // If the "Exit" button is clicked, exit the game.
                         {
                             Exit();
@@ -244,8 +259,17 @@ namespace Battleship
                         // When the game is over, reset to main menu
                         break;
 
+                    // When "Settings" is clicked, transition to the settings menu
                     case GameState.Settings:
-                        // Add settings logic here (not implemented)
+                        SettingsMenu.Update();
+                        
+                        selectedDifficulty = SettingsMenu.SelectedDifficulty;
+                        if (SettingsMenu.back && Mouse.GetState().LeftButton == ButtonState.Released) // If the back button is clicked, return to the main menu.
+                        {
+                            // Update the game's difficulty based on what was selected within the settings menu when the player returns to the main menu.
+                            currentGameState = GameState.MainMenu; // Transition back to main menu
+                            base.Initialize();
+                        }
                         break;
 
                     case GameState.Exit:
@@ -345,6 +369,12 @@ namespace Battleship
                 else if (currentGameState == GameState.Playing)
                 {
                     // Add drawing code for the game here
+                }
+                // Draws the settings menu if the settings menu should be displayed currently
+                else if (currentGameState == GameState.Settings)
+                {
+                    SettingsMenu.Draw(_spriteBatch);
+                    SettingsMenu.SelectedDifficulty = selectedDifficulty; // Updates the settings menu based on the current selected difficulty.
                 }
 
                 _spriteBatch.End(); // End the sprite batch for drawing.
