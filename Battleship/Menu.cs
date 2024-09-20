@@ -79,7 +79,7 @@ public class Menu
         buttonTexts = new Dictionary<GameState, string>
         {
             { GameState.ShipSelection, "Play Game" },
-            { GameState.Settings, "Settings" },
+            { GameState.Settings, "AI Difficulty" },
             { GameState.Exit, "Exit" }
         };
 
