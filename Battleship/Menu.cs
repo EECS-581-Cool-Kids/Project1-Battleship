@@ -104,18 +104,18 @@ public class Menu
                 // Handle button clicks
                 if (mouseState.LeftButton == ButtonState.Pressed)
                 {
-                    if (button.Key == GameState.ShipSelection)
-                    {
-                        SelectedState = GameState.ShipSelection;  // Transition to Ship Selection
-                    }
-                    else if (button.Key == GameState.Exit)
-                    {
-                        SelectedState = GameState.Exit;  // Exit the game
-                    }
-                    else if (button.Key == GameState.Settings)
-                    {
-                        SelectedState = GameState.Settings;  // Go to settings menu
-                    }
+                        if (button.Key == GameState.ShipSelection)
+                        {
+                            SelectedState = GameState.ShipSelection;  // Transition to Ship Selection
+                        }
+                        else if (button.Key == GameState.Exit)
+                        {
+                            SelectedState = GameState.Exit;  // Exit the game
+                        }
+                        else if (button.Key == GameState.Settings)
+                        {
+                            SelectedState = GameState.Settings;  // Go to settings menu
+                        }
                 }
             }
             else

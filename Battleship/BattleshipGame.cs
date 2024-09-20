@@ -81,6 +81,13 @@ namespace Battleship
         /// </summary>
         private ShipSelectionMenu shipSelectionMenu;
 
+        /// <summary>
+        /// Settings menu object.
+        /// </summary>
+        private SettingsMenu SettingsMenu;
+
+        public DifficultyState DifficultyState = DifficultyState.Disabled;
+
         //private Postgame postgame;
 
         /// <summary>
@@ -162,6 +169,7 @@ namespace Battleship
 
                 // Initialize the main menu and ship selection menu
                 menu = new Menu(font);
+                SettingsMenu = new SettingsMenu(font);
                 shipSelectionMenu = new ShipSelectionMenu(font);
                 return;
             }
@@ -211,6 +219,10 @@ namespace Battleship
                         {
                             currentGameState = GameState.ShipSelection; // Transition to the ship selection menu.
                         }
+                        else if (menu.SelectedState == GameState.Settings) // If the "Exit" button is clicked, exit the game.
+                        {
+                            currentGameState = GameState.Settings; // Transition to the ship selection menu.
+                        }
                         else if (menu.SelectedState == GameState.Exit) // If the "Exit" button is clicked, exit the game.
                         {
                             Exit();
@@ -245,7 +257,14 @@ namespace Battleship
                         break;
 
                     case GameState.Settings:
-                        // Add settings logic here (not implemented)
+                        SettingsMenu.Update();
+                        
+                        if (SettingsMenu.back && Mouse.GetState().LeftButton == ButtonState.Released) // If the back button is clicked, return to the main menu.
+                        {
+                            DifficultyState = SettingsMenu.SelectedDifficulty;
+                            currentGameState = GameState.MainMenu; // Transition back to main menu
+                            base.Initialize();
+                        }
                         break;
 
                     case GameState.Exit:
@@ -345,6 +364,10 @@ namespace Battleship
                 else if (currentGameState == GameState.Playing)
                 {
                     // Add drawing code for the game here
+                }
+                else if (currentGameState == GameState.Settings)
+                {
+                    SettingsMenu.Draw(_spriteBatch);
                 }
 
                 _spriteBatch.End(); // End the sprite batch for drawing.
