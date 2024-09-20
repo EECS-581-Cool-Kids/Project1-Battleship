@@ -32,3 +32,15 @@
     ```bash
     sudo ln -s /usr/local/lib/libfreetype.6.dylib /usr/local/lib/freetype6
     ```
+
+## Header Template
+
+```
+Name:
+Description:
+Inputs:
+Outputs:
+Collaborators/Sources: Michael Oliver, Peter Pham, Jack Youngquist, Andrew Uriell, Ian Wilson
+Created: September 19, 2024
+Last Modified: September 19, 2024
+```
