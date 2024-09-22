@@ -109,18 +109,3 @@ If you have any questions or issues, please refer to the original documentation 
 | Jacob      | 1.5 | 2    | 1    | 1    | 0    | 0    | 0    | 5.5   |
 | Richard    | 4   | 4    | 0    | 1    | 2    | 4    | 4    | 19    | 
 | **Total**  |**10**| **17** | **5** | **9** | **10** | **17** | **18** | **86** |
-
-### Week 1 Project 2
-| Member     | 9/16 | 9/17 | 9/18 | 9/19 | 9/20 | 9/21 | 9/22 | Total |
-|------------|-----|------|------|------|------|------|------|-------|
-| Michael    | 0   | .5   | 0    | 0    | 0    | .5   | 4    | 5     |
-| Peter      | 0   | 0    | 0    | 0    | 0    | 0    | 0    | 0     |
-| Andrew     | 0   | 0    | 0    | 0    | 0    | 0    | 0    | 0     |
-| Ian        | 0   | 0    | 0    | 0    | 0    | 0    | 0    | 0     |
-| Jack       | 0   | 0    | 0    | 0    | 0    | 0    | 0    | 0     | 
-| **Total**  |**0**| **0** | **0** | **0** | **0** | **0** | **0** | **0** |
-
-# Mikey's Hour log
-9/17 - spent about half hour attempting to run monogam on Apple Silicon - monogame does not work :(
-9/21 - set up virtual machine with Windows 11 to develop 
-9/22 - Started to learn C# and implemented feature so that users get better feedback when switching turns

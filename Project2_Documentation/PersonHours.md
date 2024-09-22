@@ -18,4 +18,8 @@
 
 ### Michael Oliver
 
+- .5 (9/17)
+- .5 (9/21)
+- 4 (9/22)
+
 ### Jack Youngquist

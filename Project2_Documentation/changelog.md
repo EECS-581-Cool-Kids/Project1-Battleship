@@ -1,6 +1,20 @@
 # Changelog
 
-## Septenber 20
+## September 22
+
+### Added
+
+- Implemented feature so that users get better feedback when switching turns **(Mikey)**
+  - New waiting state in BattleshipGame.cs
+  - New background, font, and sprites
+
+## September 21
+
+### Updates
+
+- set up virtual machine with Windows 11 to develop **(Mikey)**
+
+## September 20
 
 ### Added
 
@@ -15,6 +29,12 @@
 - Installation guide for Monogame on MacOS **(Peter)**
 - Changelog file **(Peter)**
 - Worked on AI difficulty selection menu (WIP) **(Peter)**
+
+## September 17
+
+### Updates
+
+- spent about half hour attempting to run monogam on Apple Silicon - monogame does not work :( **(Mikey)**
 
 ## September 16
 
