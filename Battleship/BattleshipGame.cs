@@ -405,9 +405,9 @@ namespace Battleship
             if (_turnManager.SwapWaiting)
             {
                 _spriteBatch.Draw(backgroundTexture, new Rectangle(0, 0, GraphicsDevice.Viewport.Width, GraphicsDevice.Viewport.Height), Color.White);
-                _spriteBatch.Draw(SwapTexture, new Vector2((GraphicsDevice.Viewport.Width - SwapTexture.Width) / 2,
-                                                            (GraphicsDevice.Viewport.Height - SwapTexture.Height) / 2), 
-                                Color.White);
+                //_spriteBatch.Draw(SwapTexture, new Vector2((GraphicsDevice.Viewport.Width - SwapTexture.Width) / 2,
+                //                                            (GraphicsDevice.Viewport.Height - SwapTexture.Height) / 2), 
+                //                Color.White);
 
                 string feedbackMessage = _turnManager.IsP1sTurn ? "Player 2's Turn Finished!\nClick to Switch Player" : "Player 1's Turn Finished!\nClick to Switch Player";
                 Vector2 messageSize = feedbackFont.MeasureString(feedbackMessage);
