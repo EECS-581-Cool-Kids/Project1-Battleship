@@ -5,9 +5,9 @@
  *   Inputs: None
  *   Output: None
  *   Additional code sources: None
- *   Developers: Derek Norton, Ethan Berkley, Jacob Wilkus, Mo Morgan, and Richard Moser
+ *   Developers: Derek Norton, Ethan Berkley, Jacob Wilkus, Mo Morgan, Richard Moser, Michael Oliver
  *   Date: 09/03/2024
- *   Last Modified: 09/20/2024
+ *   Last Modified: 09/22/2024
  */
 
 using Microsoft.Xna.Framework;
@@ -124,6 +124,13 @@ namespace Battleship
         }
 
         /// <summary>
+        /// Textures and fonts used while switching players - Added by Mikey (Sep 22)
+        ///</summary>
+        private Texture2D SwapTexture;
+        private SpriteFont feedbackFont; 
+        private Texture2D backgroundTexture; 
+
+        /// <summary>
         /// Initializes the relevant objects and window. 
         /// Called once at startup.
         /// </summary>
@@ -198,6 +205,11 @@ namespace Battleship
             _shipManager!.LoadContent(Content);
             _cursor.LoadContent(Content);
             _turnManager!.LoadContent(Content);
+
+            SwapTexture = Content.Load<Texture2D>("swap"); // extra textures for when switching players
+            feedbackFont = Content.Load<SpriteFont>("feedbackFont"); 
+            backgroundTexture = Content.Load<Texture2D>("clear"); 
+            
         }
 
         /// <summary>
@@ -355,40 +367,32 @@ namespace Battleship
             if (!inGame)
             {
                 GraphicsDevice.Clear(Color.CornflowerBlue); // Clear the screen with a blue color.
-
                 _spriteBatch!.Begin(); // Begin the sprite batch for drawing.
 
-                if (currentGameState! == GameState.MainMenu) // Draw the main menu if the current game state is the main menu.
+                if (currentGameState! == GameState.MainMenu)
                 {
                     menu.Draw(_spriteBatch);
                 }
-                else if (currentGameState == GameState.ShipSelection) // Draw the ship selection menu if the current game state is the ship selection menu.
+                else if (currentGameState == GameState.ShipSelection)
                 {
                     shipSelectionMenu.Draw(_spriteBatch);
                 }
-                else if (currentGameState == GameState.Playing)
-                {
-                    // Add drawing code for the game here
-                }
-                // Draws the settings menu if the settings menu should be displayed currently
                 else if (currentGameState == GameState.Settings)
                 {
                     SettingsMenu.Draw(_spriteBatch);
-                    SettingsMenu.SelectedDifficulty = selectedDifficulty; // Updates the settings menu based on the current selected difficulty.
+                    SettingsMenu.SelectedDifficulty = selectedDifficulty;
                 }
 
                 _spriteBatch.End(); // End the sprite batch for drawing.
-
-                base.Draw(gameTime); // Ensures the framerwork-level logic in the base class is drawn.
+                base.Draw(gameTime); // Ensures the framework-level logic in the base class is drawn.
                 return;
             }
 
-            // If the game has started, draw the grid objects, cursor, and ship manager and turn manager objects.
+            // If the game has started, clear the screen and draw the game elements.
             GraphicsDevice.Clear(Color.CornflowerBlue); // Clear the screen with a blue color.
-
-            // Draws the grid objects, cursor, and ship manager objects.
-            // The various Draw commands are batched together by being enclosed in a _spriteBatch!.Begin/End() block.
             _spriteBatch!.Begin(samplerState: SamplerState.PointClamp);
+
+            // Draw the grid objects and other elements
             _player1grid!.DrawBackground(_spriteBatch);
             _player2grid!.DrawBackground(_spriteBatch);
             _shipManager!.Draw(_spriteBatch);
@@ -396,10 +400,25 @@ namespace Battleship
             _player2grid!.DrawForeground(_spriteBatch);
             _cursor.Draw(_spriteBatch);
             _turnManager!.Draw(_spriteBatch);
-            _spriteBatch!.End();
 
-            base.Draw(gameTime); // Ensures the framerwork-level logic in the base class is drawn.
+            // Check if a turn swap is waiting and draw the texture and feedback message
+            if (_turnManager.SwapWaiting)
+            {
+                _spriteBatch.Draw(backgroundTexture, new Rectangle(0, 0, GraphicsDevice.Viewport.Width, GraphicsDevice.Viewport.Height), Color.White);
+                _spriteBatch.Draw(SwapTexture, new Vector2((GraphicsDevice.Viewport.Width - SwapTexture.Width) / 2,
+                                                            (GraphicsDevice.Viewport.Height - SwapTexture.Height) / 2), 
+                                Color.White);
+
+                string feedbackMessage = _turnManager.IsP1sTurn ? "Player 2's Turn Finished!\nClick to Switch Player" : "Player 1's Turn Finished!\nClick to Switch Player";
+                Vector2 messageSize = feedbackFont.MeasureString(feedbackMessage);
+                Vector2 messagePosition = new Vector2((GraphicsDevice.Viewport.Width - messageSize.X) / 2,
+                                                    (GraphicsDevice.Viewport.Height - SwapTexture.Height) / 2 + SwapTexture.Height);
+                _spriteBatch.DrawString(feedbackFont, feedbackMessage, messagePosition, Color.Red);
+            }
+            _spriteBatch.End(); // End the sprite batch for drawing.
+            base.Draw(gameTime); // Ensures the framework-level logic in the base class is drawn.
         }
+
 
         /// <summary>
         /// Handles shooting logic for the game.
