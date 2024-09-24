@@ -17,6 +17,7 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Diagnostics.Tracing;
+using System.IO.Pipes;
 
 namespace Battleship
 {
@@ -131,6 +132,11 @@ namespace Battleship
         private Texture2D backgroundTexture; 
 
         /// <summary>
+        /// Array for holding coords which should be priorited in attacks by the AI
+        ///</summary>
+        public List<(int,int)> priorityAttacks;
+
+        /// <summary>
         /// Initializes the relevant objects and window. 
         /// Called once at startup.
         /// </summary>
@@ -162,6 +168,7 @@ namespace Battleship
             _shipManager.IsPlayer2PlacementValid = _player2grid.IsShipPlacementValid;
             _shipManager.OnPlayerChange = _turnManager.NextTurn;
 
+            priorityAttacks = new List<(int, int)>(); // Initializes the empty list
             base.Initialize(); // Ensures the framerwork-level logic in the base class is initialized.
         }
 
@@ -615,6 +622,101 @@ namespace Battleship
                     }
                 }
             }
+            // Medium AI Difficulty: Attacks orthogonal tiles when hitting a ship
+            else if (selectedDifficulty == DifficultyState.Medium)
+            {
+                if (_shipManager!.ReadClick && ((mouseState.LeftButton == ButtonState.Pressed) || !_turnManager!.IsP1sTurn))
+                {
+                    _shipManager.ReadClick = false; // Set the read click to false to prevent multiple shots per click.
+                    bool? success = false; // This variable will store the result of the shot. Initialized to false.
+
+                    // Shoot the tile for the player whose turn it is.
+                    if (_turnManager!.IsP1sTurn)
+                    {
+                        success = _player2grid!.Shoot();
+                        if (success == true)
+                        {
+                            P2HitLimit = P2HitLimit - 1; // Decrement the hit limit for player 2 if the shot was successful.
+                        }
+                    }
+                    // If it is the AI's turn to attack:
+                    else
+                    {
+                        // Repeats until a valid tile is randomly selected to be attacked
+                        while (true)
+                        {
+                            // Randomly generates coords to attack
+                            Random random = new Random();
+                            int gridSize = _player2grid.GridArray.GetLength(0); // Used ChatGPT here to know how to get the size of an array
+                            int tileX = random.Next(1, gridSize);
+                            int tileY = random.Next(1, gridSize);   
+
+                            // If priority attacks exist, use their coords and remove the tuple from the list
+                            if (priorityAttacks.Count > 0)
+                            {
+                                var priorityAttack = priorityAttacks[0];
+                                tileX = priorityAttack.Item1;
+                                tileY = priorityAttack.Item2;
+                                priorityAttacks.RemoveAt(0);
+                            }
+                            // Sets the CurrentTile to the priority attack if it exists, or the random attack if it doesn't
+                            _player1grid.CurrentTile = _player1grid.GridArray[tileX,tileY];
+                            // if (_player1grid.CurrentTile.HasShip)
+
+                            success = _player1grid!.Shoot();
+                            if (success is not null)
+                            {
+                                // If a ship tile was attacked, add the adjacent tiles to the priority attack list
+                                if (success is true)
+                                {
+                                    if (tileX-1 >= 1)
+                                        priorityAttacks.Add((tileX-1, tileY));
+                                    if (tileX+1 <= 10)
+                                        priorityAttacks.Add((tileX+1, tileY));
+                                    if (tileY-1 >= 1)
+                                        priorityAttacks.Add((tileX, tileY-1));
+                                    if (tileY+1 <= 10)
+                                        priorityAttacks.Add((tileX, tileY+1));
+                                }
+                                break;
+                            }
+                                
+                        }
+                        if (success == true)
+                        {
+                            P1HitLimit = P1HitLimit - 1; // Decrement the hit limit for player 1 if the shot was successful.
+                        }
+                    }
+
+                    // If the shot was valid (a hit or a miss), move to the next turn and hide the ships of the player who is not taking their turn.
+                    if (success is not null)
+                    {
+                        _turnManager.NextTurn();
+                        // Reverts changes made in the NextTurn() function so that the user does not need to click to proceed on behalf of the AI
+                        _turnManager.SwapWaiting = false;
+                        _shipManager.ReadClick = true;
+                        _shipManager!.HideP1Ships = !_turnManager.IsP1sTurn;
+                        _shipManager.HideP2Ships = _turnManager.IsP1sTurn;
+                    }
+                    if (P1HitLimit == 0)
+                    {
+                        inGame = false;
+                        // Changes SwapWaiting and ReadClick back once the game ends to avoid glitches when returning to the main menu screen.
+                        _turnManager.SwapWaiting = true;
+                        _shipManager.ReadClick = false;
+                        currentGameState = GameState.MainMenu;
+                        base.Initialize();
+                    }
+                    else if (P2HitLimit == 0)
+                    {
+                        inGame = false;
+                        currentGameState = GameState.MainMenu;
+                        _turnManager.SwapWaiting = true;
+                        _shipManager.ReadClick = false;
+                        base.Initialize();
+                    }
+                }
+            }
             // Hard Difficulty: Lands a hit every turn
             else if (selectedDifficulty == DifficultyState.Hard)
             {
@@ -684,7 +786,6 @@ namespace Battleship
                         base.Initialize();
                     }
                 }
-
             }
         }
     }
