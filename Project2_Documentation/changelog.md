@@ -57,3 +57,13 @@
     \+ Documentation Folder
     \+ Person Hours record sheet
     \+ Documentation file
+
+## September 24
+
+### Updates
+
+- Worked on UML Diagram for our custom idea of special shots, currently have the custom shot ideas for a 3x3 bomb, column carpet bomb, and row carpet bomb **(Jack)**
+
+### Added
+
+- UML Diagram **(Jack)**
