@@ -302,6 +302,8 @@ namespace Battleship
                 return;
             }
 
+            Random random = new Random();
+
             // Update the grid objects
             _player1grid!.Update();
             _player2grid!.Update();
@@ -310,49 +312,106 @@ namespace Battleship
             Tuple<int, int> currentPlayer1TileLocation = _player1grid.GridArray.CoordinatesOf(_player1grid.CurrentTile);
             Tuple<int, int> currentPlayer2TileLocation = _player2grid.GridArray.CoordinatesOf(_player2grid.CurrentTile);
 
-            // Update the cursor object depending on if player 1 is placing ships or shooting tiles.
-            if (_shipManager!.IsPlayer1Placing && _player1grid.CurrentTile is not null)
-                _cursor.UpdateWhilePlacing(_player1grid.CurrentTile, currentPlayer1TileLocation, _shipManager.CurrentShipSize);
-            else if (_player1grid.CurrentTile is not null)
-                _cursor.UpdateWhilePlaying(_player1grid.CurrentTile, currentPlayer1TileLocation.Item1);
-
-            // Update the cursor object depending on if player 2 is placing ships or shooting tiles.
-            if (_shipManager!.IsPlayer2Placing && _player2grid.CurrentTile is not null)
-                _cursor.UpdateWhilePlacing(_player2grid.CurrentTile, currentPlayer2TileLocation, _shipManager.CurrentShipSize);
-            else if (_player2grid.CurrentTile is not null)
-                _cursor.UpdateWhilePlaying(_player2grid.CurrentTile, currentPlayer2TileLocation.Item1);
-
-            // Check if the left mouse button is released. If it is, indicate that the click has been read.
-            if (Mouse.GetState().LeftButton == ButtonState.Released) // If the left mouse button is released, set the read click to true.
+            if (selectedDifficulty == DifficultyState.Disabled)
             {
-                _shipManager!.ReadClick = true;
-            }
-            // Check if the game is waiting for the players to swap turns and if the read click is true.
-            // If so, progress the game by acknowledging the turn swap has been completed.
-            else if (_turnManager!.SwapWaiting && _shipManager!.ReadClick)
-            {
-                _shipManager!.ReadClick = false;
-                _turnManager.SwapWaiting = false; // Setting this to false ends the turn swap delay.
+
+                // Update the cursor object depending on if player 1 is placing ships or shooting tiles.
+                if (_shipManager!.IsPlayer1Placing && _player1grid.CurrentTile is not null)
+                    _cursor.UpdateWhilePlacing(_player1grid.CurrentTile, currentPlayer1TileLocation, _shipManager.CurrentShipSize);
+                else if (_player1grid.CurrentTile is not null)
+                    _cursor.UpdateWhilePlaying(_player1grid.CurrentTile, currentPlayer1TileLocation.Item1);
+
+                // Update the cursor object depending on if player 2 is placing ships or shooting tiles.
+                if (_shipManager!.IsPlayer2Placing && _player2grid.CurrentTile is not null)
+                    _cursor.UpdateWhilePlacing(_player2grid.CurrentTile, currentPlayer2TileLocation, _shipManager.CurrentShipSize);
+                else if (_player2grid.CurrentTile is not null)
+                    _cursor.UpdateWhilePlaying(_player2grid.CurrentTile, currentPlayer2TileLocation.Item1);
+
+                // Check if the left mouse button is released. If it is, indicate that the click has been read.
+                if (Mouse.GetState().LeftButton == ButtonState.Released) // If the left mouse button is released, set the read click to true.
+                {
+                    _shipManager!.ReadClick = true;
+                }
+                // Check if the game is waiting for the players to swap turns and if the read click is true.
+                // If so, progress the game by acknowledging the turn swap has been completed.
+                else if (_turnManager!.SwapWaiting && _shipManager!.ReadClick)
+                {
+                    _shipManager!.ReadClick = false;
+                    _turnManager.SwapWaiting = false; // Setting this to false ends the turn swap delay.
+                }
+                else
+                {
+                    // Update the ship manager object while the players are in ship placing mode.
+                    if (_shipManager!.IsPlayer1Placing && _player1grid.CurrentTile is not null)
+                        _shipManager.UpdateWhilePlacing(_player1grid.CurrentTile, _cursor.Orientation, 1);
+                    if (_shipManager!.IsPlayer2Placing && _player2grid.CurrentTile is not null)
+                        _shipManager.UpdateWhilePlacing(_player2grid.CurrentTile, _cursor.Orientation, 2);
+
+                    // Handle shooting logic if the players are not in ship placing mode.
+                    if (!_shipManager.IsPlacingShips)
+                    {
+                        HandleShooting();
+                    }
+                }
+
+                // Hide both players ships if transitioning between player turns 
+                // or hide the ships of the player who is not currently taking their turn.
+                _shipManager!.HideP1Ships = _turnManager!.SwapWaiting || !_turnManager.IsP1sTurn;
+                _shipManager.HideP2Ships = _turnManager!.SwapWaiting || _turnManager.IsP1sTurn;
             }
             else
             {
-                // Update the ship manager object while the players are in ship placing mode.
+                // Update the cursor object depending on if player 1 is placing ships or shooting tiles.
                 if (_shipManager!.IsPlayer1Placing && _player1grid.CurrentTile is not null)
-                    _shipManager.UpdateWhilePlacing(_player1grid.CurrentTile, _cursor.Orientation, 1);
-                if (_shipManager!.IsPlayer2Placing && _player2grid.CurrentTile is not null)
-                    _shipManager.UpdateWhilePlacing(_player2grid.CurrentTile, _cursor.Orientation, 2);
+                    _cursor.UpdateWhilePlacing(_player1grid.CurrentTile, currentPlayer1TileLocation, _shipManager.CurrentShipSize);
+                else if (_player1grid.CurrentTile is not null)
+                    _cursor.UpdateWhilePlaying(_player1grid.CurrentTile, currentPlayer1TileLocation.Item1);
 
-                // Handle shooting logic if the players are not in ship placing mode.
-                if (!_shipManager.IsPlacingShips)
+                // Update the cursor object depending on if player 2 is placing ships or shooting tiles.
+                if (_shipManager!.IsPlayer2Placing)
                 {
-                    HandleShooting();
-                }
-            }
+                    int gridSize = _player2grid.GridArray.GetLength(0); // ChatGPT
+                    int randomTileX = random.Next(1, gridSize);
+                    int randomTileY = random.Next(1, gridSize);
 
-            // Hide both players ships if transitioning between player turns 
-            // or hide the ships of the player who is not currently taking their turn.
-            _shipManager!.HideP1Ships = _turnManager!.SwapWaiting || !_turnManager.IsP1sTurn;
-            _shipManager.HideP2Ships = _turnManager!.SwapWaiting || _turnManager.IsP1sTurn;
+                    _player2grid.CurrentTile = _player2grid.GridArray[randomTileX,randomTileY];
+                    // Shows randomized ship placement
+                    // _cursor.UpdateWhilePlacing(_player2grid.CurrentTile, currentPlayer2TileLocation, _shipManager.CurrentShipSize);
+                    _shipManager!.ReadClick = true;
+                }
+                else if (_player2grid.CurrentTile is not null)
+                    _cursor.UpdateWhilePlaying(_player2grid.CurrentTile, currentPlayer2TileLocation.Item1);
+
+                // Check if the left mouse button is released. If it is, indicate that the click has been read.
+                if (Mouse.GetState().LeftButton == ButtonState.Released) // If the left mouse button is released, set the read click to true.
+                {
+                    _shipManager!.ReadClick = true;
+                }
+                // Check if the game is waiting for the players to swap turns and if the read click is true.
+                // If so, progress the game by acknowledging the turn swap has been completed.
+                else if (_turnManager!.SwapWaiting)
+                {
+                    _shipManager!.ReadClick = false;
+                    _turnManager.SwapWaiting = false; // Setting this to false ends the turn swap delay.
+                }
+                else
+                {
+                    // Update the ship manager object while the players are in ship placing mode.
+                    if (_shipManager!.IsPlayer1Placing && _player1grid.CurrentTile is not null)
+                        _shipManager.UpdateWhilePlacing(_player1grid.CurrentTile, _cursor.Orientation, 1);
+                    if (_shipManager!.IsPlayer2Placing && _player2grid.CurrentTile is not null)
+                        _shipManager.UpdateWhilePlacing(_player2grid.CurrentTile, _cursor.Orientation, 2);
+
+                    // Handle shooting logic if the players are not in ship placing mode.
+                    if (!_shipManager.IsPlacingShips)
+                    {
+                        HandleShooting();
+                    }
+                }
+
+                _shipManager!.HideP1Ships = _turnManager!.SwapWaiting || !_turnManager.IsP1sTurn;
+                _shipManager.HideP2Ships = true;
+            }
 
             base.Update(gameTime); // Ensures the framework-level logic in the base class is updated.
         }
@@ -401,20 +460,20 @@ namespace Battleship
             _cursor.Draw(_spriteBatch);
             _turnManager!.Draw(_spriteBatch);
 
-            // Check if a turn swap is waiting and draw the texture and feedback message
-            if (_turnManager.SwapWaiting)
-            {
-                _spriteBatch.Draw(backgroundTexture, new Rectangle(0, 0, GraphicsDevice.Viewport.Width, GraphicsDevice.Viewport.Height), Color.White);
-                //_spriteBatch.Draw(SwapTexture, new Vector2((GraphicsDevice.Viewport.Width - SwapTexture.Width) / 2,
-                //                                            (GraphicsDevice.Viewport.Height - SwapTexture.Height) / 2), 
-                //                Color.White);
+            // // Check if a turn swap is waiting and draw the texture and feedback message
+            // if (_turnManager.SwapWaiting)
+            // {
+            //     _spriteBatch.Draw(backgroundTexture, new Rectangle(0, 0, GraphicsDevice.Viewport.Width, GraphicsDevice.Viewport.Height), Color.White);
+            //     //_spriteBatch.Draw(SwapTexture, new Vector2((GraphicsDevice.Viewport.Width - SwapTexture.Width) / 2,
+            //     //                                            (GraphicsDevice.Viewport.Height - SwapTexture.Height) / 2), 
+            //     //                Color.White);
 
-                string feedbackMessage = _turnManager.IsP1sTurn ? "Player 2's Turn Finished!\nClick to Switch Player" : "Player 1's Turn Finished!\nClick to Switch Player";
-                Vector2 messageSize = feedbackFont.MeasureString(feedbackMessage);
-                Vector2 messagePosition = new Vector2((GraphicsDevice.Viewport.Width - messageSize.X) / 2,
-                                                    (GraphicsDevice.Viewport.Height - SwapTexture.Height) / 2 + SwapTexture.Height);
-                _spriteBatch.DrawString(feedbackFont, feedbackMessage, messagePosition, Color.Red);
-            }
+            //     string feedbackMessage = _turnManager.IsP1sTurn ? "Player 2's Turn Finished!\nClick to Switch Player" : "Player 1's Turn Finished!\nClick to Switch Player";
+            //     Vector2 messageSize = feedbackFont.MeasureString(feedbackMessage);
+            //     Vector2 messagePosition = new Vector2((GraphicsDevice.Viewport.Width - messageSize.X) / 2,
+            //                                         (GraphicsDevice.Viewport.Height - SwapTexture.Height) / 2 + SwapTexture.Height);
+            //     _spriteBatch.DrawString(feedbackFont, feedbackMessage, messagePosition, Color.Red);
+            // }
             _spriteBatch.End(); // End the sprite batch for drawing.
             base.Draw(gameTime); // Ensures the framework-level logic in the base class is drawn.
         }

@@ -212,7 +212,7 @@ namespace Battleship
             MouseState mouseState = Mouse.GetState(); // Get the current mouse state
 
             // If the mouse is clicked and the placement timeout is not active, place the ship
-            if (ReadClick && mouseState.LeftButton == ButtonState.Pressed && (_placementTimeout is null || !_placementTimeout.Enabled))
+            if (ReadClick)
             {
                 ReadClick = false; // Set the read click flag to false so it can be set to true the next time the mouse is clicked
 

@@ -1,5 +1,11 @@
 # Changelog
 
+## September 23
+
+### Added
+
+- Implemented randomized ship placement for AI **(Peter)**
+
 ## September 22
 
 ### Added
