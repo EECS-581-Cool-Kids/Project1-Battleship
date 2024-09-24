@@ -4,10 +4,10 @@
  *            It is responsible for managing all other subordinate manager objects needed to run the game.
  *   Inputs: None
  *   Output: None
- *   Additional code sources: None
- *   Developers: Derek Norton, Ethan Berkley, Jacob Wilkus, Mo Morgan, Richard Moser, Michael Oliver
+ *   Additional code sources: ChatGPT for getting the size of an array
+ *   Developers: Derek Norton, Ethan Berkley, Jacob Wilkus, Mo Morgan, Richard Moser, Michael Oliver, Peter Pham
  *   Date: 09/03/2024
- *   Last Modified: 09/22/2024
+ *   Last Modified: 09/23/2024
  */
 
 using Microsoft.Xna.Framework;
@@ -275,7 +275,7 @@ namespace Battleship
                     case GameState.Settings:
                         SettingsMenu.Update();
                         
-                        selectedDifficulty = SettingsMenu.SelectedDifficulty;
+                        selectedDifficulty = SettingsMenu.SelectedDifficulty; // Updates the global difficulty to what was chosen in the settings menu
                         if (SettingsMenu.back && Mouse.GetState().LeftButton == ButtonState.Released) // If the back button is clicked, return to the main menu.
                         {
                             // Update the game's difficulty based on what was selected within the settings menu when the player returns to the main menu.
@@ -302,6 +302,7 @@ namespace Battleship
                 return;
             }
 
+            // Uses system random class to randomly pick grids to place ships for the AI
             Random random = new Random();
 
             // Update the grid objects
@@ -312,6 +313,7 @@ namespace Battleship
             Tuple<int, int> currentPlayer1TileLocation = _player1grid.GridArray.CoordinatesOf(_player1grid.CurrentTile);
             Tuple<int, int> currentPlayer2TileLocation = _player2grid.GridArray.CoordinatesOf(_player2grid.CurrentTile);
 
+            // If the AI is disabled, continue the game as originally coded
             if (selectedDifficulty == DifficultyState.Disabled)
             {
 
@@ -359,6 +361,7 @@ namespace Battleship
                 _shipManager!.HideP1Ships = _turnManager!.SwapWaiting || !_turnManager.IsP1sTurn;
                 _shipManager.HideP2Ships = _turnManager!.SwapWaiting || _turnManager.IsP1sTurn;
             }
+            // If the AI is enabled, proceed with randomly placing the ships
             else
             {
                 // Update the cursor object depending on if player 1 is placing ships or shooting tiles.
@@ -370,13 +373,17 @@ namespace Battleship
                 // Update the cursor object depending on if player 2 is placing ships or shooting tiles.
                 if (_shipManager!.IsPlayer2Placing)
                 {
-                    int gridSize = _player2grid.GridArray.GetLength(0); // ChatGPT
+                    // Gets random X and Y coords and modifies player 2's CurrentTile to the randomly chosen one
+                    int gridSize = _player2grid.GridArray.GetLength(0); // Used ChatGPT here to know how to get the size of an array
                     int randomTileX = random.Next(1, gridSize);
                     int randomTileY = random.Next(1, gridSize);
 
                     _player2grid.CurrentTile = _player2grid.GridArray[randomTileX,randomTileY];
                     // Shows randomized ship placement
                     // _cursor.UpdateWhilePlacing(_player2grid.CurrentTile, currentPlayer2TileLocation, _shipManager.CurrentShipSize);
+                    
+                    // Changes settings to proceed without needing an input for the AI 
+                    _turnManager.SwapWaiting = false;
                     _shipManager!.ReadClick = true;
                 }
                 else if (_player2grid.CurrentTile is not null)
@@ -460,20 +467,20 @@ namespace Battleship
             _cursor.Draw(_spriteBatch);
             _turnManager!.Draw(_spriteBatch);
 
-            // // Check if a turn swap is waiting and draw the texture and feedback message
-            // if (_turnManager.SwapWaiting)
-            // {
-            //     _spriteBatch.Draw(backgroundTexture, new Rectangle(0, 0, GraphicsDevice.Viewport.Width, GraphicsDevice.Viewport.Height), Color.White);
-            //     //_spriteBatch.Draw(SwapTexture, new Vector2((GraphicsDevice.Viewport.Width - SwapTexture.Width) / 2,
-            //     //                                            (GraphicsDevice.Viewport.Height - SwapTexture.Height) / 2), 
-            //     //                Color.White);
+            // Check if a turn swap is waiting and draw the texture and feedback message
+            if (_turnManager.SwapWaiting && selectedDifficulty == DifficultyState.Disabled)
+            {
+                _spriteBatch.Draw(backgroundTexture, new Rectangle(0, 0, GraphicsDevice.Viewport.Width, GraphicsDevice.Viewport.Height), Color.White);
+                //_spriteBatch.Draw(SwapTexture, new Vector2((GraphicsDevice.Viewport.Width - SwapTexture.Width) / 2,
+                //                                            (GraphicsDevice.Viewport.Height - SwapTexture.Height) / 2), 
+                //                Color.White);
 
-            //     string feedbackMessage = _turnManager.IsP1sTurn ? "Player 2's Turn Finished!\nClick to Switch Player" : "Player 1's Turn Finished!\nClick to Switch Player";
-            //     Vector2 messageSize = feedbackFont.MeasureString(feedbackMessage);
-            //     Vector2 messagePosition = new Vector2((GraphicsDevice.Viewport.Width - messageSize.X) / 2,
-            //                                         (GraphicsDevice.Viewport.Height - SwapTexture.Height) / 2 + SwapTexture.Height);
-            //     _spriteBatch.DrawString(feedbackFont, feedbackMessage, messagePosition, Color.Red);
-            // }
+                string feedbackMessage = _turnManager.IsP1sTurn ? "Player 2's Turn Finished!\nClick to Switch Player" : "Player 1's Turn Finished!\nClick to Switch Player";
+                Vector2 messageSize = feedbackFont.MeasureString(feedbackMessage);
+                Vector2 messagePosition = new Vector2((GraphicsDevice.Viewport.Width - messageSize.X) / 2,
+                                                    (GraphicsDevice.Viewport.Height - SwapTexture.Height) / 2 + SwapTexture.Height);
+                _spriteBatch.DrawString(feedbackFont, feedbackMessage, messagePosition, Color.Red);
+            }
             _spriteBatch.End(); // End the sprite batch for drawing.
             base.Draw(gameTime); // Ensures the framework-level logic in the base class is drawn.
         }
@@ -493,49 +500,120 @@ namespace Battleship
             MouseState mouseState = Mouse.GetState(); // Get the current mouse state.
 
             // If the left mouse button is pressed and the read click is true, shoot the tile.
-            if (_shipManager!.ReadClick && mouseState.LeftButton == ButtonState.Pressed)
+            if (selectedDifficulty == DifficultyState.Disabled) // Continues as normal if the AI is disabled
             {
-                _shipManager.ReadClick = false; // Set the read click to false to prevent multiple shots per click.
-                bool? success = false; // This variable will store the result of the shot. Initialized to false.
-
-                // Shoot the tile for the player whose turn it is.
-                if (_turnManager!.IsP1sTurn)
+                if (_shipManager!.ReadClick && mouseState.LeftButton == ButtonState.Pressed)
                 {
-                    success = _player2grid!.Shoot();
-                    if (success == true)
+                    _shipManager.ReadClick = false; // Set the read click to false to prevent multiple shots per click.
+                    bool? success = false; // This variable will store the result of the shot. Initialized to false.
+
+                    // Shoot the tile for the player whose turn it is.
+                    if (_turnManager!.IsP1sTurn)
                     {
-                        P2HitLimit = P2HitLimit - 1; // Decrement the hit limit for player 2 if the shot was successful.
+                        success = _player2grid!.Shoot();
+                        if (success == true)
+                        {
+                            P2HitLimit = P2HitLimit - 1; // Decrement the hit limit for player 2 if the shot was successful.
+                        }
+                    }
+                    else
+                    {
+                        success = _player1grid!.Shoot();
+                        if (success == true)
+                        {
+                            P1HitLimit = P1HitLimit - 1; // Decrement the hit limit for player 1 if the shot was successful.
+                        }
+                    }
+
+                    // If the shot was valid (a hit or a miss), move to the next turn and hide the ships of the player who is not taking their turn.
+                    if (success is not null)
+                    {
+                        _turnManager.NextTurn();
+                        _shipManager!.HideP1Ships = !_turnManager.IsP1sTurn;
+                        _shipManager.HideP2Ships = _turnManager.IsP1sTurn;
+                    }
+                    if (P1HitLimit == 0)
+                    {
+                        inGame = false;
+                        currentGameState = GameState.MainMenu;
+                        base.Initialize();
+                    }
+                    else if (P2HitLimit == 0)
+                    {
+                        inGame = false;
+                        currentGameState = GameState.MainMenu;
+                        base.Initialize();
                     }
                 }
-                else
+            }
+            // Easy difficulty: randomly selects tiles to attack
+            else if (selectedDifficulty == DifficultyState.Easy)
+            {
+                if (_shipManager!.ReadClick && ((mouseState.LeftButton == ButtonState.Pressed) || !_turnManager!.IsP1sTurn))
                 {
-                    success = _player1grid!.Shoot();
-                    if (success == true)
+                    _shipManager.ReadClick = false; // Set the read click to false to prevent multiple shots per click.
+                    bool? success = false; // This variable will store the result of the shot. Initialized to false.
+
+                    // Shoot the tile for the player whose turn it is.
+                    if (_turnManager!.IsP1sTurn)
                     {
-                        P1HitLimit = P1HitLimit - 1; // Decrement the hit limit for player 1 if the shot was successful.
+                        success = _player2grid!.Shoot();
+                        if (success == true)
+                        {
+                            P2HitLimit = P2HitLimit - 1; // Decrement the hit limit for player 2 if the shot was successful.
+                        }
+                    }
+                    // If it is the AI's turn to attack:
+                    else
+                    {
+                        // Repeats until a valid tile is randomly selected to be attacked
+                        while (true)
+                        {
+                            Random random = new Random();
+                            int gridSize = _player2grid.GridArray.GetLength(0); // Used ChatGPT here to know how to get the size of an array
+                            int randomTileX = random.Next(1, gridSize);
+                            int randomTileY = random.Next(1, gridSize);   
+                            // Updates the AI's attacking tile to that which was randomly chosen
+                            _player1grid.CurrentTile = _player1grid.GridArray[randomTileX,randomTileY];
+
+                            success = _player1grid!.Shoot();
+                            if (success is not null)
+                                break;
+                        }
+                        if (success == true)
+                        {
+                            P1HitLimit = P1HitLimit - 1; // Decrement the hit limit for player 1 if the shot was successful.
+                        }
+                    }
+
+                    // If the shot was valid (a hit or a miss), move to the next turn and hide the ships of the player who is not taking their turn.
+                    if (success is not null)
+                    {
+                        _turnManager.NextTurn();
+                        // Reverts changes made in the NextTurn() function so that the user does not need to click to proceed on behalf of the AI
+                        _turnManager.SwapWaiting = false;
+                        _shipManager.ReadClick = true;
+                        _shipManager!.HideP1Ships = !_turnManager.IsP1sTurn;
+                        _shipManager.HideP2Ships = _turnManager.IsP1sTurn;
+                    }
+                    if (P1HitLimit == 0)
+                    {
+                        inGame = false;
+                        // Changes SwapWaiting and ReadClick back once the game ends to avoid glitches when returning to the main menu screen.
+                        _turnManager.SwapWaiting = true;
+                        _shipManager.ReadClick = false;
+                        currentGameState = GameState.MainMenu;
+                        base.Initialize();
+                    }
+                    else if (P2HitLimit == 0)
+                    {
+                        inGame = false;
+                        currentGameState = GameState.MainMenu;
+                        _turnManager.SwapWaiting = true;
+                        _shipManager.ReadClick = false;
+                        base.Initialize();
                     }
                 }
-
-                // If the shot was valid (a hit or a miss), move to the next turn and hide the ships of the player who is not taking their turn.
-                if (success is not null)
-                {
-                    _turnManager.NextTurn();
-                    _shipManager!.HideP1Ships = !_turnManager.IsP1sTurn;
-                    _shipManager.HideP2Ships = _turnManager.IsP1sTurn;
-                }
-                if (P1HitLimit == 0)
-                {
-                    inGame = false;
-                    currentGameState = GameState.MainMenu;
-                    base.Initialize();
-                }
-                else if (P2HitLimit == 0)
-                {
-                    inGame = false;
-                    currentGameState = GameState.MainMenu;
-                    base.Initialize();
-                }
-
             }
         }
     }

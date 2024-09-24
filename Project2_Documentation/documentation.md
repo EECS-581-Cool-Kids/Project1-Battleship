@@ -9,10 +9,10 @@
   - [ ] Implement idea
 - [ ] AI Opponent
   - [X] Create AI Opponent Selection interface
-  - [ ] Create AI Easy Difficulty Level
+  - [X] Create AI Easy Difficulty Level
   - [ ] Create AI Medium Difficulty Level
   - [ ] Create AI Hard Difficulty Level
-  - [ ] Randomize AI Ship Placement
+  - [X] Randomize AI Ship Placement
 - **Continuous Documentation**
 - **Person Hours Record-Keeping**
 

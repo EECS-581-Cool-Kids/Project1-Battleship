@@ -5,6 +5,7 @@
 ### Added
 
 - Implemented randomized ship placement for AI **(Peter)**
+- Implemented easy difficulty for AI **(Peter)**
 
 ## September 22
 
