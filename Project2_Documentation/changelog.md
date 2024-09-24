@@ -7,6 +7,7 @@
 - Implemented randomized ship placement for AI **(Peter)**
 - Implemented easy difficulty for AI **(Peter)**
 - Implemented hard difficulty for AI **(Peter)**
+- Implemented medium difficulty for AI **(Peter)**
 
 ## September 22
 

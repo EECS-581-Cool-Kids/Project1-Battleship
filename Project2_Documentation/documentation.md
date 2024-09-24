@@ -7,11 +7,11 @@
 - [ ] Decide on a custom addition
   - [ ] Create UML diagram
   - [ ] Implement idea
-- [ ] AI Opponent
+- [X] AI Opponent
   - [X] Create AI Opponent Selection interface
   - [X] Create AI Easy Difficulty Level
-  - [ ] Create AI Medium Difficulty Level
-  - [ ] Create AI Hard Difficulty Level
+  - [X] Create AI Medium Difficulty Level
+  - [X] Create AI Hard Difficulty Level
   - [X] Randomize AI Ship Placement
 - **Continuous Documentation**
 - **Person Hours Record-Keeping**
