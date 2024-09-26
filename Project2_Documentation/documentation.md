@@ -4,8 +4,8 @@
 
 - [X] Figure out MacOS installation
 - [ ] Add expected person hours and reasoning
-- [ ] Decide on a custom addition
-  - [ ] Create UML diagram
+- [X] Decide on a custom addition
+  - [X] Create UML diagram
   - [ ] Implement idea
 - [X] AI Opponent
   - [X] Create AI Opponent Selection interface
@@ -42,5 +42,5 @@ Inputs:
 Outputs:
 Collaborators/Sources: Michael Oliver, Peter Pham, Jack Youngquist, Andrew Uriell, Ian Wilson
 Created: September 19, 2024
-Last Modified: September 19, 2024
+Last Modified: September 24, 2024
 ```
